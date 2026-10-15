@@ -98,9 +98,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
                 child: Form(
                   key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
+                  child: AutofillGroup(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                       // Extruded Neumorphic Logo
                       Center(
                         child: NeuContainer(
@@ -179,6 +180,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         labelText: 'Institutional Email',
                         hintText: 'name@atlas.edu',
                         keyboardType: TextInputType.emailAddress,
+                        autofillHints: const [AutofillHints.email],
                         prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) return 'Please enter your email.';
@@ -194,6 +196,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         labelText: 'Password',
                         hintText: '••••••••••••',
                         obscureText: _obscurePassword,
+                        autofillHints: const [AutofillHints.password],
                         prefixIcon: Icon(TablerIcons.lock, size: 20, color: neuTheme.textSecondary),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -321,6 +324,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
+            ),
             ),
           ],
         ),

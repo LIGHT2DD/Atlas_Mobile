@@ -100,6 +100,9 @@ app.mount("/static", staticfiles.StaticFiles(directory="frontend/static"), name=
 
 # Register Middleware
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
     allow_origin_regex=r"^https?://.*$",
@@ -108,7 +111,7 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
-app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY, max_age=3600)
+app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY, max_age=259200)
 app.add_middleware(AuthMiddleware)
 
 # Middleware to log details after each request

@@ -34,6 +34,10 @@ class Evaluation(BaseTableModel):
     calculated_score = sa.Column(sa.Float, nullable=True)  # Weighted total out of 100
     is_submitted = sa.Column(sa.Boolean, default=False, index=True)
 
+    __table_args__ = (
+        sa.Index('ix_evaluations_team_defense', 'team_id', 'defense_id'),
+    )
+
     # Relationships
     team = relationship('Team', back_populates='evaluations', foreign_keys=[team_id], lazy='selectin')
     evaluator = relationship('User', foreign_keys=[evaluator_id], lazy='selectin')

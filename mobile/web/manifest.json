@@ -1,11 +1,11 @@
 {
-    "name": "atlas_mobile",
-    "short_name": "atlas_mobile",
+    "name": "ATLAS - Academic Thesis Lifecycle & Assessment Suite",
+    "short_name": "ATLAS",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#E0E5EC",
+    "theme_color": "#E0E5EC",
+    "description": "Academic Thesis Lifecycle & Assessment Suite",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

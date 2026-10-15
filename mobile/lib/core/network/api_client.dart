@@ -62,6 +62,38 @@ class ApiClient {
         },
       ),
     );
+
+    // Auto-retry interceptor for transient network failures on idempotent GET requests
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (DioException error, handler) async {
+          final requestOptions = error.requestOptions;
+          final retryCount = (requestOptions.extra['retry_count'] as int?) ?? 0;
+
+          final isGet = requestOptions.method.toUpperCase() == 'GET';
+          final isTransient = error.type == DioExceptionType.connectionTimeout ||
+              error.type == DioExceptionType.receiveTimeout ||
+              error.type == DioExceptionType.connectionError ||
+              (error.response?.statusCode != null &&
+                  [502, 503, 504].contains(error.response!.statusCode));
+
+          if (isGet && isTransient && retryCount < 2) {
+            requestOptions.extra['retry_count'] = retryCount + 1;
+            final backoffMs = (retryCount + 1) * 600;
+            await Future<void>.delayed(Duration(milliseconds: backoffMs));
+            try {
+              final response = await dio.fetch(requestOptions);
+              return handler.resolve(response);
+            } catch (e) {
+              if (e is DioException) {
+                return handler.next(e);
+              }
+            }
+          }
+          return handler.next(error);
+        },
+      ),
+    );
   }
 
   Future<String?> _handleTokenRefresh() async {

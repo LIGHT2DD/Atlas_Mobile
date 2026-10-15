@@ -74,9 +74,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Form(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+            child: AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                 NeuContainer(
                   depthType: NeuDepth.convex,
                   depth: 3.0,
@@ -138,6 +139,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         controller: _firstNameController,
                         labelText: 'First Name',
                         hintText: 'John',
+                        autofillHints: const [AutofillHints.givenName],
                         validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
                       ),
                     ),
@@ -147,6 +149,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         controller: _lastNameController,
                         labelText: 'Last Name',
                         hintText: 'Doe',
+                        autofillHints: const [AutofillHints.familyName],
                         validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
                       ),
                     ),
@@ -159,6 +162,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   labelText: 'University Email',
                   hintText: 'student@atlas.edu',
                   keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
                   prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) return 'Please enter your email.';
@@ -173,6 +177,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   labelText: 'Password',
                   hintText: '••••••••••••',
                   obscureText: _obscurePassword,
+                  autofillHints: const [AutofillHints.newPassword],
                   prefixIcon: Icon(TablerIcons.lock, size: 20, color: neuTheme.textSecondary),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -194,6 +199,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   labelText: 'Confirm Password',
                   hintText: '••••••••••••',
                   obscureText: _obscurePassword,
+                  autofillHints: const [AutofillHints.newPassword],
                   prefixIcon: Icon(TablerIcons.lock_access, size: 20, color: neuTheme.textSecondary),
                   validator: (v) {
                     if (v != _passwordController.text) return 'Passwords do not match.';
@@ -213,6 +219,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

@@ -38,7 +38,12 @@ class Submission(BaseTableModel):
 
     score = sa.Column(sa.Float, nullable=True)
     feedback = sa.Column(sa.Text, nullable=True)
-    
+
+    __table_args__ = (
+        sa.Index('ix_submissions_team_status', 'team_id', 'status'),
+        sa.Index('ix_submissions_milestone_team', 'milestone_id', 'team_id'),
+    )
+
     # Relationships
     milestone = relationship('Milestone', back_populates='submissions', foreign_keys=[milestone_id], lazy='selectin')
     team = relationship('Team', back_populates='submissions', foreign_keys=[team_id], lazy='selectin')

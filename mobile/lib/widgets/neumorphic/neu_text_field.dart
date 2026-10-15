@@ -18,6 +18,7 @@ class NeuTextField extends StatefulWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final FocusNode? focusNode;
+  final Iterable<String>? autofillHints;
 
   const NeuTextField({
     super.key,
@@ -35,6 +36,7 @@ class NeuTextField extends StatefulWidget {
     this.readOnly = false,
     this.onTap,
     this.focusNode,
+    this.autofillHints,
   });
 
   @override
@@ -76,6 +78,7 @@ class _NeuTextFieldState extends State<NeuTextField> {
           child: TextFormField(
             controller: widget.controller,
             focusNode: widget.focusNode,
+            autofillHints: widget.autofillHints,
             obscureText: widget.obscureText,
             keyboardType: widget.keyboardType,
             maxLines: widget.maxLines,

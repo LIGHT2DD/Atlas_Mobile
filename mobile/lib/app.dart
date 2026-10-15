@@ -12,6 +12,11 @@ class AtlasApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(themeModeProvider);
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(const AssetImage('asset/icon/play_store_512.png'), context).catchError((_) {});
+      precacheImage(const AssetImage('assets/icon/play_store_512.png'), context).catchError((_) {});
+    });
+
     return MaterialApp.router(
       title: 'ATLAS - Academic Thesis Lifecycle & Assessment Suite',
       debugShowCheckedModeBanner: false,

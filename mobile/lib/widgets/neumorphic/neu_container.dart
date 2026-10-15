@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../core/theme/neumorphic_theme.dart';
 
 /// NeuContainer: Pure Flutter Soft-UI Extruded / Sunken Box
@@ -103,7 +104,10 @@ class NeuContainer extends StatelessWidget {
 
     if (onTap != null) {
       return GestureDetector(
-        onTap: onTap,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap!();
+        },
         behavior: HitTestBehavior.opaque,
         child: container,
       );
