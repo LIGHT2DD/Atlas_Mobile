@@ -1,115 +1,168 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/widgets/atlas_drawer.dart';
-import '../../shared/widgets/atlas_card.dart';
 import '../auth/auth_controller.dart';
 import '../supervisor/supervisor_repository.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class SupervisorDashboardScreen extends ConsumerWidget {
   const SupervisorDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
     final requestsAsync = ref.watch(supervisorRequestsProvider);
     final teamsAsync = ref.watch(supervisedTeamsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Faculty Portal'),
+      backgroundColor: neuTheme.baseColor,
+      appBar: NeuAppBar(
+        title: 'Faculty Portal',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.bell),
-            onPressed: () => context.push('/notifications'),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.bell,
+              tooltip: 'Notifications',
+              onPressed: () => context.push('/notifications'),
+            ),
           ),
         ],
       ),
       drawer: const AtlasDrawer(),
       body: RefreshIndicator(
+        color: neuTheme.accentColor,
+        backgroundColor: neuTheme.baseColor,
         onRefresh: () async {
           ref.invalidate(supervisorRequestsProvider);
           ref.invalidate(supervisedTeamsProvider);
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Welcome Header
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.primary, Color(0xFF0F766E)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              NeuContainer(
+                depthType: NeuDepth.convex,
+                depth: 4.0,
+                borderRadius: BorderRadius.circular(20),
+                padding: const EdgeInsets.all(22),
+                child: Row(
                   children: [
-                    Text(
-                      'Welcome, Prof. ${user?.lastName ?? user?.firstName ?? 'Faculty'}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome, Prof. ${user?.lastName ?? user?.firstName ?? 'Faculty'}',
+                            style: TextStyle(
+                              color: neuTheme.textPrimary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Manage candidate supervision, milestone grading, and defense committee evaluations.',
+                            style: TextStyle(
+                              color: neuTheme.textSecondary,
+                              fontSize: 12,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Manage candidate supervision, milestone grading, and defense committee evaluations.',
-                      style: TextStyle(color: AppColors.divider, fontSize: 13),
+                    const SizedBox(width: 14),
+                    NeuContainer(
+                      shape: BoxShape.circle,
+                      width: 52,
+                      height: 52,
+                      depthType: NeuDepth.convex,
+                      depth: 3.0,
+                      alignment: Alignment.center,
+                      child: Icon(TablerIcons.school, color: neuTheme.accentColor, size: 28),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               // KPI Counters
               Row(
                 children: [
                   Expanded(
-                    child: AtlasCard(
+                    child: NeuContainer(
+                      depthType: NeuDepth.convex,
+                      depth: 3.5,
+                      borderRadius: BorderRadius.circular(18),
+                      padding: const EdgeInsets.all(18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('SUPERVISED TEAMS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
-                          const SizedBox(height: 8),
+                          Text(
+                            'SUPERVISED TEAMS',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: neuTheme.textSecondary,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
                           teamsAsync.when(
-                            loading: () => const Text('...', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                            error: (err, stack) => const Text('0', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                            data: (teams) => Text('${teams.length}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                            loading: () => const Text('...', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                            error: (err, stack) => const Text('0', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                            data: (teams) => Text(
+                              '${teams.length}',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                color: neuTheme.accentColor,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
-                    child: AtlasCard(
+                    child: NeuContainer(
+                      depthType: NeuDepth.convex,
+                      depth: 3.5,
+                      borderRadius: BorderRadius.circular(18),
+                      padding: const EdgeInsets.all(18),
                       onTap: () => context.push('/supervisor/requests'),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('PENDING REQUESTS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
-                          const SizedBox(height: 8),
+                          Text(
+                            'PENDING REQUESTS',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: neuTheme.textSecondary,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
                           requestsAsync.when(
-                            loading: () => const Text('...', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                            error: (err, stack) => const Text('0', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                            loading: () => const Text('...', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                            error: (err, stack) => const Text('0', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
                             data: (reqs) => Text(
                               '${reqs.length}',
                               style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: reqs.isNotEmpty ? AppColors.warning : AppColors.textSecondary,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                color: reqs.isNotEmpty ? neuTheme.warningColor : neuTheme.textSecondary,
                               ),
                             ),
                           ),
@@ -119,14 +172,19 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
-              // Action Navigation
-              const Text(
+              // Supervision Tasks Header
+              Text(
                 'SUPERVISION TASKS',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.8),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: neuTheme.textSecondary,
+                  letterSpacing: 1.0,
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
 
               _taskCard(
                 context,
@@ -136,7 +194,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                 badgeCount: requestsAsync.valueOrNull?.length,
                 onTap: () => context.push('/supervisor/requests'),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
 
               _taskCard(
                 context,
@@ -146,7 +204,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                 badgeCount: teamsAsync.valueOrNull?.length,
                 onTap: () => context.push('/supervisor/teams'),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
 
               _taskCard(
                 context,
@@ -155,7 +213,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                 icon: TablerIcons.clipboard_list,
                 onTap: () => context.push('/milestones'),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
 
               _taskCard(
                 context,
@@ -179,43 +237,54 @@ class SupervisorDashboardScreen extends ConsumerWidget {
     int? badgeCount,
     required VoidCallback onTap,
   }) {
-    return AtlasCard(
+    final neuTheme = context.neuTheme;
+
+    return NeuContainer(
+      depthType: NeuDepth.convex,
+      depth: 3.5,
+      borderRadius: BorderRadius.circular(18),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       onTap: onTap,
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: AppColors.accent, size: 24),
+          NeuContainer(
+            shape: BoxShape.circle,
+            width: 44,
+            height: 44,
+            depthType: NeuDepth.convex,
+            depth: 2.5,
+            alignment: Alignment.center,
+            child: Icon(icon, color: neuTheme.accentColor, size: 22),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                const SizedBox(height: 2),
-                Text(description, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: neuTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: neuTheme.textSecondary,
+                  ),
+                ),
               ],
             ),
           ),
-          if (badgeCount != null && badgeCount > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.warning,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '$badgeCount',
-                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-            ),
-          const SizedBox(width: 4),
-          const Icon(TablerIcons.chevron_right, color: AppColors.textMuted),
+          if (badgeCount != null && badgeCount > 0) ...[
+            NeuBadge(label: '$badgeCount', color: neuTheme.warningColor),
+            const SizedBox(width: 8),
+          ],
+          Icon(TablerIcons.chevron_right, size: 20, color: neuTheme.textSecondary.withValues(alpha: 0.6)),
         ],
       ),
     );

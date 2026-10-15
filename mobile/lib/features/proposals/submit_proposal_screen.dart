@@ -2,10 +2,10 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import 'proposal_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:go_router/go_router.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
+import 'proposal_repository.dart';
 
 class SubmitProposalScreen extends ConsumerStatefulWidget {
   final String teamId;
@@ -24,7 +24,6 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
   Uint8List? _selectedFileBytes;
   String? _selectedFileName;
   bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -48,11 +47,20 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
           _selectedFileBytes = picked.bytes;
           _selectedFileName = picked.name;
         });
+        if (mounted) {
+          NeuToast.show(
+            context,
+            message: 'Attached: ${picked.name}',
+            type: NeuToastType.info,
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File selection error: $e'), backgroundColor: AppColors.error),
+        NeuToast.show(
+          context,
+          message: 'File selection error: $e',
+          type: NeuToastType.error,
         );
       }
     }
@@ -61,10 +69,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    setState(() => _isLoading = true);
 
     try {
       final repo = ref.read(proposalRepositoryProvider);
@@ -80,184 +85,147 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Research proposal submitted successfully!'),
-            backgroundColor: AppColors.success,
-          ),
+        NeuToast.show(
+          context,
+          message: 'Research proposal submitted successfully for supervisor review!',
+          title: 'Proposal Transmitted',
+          type: NeuToastType.success,
         );
         context.pop();
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() => _isLoading = false);
+        NeuToast.show(
+          context,
+          message: e.toString(),
+          title: 'Submission Error',
+          type: NeuToastType.error,
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Submit Thesis Proposal'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Proposal Submission',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Submit your official research synopsis for supervisor approval. If revising, specify what changes were incorporated.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
-              ),
-              const SizedBox(height: 24),
-
-              if (_errorMessage != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.errorBg,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.error),
-                  ),
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(color: AppColors.error, fontSize: 13),
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Research Title *',
-                  hintText: 'e.g. Adaptive Federated Learning Architecture',
-                  prefixIcon: Icon(TablerIcons.heading),
-                ),
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return 'Title is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _abstractController,
-                maxLines: 6,
-                decoration: const InputDecoration(
-                  labelText: 'Abstract & Methodology *',
-                  hintText: 'Detail the problem statement, objectives, methodologies, and expected deliverables...',
-                  alignLabelWithHint: true,
-                ),
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return 'Abstract is required';
-                  }
-                  if (val.trim().length < 20) {
-                    return 'Please provide a comprehensive abstract (at least 20 chars)';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _changeSummaryController,
-                decoration: const InputDecoration(
-                  labelText: 'Revision Summary (Optional)',
-                  hintText: 'e.g. Addressed supervisor comments on Section 3 methodology',
-                  prefixIcon: Icon(TablerIcons.notes),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Document attachment box
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(TablerIcons.paperclip, size: 18, color: AppColors.accent),
-                        SizedBox(width: 8),
-                        Text(
-                          'Document Attachment (PDF / DOCX)',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    if (_selectedFileName != null) ...[
+      backgroundColor: neuTheme.baseColor,
+      appBar: const NeuAppBar(title: 'Submit Thesis Proposal'),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                NeuContainer(
+                  depthType: NeuDepth.convex,
+                  depth: 3.0,
+                  borderRadius: BorderRadius.circular(18),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Row(
                         children: [
-                          const Icon(TablerIcons.file, color: AppColors.primary, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _selectedFileName!,
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                              overflow: TextOverflow.ellipsis,
+                          Icon(TablerIcons.file_description, color: neuTheme.accentColor, size: 24),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Proposal Submission',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: neuTheme.textPrimary,
                             ),
-                          ),
-                          IconButton(
-                            icon: const Icon(TablerIcons.x, size: 18, color: AppColors.error),
-                            onPressed: () {
-                              setState(() {
-                                _selectedFileBytes = null;
-                                _selectedFileName = null;
-                              });
-                            },
                           ),
                         ],
                       ),
-                    ] else ...[
-                      OutlinedButton.icon(
-                        icon: const Icon(TablerIcons.upload),
-                        label: const Text('Select Proposal Document'),
-                        onPressed: _pickDocument,
+                      const SizedBox(height: 8),
+                      Text(
+                        'Submit your official research synopsis for supervisor approval. If revising, specify what changes were incorporated.',
+                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
                       ),
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 28),
+                const SizedBox(height: 24),
 
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Submit Proposal for Review'),
-              ),
-            ],
+                NeuTextField(
+                  controller: _titleController,
+                  labelText: 'Research Title *',
+                  hintText: 'e.g. Adaptive Federated Learning Architecture',
+                  prefixIcon: Icon(TablerIcons.heading, color: neuTheme.textSecondary),
+                  validator: (val) {
+                    if (val == null || val.trim().isEmpty) {
+                      return 'Title is required';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 18),
+
+                NeuTextField(
+                  controller: _abstractController,
+                  labelText: 'Abstract & Methodology *',
+                  hintText: 'Detail the problem statement, objectives, methodologies, and expected deliverables...',
+                  maxLines: 6,
+                  validator: (val) {
+                    if (val == null || val.trim().isEmpty) {
+                      return 'Abstract is required';
+                    }
+                    if (val.trim().length < 20) {
+                      return 'Please provide a comprehensive abstract (at least 20 chars)';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 18),
+
+                NeuTextField(
+                  controller: _changeSummaryController,
+                  labelText: 'Revision Summary (Optional)',
+                  hintText: 'e.g. Addressed supervisor comments on Section 3 methodology',
+                  prefixIcon: Icon(TablerIcons.notes, color: neuTheme.textSecondary),
+                ),
+                const SizedBox(height: 24),
+
+                // Recessed Dropzone Container
+                Text(
+                  'DOCUMENT DELIVERABLE',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: neuTheme.textSecondary,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                NeuDropzone(
+                  selectedFileName: _selectedFileName,
+                  subtitle: 'Select PDF or DOCX research synopsis (Max 25MB)',
+                  onPickFile: _pickDocument,
+                  onClearFile: () {
+                    setState(() {
+                      _selectedFileBytes = null;
+                      _selectedFileName = null;
+                    });
+                  },
+                ),
+                const SizedBox(height: 32),
+
+                NeuButton(
+                  text: 'Submit Proposal for Review',
+                  icon: TablerIcons.send,
+                  isAccent: true,
+                  height: 52,
+                  isLoading: _isLoading,
+                  onPressed: _isLoading ? null : _submit,
+                ),
+              ],
+            ),
           ),
         ),
       ),

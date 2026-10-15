@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/models/notification_model.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import 'notifications_repository.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final notificationsListProvider =
     FutureProvider.autoDispose<List<NotificationModel>>((ref) async {
@@ -20,24 +20,40 @@ class NotificationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final notifsAsync = ref.watch(notificationsListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
+      backgroundColor: neuTheme.baseColor,
+      appBar: NeuAppBar(
+        title: 'Notifications',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.checks),
-            tooltip: 'Mark all as read',
-            onPressed: () async {
-              final repo = ref.read(notificationsRepositoryProvider);
-              await repo.markAllAsRead();
-              ref.invalidate(notificationsListProvider);
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 6.0),
+            child: NeuIconButton(
+              icon: TablerIcons.checks,
+              tooltip: 'Mark all as read',
+              onPressed: () async {
+                final repo = ref.read(notificationsRepositoryProvider);
+                await repo.markAllAsRead();
+                ref.invalidate(notificationsListProvider);
+                if (context.mounted) {
+                  NeuToast.show(
+                    context,
+                    message: 'All notifications marked as read.',
+                    type: NeuToastType.info,
+                  );
+                }
+              },
+            ),
           ),
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(notificationsListProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Notifications',
+              onPressed: () => ref.refresh(notificationsListProvider),
+            ),
           ),
         ],
       ),
@@ -64,71 +80,105 @@ class NotificationsScreen extends ConsumerWidget {
           }
 
           return RefreshIndicator(
+            color: neuTheme.accentColor,
+            backgroundColor: neuTheme.baseColor,
             onRefresh: () async => ref.refresh(notificationsListProvider),
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               itemCount: notifications.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
+              separatorBuilder: (context, index) => const SizedBox(height: 14),
               itemBuilder: (context, index) {
                 final n = notifications[index];
-                return ListTile(
-                  tileColor: n.isRead ? Colors.transparent : AppColors.infoBg.withAlpha(50),
-                  leading: CircleAvatar(
-                    backgroundColor: n.isRead ? AppColors.card : AppColors.accent,
-                    child: Icon(
-                      _getNotificationIcon(n.type),
-                      color: n.isRead ? AppColors.textSecondary : Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          n.title ?? 'System Notice',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: n.isRead ? FontWeight.w600 : FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      if (!n.isRead)
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppColors.accent,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                    ],
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 4),
-                      Text(
-                        n.content,
-                        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.3),
-                      ),
-                      if (n.createdAt != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          n.createdAt!,
-                          style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
-                        ),
-                      ],
-                    ],
-                  ),
+                final isUnread = !n.isRead;
+
+                return NeuContainer(
+                  depthType: isUnread ? NeuDepth.concave : NeuDepth.convex,
+                  depth: isUnread ? 2.5 : 3.0,
+                  borderRadius: BorderRadius.circular(16),
+                  padding: const EdgeInsets.all(16),
                   onTap: () async {
-                    if (!n.isRead) {
+                    if (isUnread) {
                       final repo = ref.read(notificationsRepositoryProvider);
                       await repo.markAsRead(n.id);
                       ref.invalidate(notificationsListProvider);
                     }
                   },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      NeuContainer(
+                        shape: BoxShape.circle,
+                        width: 42,
+                        height: 42,
+                        depthType: NeuDepth.convex,
+                        depth: 2.5,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          _getNotificationIcon(n.type),
+                          color: isUnread ? neuTheme.accentColor : neuTheme.textSecondary,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    n.title ?? 'System Notice',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isUnread ? FontWeight.w800 : FontWeight.w600,
+                                      color: neuTheme.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                                if (isUnread)
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                      color: neuTheme.accentColor,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: neuTheme.accentColor.withValues(alpha: 0.6),
+                                          blurRadius: 4,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              n.content,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: neuTheme.textSecondary,
+                                height: 1.35,
+                              ),
+                            ),
+                            if (n.createdAt != null) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                n.createdAt!,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: neuTheme.textSecondary.withValues(alpha: 0.65),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

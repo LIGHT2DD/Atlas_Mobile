@@ -1,104 +1,150 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import '../../shared/widgets/atlas_drawer.dart';
-import '../../shared/widgets/atlas_card.dart';
-import '../coordinator/coordinator_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:go_router/go_router.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
+import '../../shared/widgets/atlas_drawer.dart';
+import '../coordinator/coordinator_repository.dart';
 
 class CoordinatorDashboardScreen extends ConsumerWidget {
   const CoordinatorDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final reportAsync = ref.watch(reportsSummaryProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Coordinator Administration'),
+      backgroundColor: neuTheme.baseColor,
+      appBar: NeuAppBar(
+        title: 'Coordinator Workspace',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.bell),
-            onPressed: () => context.push('/notifications'),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.bell,
+              tooltip: 'Notifications',
+              onPressed: () => context.push('/notifications'),
+            ),
           ),
         ],
       ),
       drawer: const AtlasDrawer(),
       body: RefreshIndicator(
+        color: neuTheme.accentColor,
+        backgroundColor: neuTheme.baseColor,
         onRefresh: () async {
           ref.invalidate(reportsSummaryProvider);
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF1E1B4B), Color(0xFF312E81)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Department Governance',
-                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'Institutional oversight of active semesters, defenses, rubrics, and grade certifications.',
-                      style: TextStyle(color: AppColors.divider, fontSize: 13),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // KPI Grid
-              const Text(
-                'LIFECYCLE OVERVIEW METRICS',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.8),
-              ),
-              const SizedBox(height: 12),
-
-              reportAsync.when(
-                loading: () => const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator())),
-                error: (e, _) => AtlasCard(child: Text('Error: $e', style: const TextStyle(color: AppColors.error))),
-                data: (data) => GridView.count(
-                  crossAxisCount: 3,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                  childAspectRatio: 1.1,
+              // Header Extruded Banner
+              NeuContainer(
+                depthType: NeuDepth.convex,
+                depth: 4.0,
+                borderRadius: BorderRadius.circular(20),
+                padding: const EdgeInsets.all(22),
+                child: Row(
                   children: [
-                    _kpiMiniCard('Teams', '${data.totalTeams}', TablerIcons.users),
-                    _kpiMiniCard('Proposals', '${data.activeProposals}', TablerIcons.circle_check),
-                    _kpiMiniCard('Defenses', '${data.completedDefenses}', TablerIcons.calendar_event),
-                    _kpiMiniCard('Students', '${data.totalStudents}', TablerIcons.user),
-                    _kpiMiniCard('Faculty', '${data.totalSupervisors}', TablerIcons.school),
-                    _kpiMiniCard('Completed', '${data.completedDefenses}', TablerIcons.award),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Department Governance',
+                            style: TextStyle(
+                              color: neuTheme.textPrimary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Institutional oversight of active semesters, defenses, rubrics, and grade certifications.',
+                            style: TextStyle(
+                              color: neuTheme.textSecondary,
+                              fontSize: 12,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    NeuContainer(
+                      shape: BoxShape.circle,
+                      width: 52,
+                      height: 52,
+                      depthType: NeuDepth.convex,
+                      depth: 3.0,
+                      alignment: Alignment.center,
+                      child: Icon(TablerIcons.shield_check, color: neuTheme.accentColor, size: 28),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
 
-              // Administration Management Actions
-              const Text(
-                'ADMINISTRATIVE CAPABILITIES',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.8),
+              // KPI Grid Header
+              Text(
+                'LIFECYCLE OVERVIEW METRICS',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: neuTheme.textSecondary,
+                  letterSpacing: 1.0,
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
+
+              reportAsync.when(
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (e, _) => NeuContainer(
+                  depthType: NeuDepth.concave,
+                  borderRadius: BorderRadius.circular(16),
+                  padding: const EdgeInsets.all(16),
+                  child: Text('Error: $e', style: TextStyle(color: neuTheme.dangerColor)),
+                ),
+                data: (data) => GridView.count(
+                  crossAxisCount: 3,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 1.05,
+                  children: [
+                    _kpiMiniCard(context, 'Teams', '${data.totalTeams}', TablerIcons.users),
+                    _kpiMiniCard(context, 'Proposals', '${data.activeProposals}', TablerIcons.circle_check),
+                    _kpiMiniCard(context, 'Defenses', '${data.completedDefenses}', TablerIcons.calendar_event),
+                    _kpiMiniCard(context, 'Students', '${data.totalStudents}', TablerIcons.user),
+                    _kpiMiniCard(context, 'Faculty', '${data.totalSupervisors}', TablerIcons.school),
+                    _kpiMiniCard(context, 'Completed', '${data.completedDefenses}', TablerIcons.award),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Administration Management Actions
+              Text(
+                'ADMINISTRATIVE CAPABILITIES',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: neuTheme.textSecondary,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              const SizedBox(height: 14),
 
               _adminNavTile(
                 context,
@@ -107,7 +153,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 icon: TablerIcons.users,
                 route: '/coordinator/teams',
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
 
               _adminNavTile(
                 context,
@@ -116,7 +162,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 icon: TablerIcons.calendar,
                 route: '/coordinator/semesters',
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
 
               _adminNavTile(
                 context,
@@ -125,7 +171,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 icon: TablerIcons.clock,
                 route: '/defenses',
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
 
               _adminNavTile(
                 context,
@@ -134,7 +180,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 icon: TablerIcons.ruler,
                 route: '/evaluations/rubrics',
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
 
               _adminNavTile(
                 context,
@@ -143,7 +189,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 icon: TablerIcons.shield_check,
                 route: '/coordinator/audit-logs',
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
 
               _adminNavTile(
                 context,
@@ -159,24 +205,38 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _kpiMiniCard(String label, String value, IconData icon) {
-    return Container(
+  Widget _kpiMiniCard(BuildContext context, String label, String value, IconData icon) {
+    final neuTheme = context.neuTheme;
+
+    return NeuContainer(
+      depthType: NeuDepth.convex,
+      depth: 3.0,
+      borderRadius: BorderRadius.circular(16),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, size: 20, color: AppColors.accent),
+          Icon(icon, size: 20, color: neuTheme.accentColor),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-              Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: neuTheme.textPrimary,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: neuTheme.textSecondary,
+                ),
+              ),
             ],
           ),
         ],
@@ -191,30 +251,50 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
     required IconData icon,
     required String route,
   }) {
-    return AtlasCard(
+    final neuTheme = context.neuTheme;
+
+    return NeuContainer(
+      depthType: NeuDepth.convex,
+      depth: 3.5,
+      borderRadius: BorderRadius.circular(18),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       onTap: () => context.push(route),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: AppColors.primary, size: 22),
+          NeuContainer(
+            shape: BoxShape.circle,
+            width: 44,
+            height: 44,
+            depthType: NeuDepth.convex,
+            depth: 2.5,
+            alignment: Alignment.center,
+            child: Icon(icon, color: neuTheme.accentColor, size: 22),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                const SizedBox(height: 2),
-                Text(description, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: neuTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: neuTheme.textSecondary,
+                  ),
+                ),
               ],
             ),
           ),
-          const Icon(TablerIcons.chevron_right, color: AppColors.textMuted),
+          Icon(TablerIcons.chevron_right, size: 20, color: neuTheme.textSecondary.withValues(alpha: 0.6)),
         ],
       ),
     );

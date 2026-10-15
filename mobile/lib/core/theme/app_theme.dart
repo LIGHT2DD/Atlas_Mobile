@@ -1,125 +1,152 @@
 import 'package:flutter/material.dart';
+import 'neumorphic_theme.dart';
 
 class AppColors {
-  // Brand Primary & Secondary
-  static const Color primary = Color(0xFF1E293B);      // Slate 800
-  static const Color primaryLight = Color(0xFF334155); // Slate 700
-  static const Color accent = Color(0xFF4F46E5);        // Indigo 600
-  static const Color accentLight = Color(0xFF6366F1);   // Indigo 500
+  // Brand Primary & Secondary (Neumorphic Aligned)
+  static const Color primary = NeuColors.lightAccent;
+  static const Color primaryLight = Color(0xFF6B8AFF);
+  static const Color accent = NeuColors.lightAccent;
+  static const Color accentLight = Color(0xFF8DA4FF);
 
   // Semantic Status Colors
-  static const Color success = Color(0xFF10B981);       // Emerald 500
-  static const Color successBg = Color(0xFFD1FAE5);     // Emerald 100
-  static const Color warning = Color(0xFFF59E0B);       // Amber 500
-  static const Color warningBg = Color(0xFFFEF3C7);     // Amber 100
-  static const Color error = Color(0xFFEF4444);         // Rose 500
-  static const Color errorBg = Color(0xFFFEE2E2);       // Rose 100
-  static const Color info = Color(0xFF0EA5E9);          // Sky 500
-  static const Color infoBg = Color(0xFFE0F2FE);        // Sky 100
+  static const Color success = NeuColors.lightSuccess;
+  static const Color successBg = Color(0xFFD1FAE5);
+  static const Color warning = NeuColors.lightWarning;
+  static const Color warningBg = Color(0xFFFEF3C7);
+  static const Color error = NeuColors.lightDanger;
+  static const Color errorBg = Color(0xFFFEE2E2);
+  static const Color info = NeuColors.lightAccent;
+  static const Color infoBg = Color(0xFFE0F2FE);
 
-  // Background & Surface
-  static const Color background = Color(0xFFF8FAFC);    // Slate 50
-  static const Color surface = Colors.white;
-  static const Color card = Color(0xFFF1F5F9);          // Slate 100
-  static const Color border = Color(0xFFE2E8F0);        // Slate 200
-  static const Color divider = Color(0xFFF1F5F9);       // Slate 100
+  // Background & Surface (Neumorphic Aligned)
+  static const Color background = NeuColors.lightBase;
+  static const Color surface = NeuColors.lightBase;
+  static const Color card = NeuColors.lightBase;
+  static const Color border = NeuColors.lightShadow;
+  static const Color divider = Color(0xFFCAD1DC);
 
   // Typography
-  static const Color textPrimary = Color(0xFF0F172A);   // Slate 900
-  static const Color textSecondary = Color(0xFF64748B); // Slate 500
-  static const Color textMuted = Color(0xFF94A3B8);     // Slate 400
+  static const Color textPrimary = NeuColors.lightTextPrimary;
+  static const Color textSecondary = NeuColors.lightTextSecondary;
+  static const Color textMuted = Color(0xFF8896AB);
 }
 
 class AppTheme {
-  static ThemeData get lightTheme {
+  static ThemeData get lightTheme => neumorphicLightTheme;
+  static ThemeData get darkTheme => neumorphicDarkTheme;
+
+  /// Pure Neumorphic Light Theme
+  static ThemeData get neumorphicLightTheme {
     return ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.light(
-        primary: AppColors.primary,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: NeuColors.lightBase,
+      canvasColor: NeuColors.lightBase,
+      cardColor: NeuColors.lightBase,
+      dialogTheme: const DialogThemeData(
+        backgroundColor: NeuColors.lightBase,
+      ),
+      colorScheme: const ColorScheme.light(
+        primary: NeuColors.lightAccent,
         onPrimary: Colors.white,
-        secondary: AppColors.accent,
+        secondary: NeuColors.lightAccent,
         onSecondary: Colors.white,
-        surface: AppColors.surface,
-        onSurface: AppColors.textPrimary,
-        error: AppColors.error,
+        surface: NeuColors.lightBase,
+        onSurface: NeuColors.lightTextPrimary,
+        error: NeuColors.lightDanger,
         onError: Colors.white,
       ),
-      scaffoldBackgroundColor: AppColors.background,
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: NeuColors.lightBase,
+        foregroundColor: NeuColors.lightTextPrimary,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
-          color: Colors.white,
+          color: NeuColors.lightTextPrimary,
           fontSize: 18,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.2,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.2,
         ),
       ),
+      textTheme: const TextTheme(
+        headlineLarge: TextStyle(color: NeuColors.lightTextPrimary, fontWeight: FontWeight.w800),
+        headlineMedium: TextStyle(color: NeuColors.lightTextPrimary, fontWeight: FontWeight.w700),
+        titleLarge: TextStyle(color: NeuColors.lightTextPrimary, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(color: NeuColors.lightTextPrimary, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(color: NeuColors.lightTextPrimary),
+        bodyMedium: TextStyle(color: NeuColors.lightTextPrimary),
+        bodySmall: TextStyle(color: NeuColors.lightTextSecondary),
+      ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: NeuColors.lightBase,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: AppColors.border, width: 1),
+          borderRadius: BorderRadius.circular(16),
         ),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
       ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
+      dividerTheme: const DividerThemeData(
+        color: Color(0xFFD1D8E3),
+        thickness: 1,
+        space: 24,
+      ),
+    );
+  }
+
+  /// Pure Neumorphic Dark Theme
+  static ThemeData get neumorphicDarkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: NeuColors.darkBase,
+      canvasColor: NeuColors.darkBase,
+      cardColor: NeuColors.darkBase,
+      dialogTheme: const DialogThemeData(
+        backgroundColor: NeuColors.darkBase,
+      ),
+      colorScheme: const ColorScheme.dark(
+        primary: NeuColors.darkAccent,
+        onPrimary: NeuColors.darkBase,
+        secondary: NeuColors.darkAccent,
+        onSecondary: NeuColors.darkBase,
+        surface: NeuColors.darkBase,
+        onSurface: NeuColors.darkTextPrimary,
+        error: NeuColors.darkDanger,
+        onError: Colors.white,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: NeuColors.darkBase,
+        foregroundColor: NeuColors.darkTextPrimary,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleTextStyle: TextStyle(
+          color: NeuColors.darkTextPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.2,
         ),
       ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.border),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+      textTheme: const TextTheme(
+        headlineLarge: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w800),
+        headlineMedium: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w700),
+        titleLarge: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(color: NeuColors.darkTextPrimary),
+        bodyMedium: TextStyle(color: NeuColors.darkTextPrimary),
+        bodySmall: TextStyle(color: NeuColors.darkTextSecondary),
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.border),
+      cardTheme: CardThemeData(
+        color: NeuColors.darkBase,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.error),
-        ),
-        labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
       ),
       dividerTheme: const DividerThemeData(
-        color: AppColors.divider,
+        color: Color(0xFF353B42),
         thickness: 1,
         space: 24,
       ),

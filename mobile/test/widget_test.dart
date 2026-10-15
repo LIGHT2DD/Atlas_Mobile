@@ -5,6 +5,7 @@ import 'package:atlas_mobile/shared/widgets/atlas_card.dart';
 import 'package:atlas_mobile/shared/widgets/empty_state.dart';
 import 'package:atlas_mobile/shared/widgets/loading_indicator.dart';
 import 'package:atlas_mobile/shared/widgets/status_badge.dart';
+import 'package:atlas_mobile/widgets/neumorphic/neumorphic.dart';
 
 void main() {
   group('ATLAS Widget UI Tests', () {
@@ -30,6 +31,18 @@ void main() {
       expect(find.text('Pending'), findsOneWidget);
       expect(find.text('Completed'), findsOneWidget);
       expect(find.text('Scheduled'), findsOneWidget);
+    });
+
+    testWidgets('StatusBadge renders Overdue when isOverdue is true', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: StatusBadge(status: 'pending', isOverdue: true),
+          ),
+        ),
+      );
+
+      expect(find.text('Overdue'), findsOneWidget);
     });
 
     testWidgets('AtlasCard renders child content within styled container and responds to taps', (WidgetTester tester) async {
@@ -103,6 +116,69 @@ void main() {
 
       expect(find.text('Authenticating credentials...'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
+    testWidgets('NeuButton responds to physical tap and triggers onPressed', (WidgetTester tester) async {
+      bool btnTapped = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: NeuButton(
+              text: 'Tactile Submit',
+              onPressed: () {
+                btnTapped = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Tactile Submit'), findsOneWidget);
+      await tester.tap(find.text('Tactile Submit'));
+      await tester.pump();
+      expect(btnTapped, isTrue);
+    });
+
+    testWidgets('NeuSwitch toggles value correctly', (WidgetTester tester) async {
+      bool switchVal = false;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) => MaterialApp(
+            home: Scaffold(
+              body: NeuSwitch(
+                value: switchVal,
+                onChanged: (val) {
+                  setState(() => switchVal = val);
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(switchVal, isFalse);
+      await tester.tap(find.byType(NeuSwitch));
+      await tester.pumpAndSettle();
+      expect(switchVal, isTrue);
+    });
+
+    testWidgets('NeuProgressBar displays progress accurately', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: NeuProgressBar(
+              progress: 0.75,
+              label: 'Sprint Progress',
+              showPercentage: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Sprint Progress'), findsOneWidget);
+      expect(find.text('75%'), findsOneWidget);
     });
   });
 }

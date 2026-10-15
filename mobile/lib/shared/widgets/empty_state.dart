@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 
 class EmptyState extends StatelessWidget {
   final IconData icon;
@@ -27,29 +27,31 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.border, width: 1),
-              ),
-              child: Icon(icon, size: 48, color: AppColors.textSecondary),
+            NeuContainer(
+              shape: BoxShape.circle,
+              width: 80,
+              height: 80,
+              depthType: NeuDepth.convex,
+              depth: 3.5,
+              alignment: Alignment.center,
+              child: Icon(icon, size: 36, color: neuTheme.accentColor),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: neuTheme.textPrimary,
                 fontSize: 18,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
               ),
             ),
             if (_displayDescription.isNotEmpty) ...[
@@ -57,25 +59,29 @@ class EmptyState extends StatelessWidget {
               Text(
                 _displayDescription,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                  height: 1.4,
+                style: TextStyle(
+                  color: neuTheme.textSecondary,
+                  fontSize: 13,
+                  height: 1.45,
                 ),
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 24),
-              ElevatedButton(
+              NeuButton(
+                text: actionLabel!,
+                isAccent: true,
+                height: 44,
                 onPressed: onAction,
-                child: Text(actionLabel!),
               ),
             ],
             if (secondaryActionLabel != null && onSecondaryAction != null) ...[
               const SizedBox(height: 12),
-              OutlinedButton(
+              NeuButton(
+                text: secondaryActionLabel!,
+                height: 42,
+                depth: 2.5,
                 onPressed: onSecondaryAction,
-                child: Text(secondaryActionLabel!),
               ),
             ],
           ],

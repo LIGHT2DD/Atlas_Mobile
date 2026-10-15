@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import 'team_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:go_router/go_router.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
+import 'team_repository.dart';
 
 class CreateTeamScreen extends ConsumerStatefulWidget {
   const CreateTeamScreen({super.key});
@@ -18,7 +18,6 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
   bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -31,10 +30,7 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    setState(() => _isLoading = true);
 
     try {
       final repo = ref.read(teamRepositoryProvider);
@@ -45,123 +41,123 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Thesis team created successfully!'),
-            backgroundColor: AppColors.success,
-          ),
+        NeuToast.show(
+          context,
+          message: 'Thesis team created successfully! Share your invite code.',
+          title: 'Team Established',
+          type: NeuToastType.success,
         );
         context.pop();
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() => _isLoading = false);
+        NeuToast.show(
+          context,
+          message: e.toString(),
+          title: 'Team Creation Failed',
+          type: NeuToastType.error,
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Thesis Team'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'New Team Registration',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'As the founder of this team, you will be registered as the Team Leader. You can share your unique invite code with peers once created.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
-              ),
-              const SizedBox(height: 24),
-
-              if (_errorMessage != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.errorBg,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.error),
+      backgroundColor: neuTheme.baseColor,
+      appBar: const NeuAppBar(title: 'Create Thesis Team'),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                NeuContainer(
+                  depthType: NeuDepth.convex,
+                  depth: 3.0,
+                  borderRadius: BorderRadius.circular(18),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(TablerIcons.circles_relation, color: neuTheme.accentColor, size: 24),
+                          const SizedBox(width: 10),
+                          Text(
+                            'New Team Registration',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: neuTheme.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'As the founder of this team, you will be registered as the Team Leader. You can share your unique invite code with peers once created.',
+                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(color: AppColors.error, fontSize: 13),
-                  ),
                 ),
-                const SizedBox(height: 16),
-              ],
+                const SizedBox(height: 24),
 
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
+                NeuTextField(
+                  controller: _nameController,
                   labelText: 'Team Name *',
                   hintText: 'e.g. Quantum Innovators',
-                  prefixIcon: Icon(TablerIcons.circles_relation),
+                  prefixIcon: Icon(TablerIcons.circles_relation, color: neuTheme.textSecondary),
+                  validator: (val) {
+                    if (val == null || val.trim().isEmpty) {
+                      return 'Team name is required';
+                    }
+                    if (val.trim().length < 3) {
+                      return 'Team name must be at least 3 characters';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return 'Team name is required';
-                  }
-                  if (val.trim().length < 3) {
-                    return 'Team name must be at least 3 characters';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
+                NeuTextField(
+                  controller: _titleController,
                   labelText: 'Thesis / Project Title *',
                   hintText: 'e.g. Distributed Consensus in Edge Networks',
-                  prefixIcon: Icon(TablerIcons.book),
+                  prefixIcon: Icon(TablerIcons.book, color: neuTheme.textSecondary),
+                  validator: (val) {
+                    if (val == null || val.trim().isEmpty) {
+                      return 'Project title is required';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return 'Project title is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-              TextFormField(
-                controller: _descController,
-                maxLines: 4,
-                decoration: const InputDecoration(
+                NeuTextField(
+                  controller: _descController,
                   labelText: 'Project Summary / Scope (Optional)',
                   hintText: 'Provide a brief outline of the research domain and goals...',
-                  alignLabelWithHint: true,
+                  maxLines: 4,
                 ),
-              ),
-              const SizedBox(height: 28),
+                const SizedBox(height: 32),
 
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Establish Team'),
-              ),
-            ],
+                NeuButton(
+                  text: 'Establish Team',
+                  icon: TablerIcons.plus,
+                  isAccent: true,
+                  height: 52,
+                  isLoading: _isLoading,
+                  onPressed: _isLoading ? null : _submit,
+                ),
+              ],
+            ),
           ),
         ),
       ),

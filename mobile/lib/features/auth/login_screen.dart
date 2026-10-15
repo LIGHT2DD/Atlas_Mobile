@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import 'auth_controller.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:go_router/go_router.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
+import 'auth_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -36,234 +36,327 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
 
     if (success && mounted) {
+      NeuToast.show(
+        context,
+        message: 'Welcome back to ATLAS',
+        title: 'Authentication Successful',
+        type: NeuToastType.success,
+      );
       context.go('/dashboard');
+    } else if (mounted) {
+      final err = ref.read(authControllerProvider).errorMessage ?? 'Login failed';
+      NeuToast.show(
+        context,
+        message: err,
+        title: 'Authentication Error',
+        type: NeuToastType.error,
+      );
     }
   }
 
+  void _handleGoogleSignIn() {
+    NeuToast.show(
+      context,
+      message: 'Redirecting to University Google OAuth Single Sign-On...',
+      title: 'Google Sign-In',
+      type: NeuToastType.info,
+    );
+  }
+
   void _quickFill(String email, String password) {
-    _emailController.text = email;
-    _passwordController.text = password;
+    setState(() {
+      _emailController.text = email;
+      _passwordController.text = password;
+    });
+    NeuToast.show(
+      context,
+      message: 'Loaded credentials for $email',
+      type: NeuToastType.info,
+      duration: const Duration(seconds: 2),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
     final authState = ref.watch(authControllerProvider);
+    final currentThemeMode = ref.watch(themeModeProvider);
+    final isDark = currentThemeMode == ThemeMode.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: neuTheme.baseColor,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Logo & Brand Header
-                  Center(
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(
-                        TablerIcons.school,
-                        color: Colors.white,
-                        size: 36,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'ATLAS',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Academic Thesis Lifecycle & Assessment Suite',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+        child: Stack(
+          children: [
+            // Top theme toggle button
+            Positioned(
+              top: 12,
+              right: 16,
+              child: NeuIconButton(
+                icon: isDark ? TablerIcons.sun : TablerIcons.moon,
+                tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+                iconColor: isDark ? const Color(0xFFF6E05E) : neuTheme.accentColor,
+                onPressed: () {
+                  ref.read(themeModeProvider.notifier).toggleTheme();
+                },
+              ),
+            ),
 
-                  // Error banner if any
-                  if (authState.errorMessage != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.errorBg,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.error.withAlpha(50)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(TablerIcons.alert_circle, color: AppColors.error, size: 20),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              authState.errorMessage!,
-                              style: const TextStyle(color: AppColors.error, fontSize: 13),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-
-                  // Email Input
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Institutional Email',
-                      hintText: 'name@atlas.edu',
-                      prefixIcon: Icon(TablerIcons.mail, size: 20),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Please enter your email.';
-                      if (!v.contains('@')) return 'Please enter a valid email.';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Password Input
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(TablerIcons.lock, size: 20),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? TablerIcons.eye_off : TablerIcons.eye,
-                          size: 20,
-                        ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                      ),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Please enter your password.';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Remember Me & Forgot Password
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Extruded Neumorphic Logo
+                      Center(
+                        child: NeuContainer(
+                          shape: BoxShape.circle,
+                          width: 80,
+                          height: 80,
+                          depthType: NeuDepth.convex,
+                          depth: 4.5,
+                          alignment: Alignment.center,
+                          child: Icon(
+                            TablerIcons.school,
+                            color: neuTheme.accentColor,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'ATLAS',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: neuTheme.textPrimary,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2.0,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Academic Thesis Lifecycle & Assessment Suite',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: neuTheme.textSecondary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 36),
+
+                      // Error banner if any
+                      if (authState.errorMessage != null) ...[
+                        NeuContainer(
+                          depthType: NeuDepth.concave,
+                          borderRadius: BorderRadius.circular(14),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          border: Border.all(color: neuTheme.dangerColor.withValues(alpha: 0.5), width: 1.2),
+                          child: Row(
+                            children: [
+                              Icon(TablerIcons.alert_circle, color: neuTheme.dangerColor, size: 20),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  authState.errorMessage!,
+                                  style: TextStyle(color: neuTheme.dangerColor, fontSize: 13, fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+
+                      // Email Recessed Input
+                      NeuTextField(
+                        controller: _emailController,
+                        labelText: 'Institutional Email',
+                        hintText: 'name@atlas.edu',
+                        keyboardType: TextInputType.emailAddress,
+                        prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) return 'Please enter your email.';
+                          if (!v.contains('@')) return 'Please enter a valid email.';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 18),
+
+                      // Password Recessed Input
+                      NeuTextField(
+                        controller: _passwordController,
+                        labelText: 'Password',
+                        hintText: '••••••••••••',
+                        obscureText: _obscurePassword,
+                        prefixIcon: Icon(TablerIcons.lock, size: 20, color: neuTheme.textSecondary),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? TablerIcons.eye_off : TablerIcons.eye,
+                            size: 20,
+                            color: neuTheme.textSecondary,
+                          ),
+                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Please enter your password.';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Remember Me & Forgot Password
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Checkbox(
-                            value: _rememberMe,
-                            activeColor: AppColors.accent,
-                            onChanged: (v) => setState(() => _rememberMe = v ?? false),
+                          Row(
+                            children: [
+                              NeuCheckbox(
+                                value: _rememberMe,
+                                onChanged: (v) => setState(() => _rememberMe = v),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Remember me',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: neuTheme.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
-                          const Text('Remember me', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                          GestureDetector(
+                            onTap: () => context.push('/forgot-password'),
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: neuTheme.accentColor,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                      TextButton(
-                        onPressed: () => context.push('/forgot-password'),
-                        child: const Text('Forgot Password?', style: TextStyle(fontSize: 13, color: AppColors.accent)),
+                      const SizedBox(height: 28),
+
+                      // Primary Raised Submit Button
+                      NeuButton(
+                        text: 'Sign In to ATLAS',
+                        icon: TablerIcons.login,
+                        isAccent: true,
+                        height: 52,
+                        isLoading: authState.isLoading,
+                        onPressed: authState.isLoading ? null : _handleLogin,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
-                  // Sign In Button
-                  ElevatedButton(
-                    onPressed: authState.isLoading ? null : _handleLogin,
-                    child: authState.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                          )
-                        : const Text('Sign In to ATLAS'),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Register link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("New candidate? ", style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-                      GestureDetector(
-                        onTap: () => context.push('/register'),
-                        child: const Text(
-                          'Register Student Account',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.accent),
-                        ),
+                      // Tactile Google OAuth Button
+                      NeuButton(
+                        text: 'Continue with Google',
+                        icon: TablerIcons.brand_google,
+                        height: 50,
+                        depth: 3.5,
+                        onPressed: authState.isLoading ? null : _handleGoogleSignIn,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
+                      const SizedBox(height: 24),
 
-                  // Quick Demo Credentials Card
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: AppColors.background,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'QUICK DEMO ROSTER',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textSecondary,
-                            letterSpacing: 0.8,
+                      // Candidate Registration link
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "New candidate? ",
+                            style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
+                          GestureDetector(
+                            onTap: () => context.push('/register'),
+                            child: Text(
+                              'Register Student Account',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: neuTheme.accentColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 36),
+
+                      // Tactile Quick Demo Roster Box
+                      NeuContainer(
+                        depthType: NeuDepth.convex,
+                        depth: 2.5,
+                        borderRadius: BorderRadius.circular(16),
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ActionChip(
-                              label: const Text('Coordinator', style: TextStyle(fontSize: 12)),
-                              avatar: const Icon(TablerIcons.shield_check, size: 16),
-                              onPressed: () => _quickFill('coordinator@atlas.edu', 'Password123'),
+                            Row(
+                              children: [
+                                Icon(TablerIcons.sparkles, size: 16, color: neuTheme.accentColor),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'QUICK DEMO ROSTER',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
+                                    color: neuTheme.textSecondary,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                              ],
                             ),
-                            ActionChip(
-                              label: const Text('Supervisor', style: TextStyle(fontSize: 12)),
-                              avatar: const Icon(TablerIcons.school, size: 16),
-                              onPressed: () => _quickFill('supervisor1@atlas.edu', 'Password123'),
-                            ),
-                            ActionChip(
-                              label: const Text('Student', style: TextStyle(fontSize: 12)),
-                              avatar: const Icon(TablerIcons.user, size: 16),
-                              onPressed: () => _quickFill('student1@atlas.edu', 'Password123'),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: [
+                                _demoButton('Coordinator', TablerIcons.shield_check, 'coordinator@atlas.edu', neuTheme),
+                                _demoButton('Supervisor', TablerIcons.school, 'supervisor1@atlas.edu', neuTheme),
+                                _demoButton('Student', TablerIcons.user, 'student1@atlas.edu', neuTheme),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _demoButton(String label, IconData icon, String email, NeumorphicThemeData neuTheme) {
+    return NeuButton(
+      height: 36,
+      depth: 2.5,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      onPressed: () => _quickFill(email, 'Password123'),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: neuTheme.accentColor),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              color: neuTheme.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

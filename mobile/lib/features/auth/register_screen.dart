@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import 'auth_controller.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:go_router/go_router.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
+import 'auth_controller.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -43,21 +43,32 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
 
     if (success && mounted) {
+      NeuToast.show(
+        context,
+        message: 'Your ATLAS student account is ready.',
+        title: 'Registration Complete',
+        type: NeuToastType.success,
+      );
       context.go('/dashboard');
+    } else if (mounted) {
+      final err = ref.read(authControllerProvider).errorMessage ?? 'Registration failed';
+      NeuToast.show(
+        context,
+        message: err,
+        title: 'Registration Error',
+        type: NeuToastType.error,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
     final authState = ref.watch(authControllerProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Student Registration'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
+      backgroundColor: neuTheme.baseColor,
+      appBar: const NeuAppBar(title: 'Student Registration'),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -66,50 +77,76 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Candidate Account Setup',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                NeuContainer(
+                  depthType: NeuDepth.convex,
+                  depth: 3.0,
+                  borderRadius: BorderRadius.circular(18),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(TablerIcons.user_plus, color: neuTheme.accentColor, size: 24),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Candidate Account Setup',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: neuTheme.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Register your institutional profile to join or form thesis teams and submit research milestones.',
+                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Register your profile to form thesis teams and submit project milestones.',
-                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 24),
 
                 if (authState.errorMessage != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorBg,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      authState.errorMessage!,
-                      style: const TextStyle(color: AppColors.error, fontSize: 13),
+                  NeuContainer(
+                    depthType: NeuDepth.concave,
+                    borderRadius: BorderRadius.circular(14),
+                    padding: const EdgeInsets.all(14),
+                    border: Border.all(color: neuTheme.dangerColor.withValues(alpha: 0.5), width: 1.2),
+                    child: Row(
+                      children: [
+                        Icon(TablerIcons.alert_circle, color: neuTheme.dangerColor, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            authState.errorMessage!,
+                            style: TextStyle(color: neuTheme.dangerColor, fontSize: 13, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 18),
                 ],
 
                 Row(
                   children: [
                     Expanded(
-                      child: TextFormField(
+                      child: NeuTextField(
                         controller: _firstNameController,
-                        decoration: const InputDecoration(labelText: 'First Name'),
+                        labelText: 'First Name',
+                        hintText: 'John',
                         validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 14),
                     Expanded(
-                      child: TextFormField(
+                      child: NeuTextField(
                         controller: _lastNameController,
-                        decoration: const InputDecoration(labelText: 'Last Name'),
+                        labelText: 'Last Name',
+                        hintText: 'Doe',
                         validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
                       ),
                     ),
@@ -117,14 +154,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                TextFormField(
+                NeuTextField(
                   controller: _emailController,
+                  labelText: 'University Email',
+                  hintText: 'student@atlas.edu',
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'University Email',
-                    hintText: 'student@atlas.edu',
-                    prefixIcon: Icon(TablerIcons.mail, size: 20),
-                  ),
+                  prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) return 'Please enter your email.';
                     if (!v.contains('@')) return 'Please enter a valid email.';
@@ -133,16 +168,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                TextFormField(
+                NeuTextField(
                   controller: _passwordController,
+                  labelText: 'Password',
+                  hintText: '••••••••••••',
                   obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(TablerIcons.lock, size: 20),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? TablerIcons.eye_off : TablerIcons.eye, size: 20),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  prefixIcon: Icon(TablerIcons.lock, size: 20, color: neuTheme.textSecondary),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? TablerIcons.eye_off : TablerIcons.eye,
+                      size: 20,
+                      color: neuTheme.textSecondary,
                     ),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   validator: (v) {
                     if (v == null || v.length < 8) return 'Password must be at least 8 characters.';
@@ -151,13 +189,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                TextFormField(
+                NeuTextField(
                   controller: _confirmPasswordController,
+                  labelText: 'Confirm Password',
+                  hintText: '••••••••••••',
                   obscureText: _obscurePassword,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: Icon(TablerIcons.lock_access, size: 20),
-                  ),
+                  prefixIcon: Icon(TablerIcons.lock_access, size: 20, color: neuTheme.textSecondary),
                   validator: (v) {
                     if (v != _passwordController.text) return 'Passwords do not match.';
                     return null;
@@ -165,11 +202,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 28),
 
-                ElevatedButton(
+                NeuButton(
+                  text: 'Complete Registration',
+                  icon: TablerIcons.check,
+                  isAccent: true,
+                  height: 52,
+                  isLoading: authState.isLoading,
                   onPressed: authState.isLoading ? null : _handleRegister,
-                  child: authState.isLoading
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Complete Registration'),
                 ),
               ],
             ),

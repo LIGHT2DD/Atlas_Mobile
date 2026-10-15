@@ -1,77 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../models/user_model.dart';
 import '../../features/auth/auth_controller.dart';
-import 'status_badge.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class AtlasDrawer extends ConsumerWidget {
   const AtlasDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
     final role = user?.role ?? UserRole.student;
+    final currentThemeMode = ref.watch(themeModeProvider);
+    final isDark = currentThemeMode == ThemeMode.dark;
 
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: neuTheme.baseColor,
+      surfaceTintColor: Colors.transparent,
       child: SafeArea(
         child: Column(
           children: [
-            // Header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: AppColors.accent,
-                    child: Text(
-                      user != null && user.firstName.isNotEmpty
-                          ? user.firstName[0].toUpperCase()
-                          : 'A',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+            // Neumorphic Header Card
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: NeuContainer(
+                depthType: NeuDepth.convex,
+                depth: 3.5,
+                borderRadius: BorderRadius.circular(20),
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        NeuContainer(
+                          shape: BoxShape.circle,
+                          width: 52,
+                          height: 52,
+                          depthType: NeuDepth.convex,
+                          depth: 3.0,
+                          alignment: Alignment.center,
+                          child: Text(
+                            user != null && user.firstName.isNotEmpty
+                                ? user.firstName[0].toUpperCase()
+                                : 'A',
+                            style: TextStyle(
+                              color: neuTheme.accentColor,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        NeuIconButton(
+                          icon: isDark ? TablerIcons.sun : TablerIcons.moon,
+                          size: 38,
+                          iconSize: 18,
+                          tooltip: isDark ? 'Light Mode' : 'Dark Mode',
+                          iconColor: isDark ? const Color(0xFFF6E05E) : neuTheme.accentColor,
+                          onPressed: () {
+                            ref.read(themeModeProvider.notifier).toggleTheme();
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      user?.fullName ?? 'ATLAS User',
+                      style: TextStyle(
+                        color: neuTheme.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    user?.fullName ?? 'ATLAS User',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                    const SizedBox(height: 3),
+                    Text(
+                      user?.email ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: neuTheme.textSecondary,
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    user?.email ?? '',
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 13,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  StatusBadge(status: role.name, customLabel: role.displayName),
-                ],
+                    const SizedBox(height: 12),
+                    NeuBadge.fromStatus(role.name),
+                  ],
+                ),
               ),
             ),
 
             // Navigation List
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                 children: [
                   _drawerItem(
                     context,
@@ -188,7 +214,13 @@ class AtlasDrawer extends ConsumerWidget {
                     ),
                   ],
 
-                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Divider(
+                      color: neuTheme.darkShadow.withValues(alpha: 0.3),
+                      thickness: 1,
+                    ),
+                  ),
                   _drawerItem(
                     context,
                     icon: TablerIcons.bell,
@@ -206,22 +238,14 @@ class AtlasDrawer extends ConsumerWidget {
             ),
 
             // Footer Logout
-            Container(
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: AppColors.border)),
-              ),
-              child: ListTile(
-                leading: const Icon(TablerIcons.logout, color: AppColors.error),
-                title: const Text(
-                  'Sign Out',
-                  style: TextStyle(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                onTap: () async {
+              child: NeuButton(
+                text: 'Sign Out',
+                icon: TablerIcons.logout,
+                isDanger: true,
+                height: 46,
+                onPressed: () async {
                   Navigator.of(context).pop(); // close drawer
                   await ref.read(authControllerProvider.notifier).logout();
                   if (context.mounted) {
@@ -242,31 +266,44 @@ class AtlasDrawer extends ConsumerWidget {
     required String title,
     required String route,
   }) {
+    final neuTheme = context.neuTheme;
     final currentPath = GoRouterState.of(context).uri.toString();
     final isSelected = currentPath == route || currentPath.startsWith('$route/');
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-      child: ListTile(
-        leading: Icon(
-          icon,
-          color: isSelected ? AppColors.accent : AppColors.textSecondary,
-          size: 22,
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: isSelected ? AppColors.accent : AppColors.textPrimary,
-            fontSize: 14,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-          ),
-        ),
-        tileColor: isSelected ? AppColors.infoBg.withAlpha(100) : Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: NeuContainer(
+        depthType: isSelected ? NeuDepth.concave : NeuDepth.flat,
+        depth: isSelected ? 2.0 : 0.0,
+        borderRadius: BorderRadius.circular(12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        border: isSelected
+            ? Border.all(color: neuTheme.accentColor.withValues(alpha: 0.4), width: 1)
+            : Border.all(color: Colors.transparent),
         onTap: () {
           Navigator.of(context).pop(); // close drawer
           context.go(route);
         },
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? neuTheme.accentColor : neuTheme.textSecondary,
+              size: 20,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: isSelected ? neuTheme.accentColor : neuTheme.textPrimary,
+                  fontSize: 14,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

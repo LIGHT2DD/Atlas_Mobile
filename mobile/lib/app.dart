@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/neumorphic_theme.dart';
 
 class AtlasApp extends ConsumerWidget {
   const AtlasApp({super.key});
@@ -9,11 +10,14 @@ class AtlasApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'ATLAS - Academic Thesis Lifecycle & Assessment Suite',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.neumorphicLightTheme,
+      darkTheme: AppTheme.neumorphicDarkTheme,
+      themeMode: themeMode,
       routerConfig: router,
     );
   }

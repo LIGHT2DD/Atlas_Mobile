@@ -1,65 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
-import '../../shared/widgets/atlas_card.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/status_badge.dart';
 import '../auth/auth_controller.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Profile'),
-      ),
+      backgroundColor: neuTheme.baseColor,
+      appBar: const NeuAppBar(title: 'User Profile'),
       drawer: const AtlasDrawer(),
       body: user == null
-          ? const Center(child: Text('No active session'))
+          ? Center(
+              child: Text(
+                'No active session',
+                style: TextStyle(color: neuTheme.textSecondary),
+              ),
+            )
           : ListView(
               padding: const EdgeInsets.all(20.0),
               children: [
-                // Profile Header Card
-                AtlasCard(
+                // Profile Extruded Avatar & Header Card
+                NeuContainer(
+                  depthType: NeuDepth.convex,
+                  depth: 4.0,
+                  borderRadius: BorderRadius.circular(22),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundColor: AppColors.primary,
+                      NeuContainer(
+                        shape: BoxShape.circle,
+                        width: 86,
+                        height: 86,
+                        depthType: NeuDepth.convex,
+                        depth: 4.0,
+                        alignment: Alignment.center,
                         child: Text(
                           user.firstName.isNotEmpty ? user.firstName[0].toUpperCase() : 'A',
-                          style: const TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                          style: TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w900,
+                            color: neuTheme.accentColor,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       Text(
                         user.fullName,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                          color: neuTheme.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         user.email,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: neuTheme.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
                       StatusBadge(
                         status: user.role.name,
                         customLabel: user.role.displayName,
@@ -67,74 +81,139 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
                 // Account Information
-                AtlasCard(
+                NeuContainer(
+                  depthType: NeuDepth.convex,
+                  depth: 3.5,
+                  borderRadius: BorderRadius.circular(20),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Account Information',
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w800,
+                          color: neuTheme.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      _infoRow(label: 'Account Status', value: user.isActive ? 'Active' : 'Inactive'),
-                      const Divider(height: 16),
-                      _infoRow(label: 'User ID', value: user.id),
+                      const SizedBox(height: 14),
+                      _infoRow(context, label: 'Account Status', value: user.isActive ? 'Active' : 'Inactive'),
+                      _divider(neuTheme),
+                      _infoRow(context, label: 'User ID', value: user.id),
                       if (user.department != null && user.department!.isNotEmpty) ...[
-                        const Divider(height: 16),
-                        _infoRow(label: 'Department', value: user.department!),
+                        _divider(neuTheme),
+                        _infoRow(context, label: 'Department', value: user.department!),
                       ],
                       if (user.studentId != null && user.studentId!.isNotEmpty) ...[
-                        const Divider(height: 16),
-                        _infoRow(label: 'Student Registration ID', value: user.studentId!),
+                        _divider(neuTheme),
+                        _infoRow(context, label: 'Student ID', value: user.studentId!),
                       ],
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
-                // Security & Settings Card
-                AtlasCard(
+                // Appearance & Theme Preferences
+                NeuContainer(
+                  depthType: NeuDepth.convex,
+                  depth: 3.5,
+                  borderRadius: BorderRadius.circular(20),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Security & Preferences',
+                      Text(
+                        'Appearance & Theme Mode',
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w800,
+                          color: neuTheme.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(TablerIcons.lock_access, color: AppColors.accent),
-                        title: const Text('Password Recovery'),
-                        subtitle: const Text('Dispatch a password reset link to your email'),
-                        trailing: const Icon(TablerIcons.chevron_right, size: 14),
-                        onTap: () {
-                          context.push('/forgot-password');
-                        },
+                      const SizedBox(height: 14),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                isDark ? TablerIcons.moon : TablerIcons.sun,
+                                size: 20,
+                                color: isDark ? const Color(0xFFF6E05E) : neuTheme.accentColor,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Dark Mode Theme',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: neuTheme.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          NeuSwitch(
+                            value: isDark,
+                            onChanged: (val) {
+                              ref.read(themeModeProvider.notifier).setTheme(
+                                val ? ThemeMode.dark : ThemeMode.light,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      _divider(neuTheme),
+                      GestureDetector(
+                        onTap: () => context.push('/forgot-password'),
+                        behavior: HitTestBehavior.opaque,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(TablerIcons.lock_access, size: 20, color: neuTheme.accentColor),
+                                const SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Password Recovery',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: neuTheme.textPrimary,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Dispatch password reset token',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: neuTheme.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Icon(TablerIcons.chevron_right, size: 18, color: neuTheme.textSecondary),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
                 // Sign Out Button
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.error,
-                  ),
-                  icon: const Icon(TablerIcons.logout),
-                  label: const Text('Sign Out of ATLAS'),
+                NeuButton(
+                  text: 'Sign Out of ATLAS',
+                  icon: TablerIcons.logout,
+                  isDanger: true,
+                  height: 52,
                   onPressed: () => _confirmSignOut(context, ref),
                 ),
                 const SizedBox(height: 32),
@@ -143,36 +222,59 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _infoRow({required String label, required String value}) {
+  Widget _divider(NeumorphicThemeData neuTheme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Divider(
+        color: neuTheme.darkShadow.withValues(alpha: 0.3),
+        thickness: 1,
+        height: 1,
+      ),
+    );
+  }
+
+  Widget _infoRow(BuildContext context, {required String label, required String value}) {
+    final neuTheme = context.neuTheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, fontWeight: FontWeight.w500),
         ),
         Text(
           value,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: neuTheme.textPrimary),
         ),
       ],
     );
   }
 
   void _confirmSignOut(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to end your ATLAS mobile session?'),
+        backgroundColor: neuTheme.baseColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Sign Out',
+          style: TextStyle(color: neuTheme.textPrimary, fontWeight: FontWeight.w800),
+        ),
+        content: Text(
+          'Are you sure you want to end your ATLAS mobile session?',
+          style: TextStyle(color: neuTheme.textSecondary, height: 1.4),
+        ),
         actions: [
           TextButton(
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: TextStyle(color: neuTheme.textSecondary)),
             onPressed: () => Navigator.of(ctx).pop(),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Sign Out'),
+          NeuButton(
+            text: 'Sign Out',
+            isDanger: true,
+            height: 40,
             onPressed: () async {
               Navigator.of(ctx).pop();
               await ref.read(authControllerProvider.notifier).logout();
