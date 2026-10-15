@@ -17,3 +17,4 @@ export 'ios_neu_button.dart';
 export 'ios_neu_fab.dart';
 export 'ios_neu_empty_state.dart';
 export 'ios_neu_modal.dart';
+export 'neu_shimmer.dart';

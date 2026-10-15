@@ -309,7 +309,7 @@ if __name__ == "__main__":
         "main:app", 
         host='0.0.0.0',
         port=find_free_port(
-            port=config('PORT', cast=int, default=7001),
+            port=config('PORT', cast=int, default=8000),
             is_production=config('PYTHON_ENV') == "production"
         ), 
         reload=True,

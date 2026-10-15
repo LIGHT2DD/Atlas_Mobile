@@ -81,8 +81,8 @@ class NeuContainer extends StatelessWidget {
           gradient: neuTheme.concaveGradient,
           border: border ??
               Border.all(
-                color: neuTheme.darkShadow.withValues(alpha: neuTheme.isDark ? 0.45 : 0.25),
-                width: 1.2,
+                color: neuTheme.darkShadow.withValues(alpha: neuTheme.isDark ? 0.22 : 0.12),
+                width: 1.0,
               ),
         );
         break;

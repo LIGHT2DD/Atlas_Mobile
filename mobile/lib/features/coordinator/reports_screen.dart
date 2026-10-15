@@ -20,9 +20,11 @@ class ReportsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final reportAsync = ref.watch(reportSummaryFutureProvider);
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Departmental Reports',
         actions: [
@@ -49,18 +51,18 @@ class ReportsScreen extends ConsumerWidget {
             child: ListView(
               padding: const EdgeInsets.all(16.0),
               children: [
-                const Text(
+                Text(
                   'Academic Cohort Performance',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: neuTheme.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'Real-time synthesis of student engagement, faculty assignments, and thesis defense progress.',
-                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
                 ),
                 const SizedBox(height: 16),
 
@@ -69,6 +71,7 @@ class ReportsScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _metricCard(
+                        context: context,
                         title: 'Total Students',
                         value: report.totalStudents.toString(),
                         icon: TablerIcons.user,
@@ -78,6 +81,7 @@ class ReportsScreen extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _metricCard(
+                        context: context,
                         title: 'Supervisors',
                         value: report.totalSupervisors.toString(),
                         icon: TablerIcons.school,
@@ -91,6 +95,7 @@ class ReportsScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _metricCard(
+                        context: context,
                         title: 'Thesis Teams',
                         value: report.totalTeams.toString(),
                         icon: TablerIcons.users,
@@ -100,6 +105,7 @@ class ReportsScreen extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _metricCard(
+                        context: context,
                         title: 'Active Proposals',
                         value: report.activeProposals.toString(),
                         icon: TablerIcons.file_description,
@@ -110,6 +116,7 @@ class ReportsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 _metricCard(
+                  context: context,
                   title: 'Oral Defenses Concluded',
                   value: report.completedDefenses.toString(),
                   icon: TablerIcons.award,
@@ -122,17 +129,17 @@ class ReportsScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Team Lifecycle Status Distribution',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: neuTheme.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 16),
                       if (report.teamsByStatus.isEmpty) ...[
-                        const Text('No status distribution records available.', style: TextStyle(fontSize: 13)),
+                        Text('No status distribution records available.', style: TextStyle(fontSize: 13, color: neuTheme.textSecondary)),
                       ] else ...[
                         ...report.teamsByStatus.entries.map((entry) {
                           return Padding(
@@ -143,10 +150,10 @@ class ReportsScreen extends ConsumerWidget {
                                 StatusBadge(status: entry.key),
                                 Text(
                                   '${entry.value} team(s)',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
+                                    color: neuTheme.textPrimary,
                                   ),
                                 ),
                               ],
@@ -167,11 +174,13 @@ class ReportsScreen extends ConsumerWidget {
   }
 
   Widget _metricCard({
+    required BuildContext context,
     required String title,
     required String value,
     required IconData icon,
     required Color color,
   }) {
+    final neuTheme = context.neuTheme;
     return AtlasCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,23 +190,23 @@ class ReportsScreen extends ConsumerWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: IosNeuColors.textSecondary,
+                  color: neuTheme.textSecondary,
                 ),
               ),
-              Icon(icon, size: 20, color: IosNeuColors.activePill),
+              Icon(icon, size: 20, color: neuTheme.accentColor),
             ],
           ),
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
-              color: IosNeuColors.textPrimary,
+              color: neuTheme.textPrimary,
             ),
           ),
         ],

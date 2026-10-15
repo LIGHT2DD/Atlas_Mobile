@@ -32,37 +32,42 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
             create_token=False,
         )
     except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+        detail = "Invalid email or password." if e.status_code in (400, 401, 404) else e.detail
+        raise HTTPException(status_code=400, detail=detail)
     except Exception as e:
-        logger.error(f"Login failed: {e}")
+        logger.error(f"Login failed: {e}", exc_info=True)
         raise HTTPException(status_code=400, detail="Invalid email or password.")
 
-    access_expiry_minutes = (30 * 24 * 60) if payload.remember_me else settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    refresh_expiry_minutes = (45 * 24 * 60) if payload.remember_me else settings.REFRESH_TOKEN_EXPIRE_MINUTES
+    try:
+        access_expiry_minutes = (30 * 24 * 60) if payload.remember_me else settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        refresh_expiry_minutes = (45 * 24 * 60) if payload.remember_me else settings.REFRESH_TOKEN_EXPIRE_MINUTES
 
-    access_token = AuthService.create_access_token(db, user.id, expiry_in_minutes=access_expiry_minutes)
-    refresh_token = AuthService.create_refresh_token(db, user.id, expiry_in_minutes=refresh_expiry_minutes)
+        access_token = AuthService.create_access_token(db, user.id, expiry_in_minutes=access_expiry_minutes)
+        refresh_token = AuthService.create_refresh_token(db, user.id, expiry_in_minutes=refresh_expiry_minutes)
 
-    # Attach role-specific context
-    context = {}
-    active_sem = SemesterService.get_active_semester(db)
-    if active_sem:
-        context["active_semester"] = {
-            "id": active_sem.id,
-            "name": active_sem.name,
-            "academic_year": active_sem.academic_year,
-        }
-
-    if user.role == UserRole.STUDENT.value:
-        team = TeamService.get_student_active_team(db, user.id)
-        if team:
-            context["active_team"] = {
-                "id": team.id,
-                "name": team.name,
-                "project_title": team.project_title,
-                "status": team.status,
-                "is_leader": team.leader_id == user.id,
+        # Attach role-specific context
+        context = {}
+        active_sem = SemesterService.get_active_semester(db)
+        if active_sem:
+            context["active_semester"] = {
+                "id": active_sem.id,
+                "name": active_sem.name,
+                "academic_year": active_sem.academic_year,
             }
+
+        if user.role == UserRole.STUDENT.value:
+            team = TeamService.get_student_active_team(db, user.id)
+            if team:
+                context["active_team"] = {
+                    "id": team.id,
+                    "name": team.name,
+                    "project_title": team.project_title,
+                    "status": team.status,
+                    "is_leader": team.leader_id == user.id,
+                }
+    except Exception as e:
+        logger.error(f"Session generation failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Session initialization failed. Please try again.")
 
     return mobile_response(
         data={

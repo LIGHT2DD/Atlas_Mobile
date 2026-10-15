@@ -25,9 +25,11 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final teamsAsync = ref.watch(allTeamsFutureProvider);
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'All Thesis Teams',
         actions: [
@@ -70,7 +72,7 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final team = teams[index];
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
+                  padding: const EdgeInsets.only(bottom: 14.0),
                   child: AtlasCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,10 +83,10 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 team.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                             ),
@@ -208,6 +210,7 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
       barrierColor: Colors.black.withValues(alpha: 0.35),
       builder: (ctx) => Consumer(
         builder: (context, ref, _) {
+          final neuTheme = context.neuTheme;
           final supervisorsAsync = ref.watch(supervisorsFutureProvider);
           return Dialog(
             backgroundColor: Colors.transparent,
@@ -221,17 +224,17 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                 children: [
                   Text(
                     'Assign Supervisor: ${team.name}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.3,
-                      color: IosNeuColors.textPrimary,
+                      color: neuTheme.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
                   supervisorsAsync.when(
                     loading: () => const SizedBox(height: 80, child: LoadingIndicator()),
-                    error: (e, _) => Text('Error loading faculty: $e'),
+                    error: (e, _) => Text('Error loading faculty: $e', style: TextStyle(color: neuTheme.textPrimary)),
                     data: (supervisors) {
                       return SizedBox(
                         width: double.maxFinite,
@@ -273,15 +276,15 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                                         color: IosNeuColors.inactiveBadge,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: const Icon(TablerIcons.user, size: 18, color: IosNeuColors.textPrimary),
+                                      child: Icon(TablerIcons.user, size: 18, color: neuTheme.textPrimary),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(s.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                                          Text(s.email, style: const TextStyle(fontSize: 12, color: IosNeuColors.textSecondary)),
+                                          Text(s.name, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: neuTheme.textPrimary)),
+                                          Text(s.email, style: TextStyle(fontSize: 12, color: neuTheme.textSecondary)),
                                         ],
                                       ),
                                     ),

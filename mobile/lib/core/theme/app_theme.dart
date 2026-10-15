@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'neumorphic_theme.dart';
 
 class AppColors {
@@ -114,8 +115,19 @@ class AppTheme {
       scaffoldBackgroundColor: NeuColors.darkBase,
       canvasColor: NeuColors.darkBase,
       cardColor: NeuColors.darkBase,
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: NeuColors.darkBase,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+      ),
       dialogTheme: const DialogThemeData(
         backgroundColor: NeuColors.darkBase,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(32)),
+        ),
       ),
       colorScheme: const ColorScheme.dark(
         primary: NeuColors.darkAccent,
@@ -133,29 +145,37 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: NeuColors.darkBase,
+          statusBarBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.light,
+          systemNavigationBarColor: NeuColors.darkBase,
+          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarDividerColor: Colors.transparent,
+        ),
         titleTextStyle: TextStyle(
           color: NeuColors.darkTextPrimary,
-          fontSize: 18,
+          fontSize: 20,
           fontWeight: FontWeight.w700,
-          letterSpacing: -0.2,
+          letterSpacing: -0.3,
         ),
       ),
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w800),
-        headlineMedium: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w700),
-        titleLarge: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w700),
-        titleMedium: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w600),
-        bodyLarge: TextStyle(color: NeuColors.darkTextPrimary),
-        bodyMedium: TextStyle(color: NeuColors.darkTextPrimary),
-        bodySmall: TextStyle(color: NeuColors.darkTextSecondary),
+        headlineLarge: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w800, fontSize: 34),
+        headlineMedium: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w700, fontSize: 28),
+        titleLarge: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w700, fontSize: 22),
+        titleMedium: TextStyle(color: NeuColors.darkTextPrimary, fontWeight: FontWeight.w600, fontSize: 17),
+        bodyLarge: TextStyle(color: NeuColors.darkTextPrimary, fontSize: 16),
+        bodyMedium: TextStyle(color: NeuColors.darkTextPrimary, fontSize: 15),
+        bodySmall: TextStyle(color: NeuColors.darkTextSecondary, fontSize: 13),
       ),
       cardTheme: CardThemeData(
         color: NeuColors.darkBase,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
         ),
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
       ),
       dividerTheme: const DividerThemeData(
         color: Color(0xFF353B42),

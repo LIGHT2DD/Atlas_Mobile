@@ -12,8 +12,7 @@ class AtlasDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final neuTheme = context.neuTheme;
-    final authState = ref.watch(authControllerProvider);
-    final user = authState.user;
+    final user = ref.watch(authControllerProvider.select((s) => s.user));
     final role = user?.role ?? UserRole.student;
     final currentThemeMode = ref.watch(themeModeProvider);
     final isDark = currentThemeMode == ThemeMode.dark;
@@ -93,6 +92,69 @@ class AtlasDrawer extends ConsumerWidget {
                 ),
               ),
             ),
+
+            // Compact "About ATLAS" Card
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: NeuContainer(
+                depthType: NeuDepth.convex,
+                depth: 2.0,
+                borderRadius: BorderRadius.circular(16),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        NeuContainer(
+                          shape: BoxShape.circle,
+                          width: 24,
+                          height: 24,
+                          depthType: NeuDepth.convex,
+                          depth: 1.5,
+                          alignment: Alignment.center,
+                          child: Icon(
+                            TablerIcons.info_circle,
+                            size: 14,
+                            color: neuTheme.accentColor,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'ABOUT ATLAS',
+                          style: TextStyle(
+                            color: neuTheme.accentColor,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Academic Thesis Lifecycle & Assessment Suite',
+                      style: TextStyle(
+                        color: neuTheme.textPrimary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        height: 1.25,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'A centralized academic platform coordinating thesis proposals, milestone progress, oral defense hearings, and rubric evaluations for students, supervisors, and coordinators.',
+                      style: TextStyle(
+                        color: neuTheme.textSecondary,
+                        fontSize: 11,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
 
             // Navigation List
             Expanded(

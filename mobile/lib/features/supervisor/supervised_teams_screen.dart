@@ -17,9 +17,11 @@ class SupervisedTeamsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final teamsAsync = ref.watch(supervisedTeamsFutureProvider);
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Supervised Teams',
         actions: [
@@ -74,10 +76,10 @@ class SupervisedTeamsScreen extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 team.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                             ),
@@ -99,7 +101,7 @@ class SupervisedTeamsScreen extends ConsumerWidget {
                             team.description!,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                            style: TextStyle(fontSize: 12, color: neuTheme.textSecondary),
                           ),
                         ],
                         const SizedBox(height: 10),

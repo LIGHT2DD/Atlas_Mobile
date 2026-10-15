@@ -23,7 +23,7 @@ class NeuBadge extends StatelessWidget {
   factory NeuBadge.fromStatus(String status, {bool isOverdue = false}) {
     return NeuBadge(
       label: _formatStatus(status),
-      color: _resolveStatusColor(status, isOverdue),
+      color: null, // Dynamically resolved based on theme brightness in build()
       isOverdue: isOverdue,
     );
   }
@@ -35,20 +35,20 @@ class NeuBadge extends StatelessWidget {
     }).join(' ');
   }
 
-  static Color? _resolveStatusColor(String status, bool isOverdue) {
+  static Color? _resolveStatusColor(String status, bool isOverdue, [bool isDark = false]) {
     if (isOverdue) return null; // Uses neuTheme.dangerColor
 
     final s = status.toUpperCase();
     if (s.contains('APPROV') || s.contains('COMPLET') || s.contains('ACTIVE')) {
-      return const Color(0xFF2E6F40); // Soft Forest Emerald
+      return isDark ? const Color(0xFF68D391) : const Color(0xFF2E6F40); // Soft Emerald
     } else if (s.contains('REJECT') || s.contains('LATE') || s.contains('CANCEL')) {
-      return const Color(0xFF992222); // Soft Crimson
+      return isDark ? const Color(0xFFFC8181) : const Color(0xFF992222); // Soft Crimson
     } else if (s.contains('CHANGE') || s.contains('PROGRESS') || s.contains('FORMING')) {
-      return const Color(0xFF8A6510); // Soft Bronze
+      return isDark ? const Color(0xFFF6E05E) : const Color(0xFF8A6510); // Soft Gold / Bronze
     } else if (s.contains('SUBMIT') || s.contains('SCHEDULE')) {
-      return const Color(0xFF334E68); // Soft Slate Navy
+      return isDark ? const Color(0xFF63B3ED) : const Color(0xFF334E68); // Soft Sky / Slate Navy
     }
-    return const Color(0xFF4A4A4A);
+    return isDark ? const Color(0xFFA0AEC0) : const Color(0xFF4A4A4A);
   }
 
   @override
@@ -56,7 +56,7 @@ class NeuBadge extends StatelessWidget {
     final neuTheme = context.neuTheme;
     final badgeColor = isOverdue
         ? neuTheme.dangerColor
-        : (color ?? neuTheme.accentColor);
+        : (color ?? _resolveStatusColor(label, isOverdue, neuTheme.isDark) ?? neuTheme.accentColor);
 
     return NeuContainer(
       depthType: isSunken ? NeuDepth.concave : NeuDepth.convex,

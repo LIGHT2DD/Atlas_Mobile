@@ -14,8 +14,7 @@ class StudentDashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final neuTheme = context.neuTheme;
-    final authState = ref.watch(authControllerProvider);
-    final user = authState.user;
+    final user = ref.watch(authControllerProvider.select((s) => s.user));
     final teamAsync = ref.watch(myTeamProvider);
 
     return Scaffold(
@@ -111,16 +110,10 @@ class StudentDashboardScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(4),
                       child: ClipOval(
                         child: Image.asset(
-                          'asset/icon/play_store_512.png',
+                          'assets/icon/play_store_512.png',
                           width: 46,
                           height: 46,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => Image.asset(
-                            'assets/icon/play_store_512.png',
-                            width: 46,
-                            height: 46,
-                            fit: BoxFit.contain,
-                          ),
                         ),
                       ),
                     ),
@@ -131,17 +124,62 @@ class StudentDashboardScreen extends ConsumerWidget {
 
               // Team Status Card
               teamAsync.when(
-                loading: () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                loading: () => const NeuSkeletonCard(height: 110),
                 error: (e, _) => NeuContainer(
-                  depthType: NeuDepth.concave,
-                  borderRadius: BorderRadius.circular(16),
-                  padding: const EdgeInsets.all(16),
-                  child: Text('Error loading team: $e', style: TextStyle(color: neuTheme.dangerColor)),
+                  depthType: NeuDepth.convex,
+                  depth: 3.5,
+                  borderRadius: BorderRadius.circular(20),
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          NeuContainer(
+                            shape: BoxShape.circle,
+                            width: 38,
+                            height: 38,
+                            depthType: NeuDepth.concave,
+                            alignment: Alignment.center,
+                            child: Icon(TablerIcons.wifi_off, color: neuTheme.warningColor, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Server Connection Unavailable',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: neuTheme.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Check network settings or retry connecting to ATLAS server.',
+                                  style: TextStyle(fontSize: 12, color: neuTheme.textSecondary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          NeuButton(
+                            text: 'Retry Connection',
+                            icon: TablerIcons.refresh,
+                            height: 38,
+                            onPressed: () => ref.invalidate(myTeamProvider),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 data: (team) {
                   if (team == null) {

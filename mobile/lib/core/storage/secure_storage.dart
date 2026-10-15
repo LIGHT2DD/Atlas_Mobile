@@ -17,6 +17,7 @@ class SecureStorageService {
   static const _keyUserId = 'atlas_user_id';
   static const _keyUserRole = 'atlas_user_role';
   static const _keyThemeMode = 'atlas_theme_mode';
+  static const _keyServerUrl = 'atlas_server_url';
 
   Future<void> saveTokens({required String accessToken, required String refreshToken}) async {
     _memoryFallback[_keyAccessToken] = accessToken;
@@ -28,18 +29,28 @@ class SecureStorageService {
   }
 
   Future<String?> getAccessToken() async {
-    try {
-      return await _storage.read(key: _keyAccessToken) ?? _memoryFallback[_keyAccessToken];
-    } catch (_) {
+    if (_memoryFallback.containsKey(_keyAccessToken)) {
       return _memoryFallback[_keyAccessToken];
+    }
+    try {
+      final token = await _storage.read(key: _keyAccessToken);
+      if (token != null) _memoryFallback[_keyAccessToken] = token;
+      return token;
+    } catch (_) {
+      return null;
     }
   }
 
   Future<String?> getRefreshToken() async {
-    try {
-      return await _storage.read(key: _keyRefreshToken) ?? _memoryFallback[_keyRefreshToken];
-    } catch (_) {
+    if (_memoryFallback.containsKey(_keyRefreshToken)) {
       return _memoryFallback[_keyRefreshToken];
+    }
+    try {
+      final token = await _storage.read(key: _keyRefreshToken);
+      if (token != null) _memoryFallback[_keyRefreshToken] = token;
+      return token;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -53,18 +64,28 @@ class SecureStorageService {
   }
 
   Future<String?> getUserRole() async {
-    try {
-      return await _storage.read(key: _keyUserRole) ?? _memoryFallback[_keyUserRole];
-    } catch (_) {
+    if (_memoryFallback.containsKey(_keyUserRole)) {
       return _memoryFallback[_keyUserRole];
+    }
+    try {
+      final role = await _storage.read(key: _keyUserRole);
+      if (role != null) _memoryFallback[_keyUserRole] = role;
+      return role;
+    } catch (_) {
+      return null;
     }
   }
 
   Future<String?> getUserId() async {
-    try {
-      return await _storage.read(key: _keyUserId) ?? _memoryFallback[_keyUserId];
-    } catch (_) {
+    if (_memoryFallback.containsKey(_keyUserId)) {
       return _memoryFallback[_keyUserId];
+    }
+    try {
+      final uid = await _storage.read(key: _keyUserId);
+      if (uid != null) _memoryFallback[_keyUserId] = uid;
+      return uid;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -76,15 +97,43 @@ class SecureStorageService {
   }
 
   Future<String?> getThemeMode() async {
-    try {
-      return await _storage.read(key: _keyThemeMode) ?? _memoryFallback[_keyThemeMode];
-    } catch (_) {
+    if (_memoryFallback.containsKey(_keyThemeMode)) {
       return _memoryFallback[_keyThemeMode];
+    }
+    try {
+      final mode = await _storage.read(key: _keyThemeMode);
+      if (mode != null) _memoryFallback[_keyThemeMode] = mode;
+      return mode;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveServerUrl(String url) async {
+    _memoryFallback[_keyServerUrl] = url;
+    try {
+      await _storage.write(key: _keyServerUrl, value: url);
+    } catch (_) {}
+  }
+
+  Future<String?> getServerUrl() async {
+    if (_memoryFallback.containsKey(_keyServerUrl)) {
+      return _memoryFallback[_keyServerUrl];
+    }
+    try {
+      final url = await _storage.read(key: _keyServerUrl);
+      if (url != null) _memoryFallback[_keyServerUrl] = url;
+      return url;
+    } catch (_) {
+      return null;
     }
   }
 
   Future<void> clearAuth() async {
-    _memoryFallback.clear();
+    _memoryFallback.remove(_keyAccessToken);
+    _memoryFallback.remove(_keyRefreshToken);
+    _memoryFallback.remove(_keyUserId);
+    _memoryFallback.remove(_keyUserRole);
     try {
       await _storage.delete(key: _keyAccessToken);
       await _storage.delete(key: _keyRefreshToken);

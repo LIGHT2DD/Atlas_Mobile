@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import '../../core/theme/ios_neu_theme.dart';
+import '../../core/theme/neumorphic_theme.dart';
 
 /// Minimalist iOS Neumorphic Stadium Search Bar
 class IosNeuSearchBar extends StatefulWidget {
@@ -58,21 +58,27 @@ class _IosNeuSearchBarState extends State<IosNeuSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+    final isDark = context.isDarkMode;
+
     return Container(
       height: 52.0,
       decoration: BoxDecoration(
-        color: IosNeuColors.canvas,
+        color: neuTheme.baseColor,
         borderRadius: BorderRadius.circular(30.0),
-        boxShadow: IosNeuTheme.subtleShadows,
+        boxShadow: neuTheme.convexShadowsWithDepth(2.5),
+        border: isDark
+            ? Border.all(color: neuTheme.darkHighlight.withValues(alpha: 0.3), width: 0.8)
+            : null,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 18.0),
       alignment: Alignment.center,
       child: Row(
         children: [
-          const Icon(
+          Icon(
             TablerIcons.search,
             size: 20,
-            color: IosNeuColors.textSecondary,
+            color: neuTheme.textSecondary,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -80,16 +86,16 @@ class _IosNeuSearchBarState extends State<IosNeuSearchBar> {
               controller: _controller,
               focusNode: widget.focusNode,
               autofocus: widget.autoFocus,
-              style: const TextStyle(
-                color: IosNeuColors.textPrimary,
+              style: TextStyle(
+                color: neuTheme.textPrimary,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
-              cursorColor: IosNeuColors.activePill,
+              cursorColor: neuTheme.accentColor,
               decoration: InputDecoration(
                 hintText: widget.hintText,
-                hintStyle: const TextStyle(
-                  color: IosNeuColors.textSecondary,
+                hintStyle: TextStyle(
+                  color: neuTheme.textSecondary,
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
                 ),
@@ -111,14 +117,14 @@ class _IosNeuSearchBarState extends State<IosNeuSearchBar> {
               child: Container(
                 width: 22,
                 height: 22,
-                decoration: const BoxDecoration(
-                  color: IosNeuColors.inactiveBadge,
+                decoration: BoxDecoration(
+                  color: isDark ? neuTheme.darkHighlight : IosNeuColors.inactiveBadge,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   TablerIcons.x,
                   size: 14,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                 ),
               ),
             ),

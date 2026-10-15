@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
 import '../../shared/models/evaluation_model.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/atlas_drawer.dart';
@@ -22,9 +21,11 @@ class MyGradeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final gradeAsync = ref.watch(myGradeFutureProvider);
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Official Academic Grades',
         actions: [
@@ -69,33 +70,33 @@ class MyGradeScreen extends ConsumerWidget {
                 AtlasCard(
                   child: Column(
                     children: [
-                      const Icon(TablerIcons.award, size: 56, color: IosNeuColors.activePill),
+                      Icon(TablerIcons.award, size: 56, color: neuTheme.accentColor),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'OFFICIAL THESIS ASSESSMENT',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.5,
-                          color: IosNeuColors.textSecondary,
+                          color: neuTheme.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Text(
                         grade.finalGrade ?? 'P',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 54,
                           fontWeight: FontWeight.w900,
-                          color: IosNeuColors.textPrimary,
+                          color: neuTheme.textPrimary,
                         ),
                       ),
                       if (grade.finalScore != null) ...[
                         Text(
                           '${grade.finalScore!.toStringAsFixed(1)}% Aggregate Score',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: IosNeuColors.textPrimary,
+                            color: neuTheme.textPrimary,
                           ),
                         ),
                       ],
@@ -104,17 +105,17 @@ class MyGradeScreen extends ConsumerWidget {
                         status: 'approved',
                         customLabel: 'Published & Certified',
                       ),
-                      const Divider(height: 32),
+                      Divider(height: 32, color: neuTheme.darkShadow.withValues(alpha: 0.3)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Team:',
-                            style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                            style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
                           ),
                           Text(
                             grade.teamName ?? 'N/A',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: neuTheme.textPrimary),
                           ),
                         ],
                       ),
@@ -122,16 +123,16 @@ class MyGradeScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Project:',
-                            style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                            style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
                           ),
                           Expanded(
                             child: Text(
                               grade.projectTitle ?? 'N/A',
                               textAlign: TextAlign.end,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: neuTheme.textPrimary),
                             ),
                           ),
                         ],
@@ -140,10 +141,10 @@ class MyGradeScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'This official grade reflects aggregated scores from your thesis supervisor, defense panel examiners, and deliverable milestones, finalized by the academic coordinator.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: AppColors.textMuted, height: 1.4),
+                  style: TextStyle(fontSize: 12, color: neuTheme.textSecondary, height: 1.4),
                 ),
               ],
             ),

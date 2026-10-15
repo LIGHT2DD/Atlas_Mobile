@@ -32,6 +32,7 @@ class ApiClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
+          options.baseUrl = ApiConfig.baseUrl;
           final token = await storage.getAccessToken();
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
@@ -125,7 +126,8 @@ class ApiClient {
         return newAccess;
       }
     } catch (_) {
-      // Refresh failed
+      // Refresh failed: clear invalid session
+      await storage.clearAuth();
     } finally {
       _isRefreshing = false;
     }
@@ -152,17 +154,74 @@ class ApiClient {
     final response = error.response;
     if (response != null) {
       final data = response.data;
-      String message = 'An unexpected server error occurred.';
+      String? extractedMessage;
       List<String>? errors;
 
       if (data is Map<String, dynamic>) {
-        message = data['message'] as String? ?? message;
+        if (data['message'] is String && (data['message'] as String).trim().isNotEmpty) {
+          extractedMessage = (data['message'] as String).trim();
+        } else if (data['detail'] is String && (data['detail'] as String).trim().isNotEmpty) {
+          extractedMessage = (data['detail'] as String).trim();
+        } else if (data['detail'] is List) {
+          final listMsgs = (data['detail'] as List).map((e) {
+            if (e is Map && e['msg'] != null) return e['msg'].toString();
+            return e.toString();
+          }).where((s) => s.isNotEmpty).toList();
+          if (listMsgs.isNotEmpty) {
+            extractedMessage = listMsgs.join(', ');
+            errors = listMsgs;
+          }
+        } else if (data['error'] is String && (data['error'] as String).trim().isNotEmpty) {
+          extractedMessage = (data['error'] as String).trim();
+        }
+
         if (data['errors'] is List) {
           errors = (data['errors'] as List).map((e) => e.toString()).toList();
+          if (extractedMessage == null && errors.isNotEmpty) {
+            extractedMessage = errors.first;
+          }
+        }
+      } else if (data is String && data.trim().isNotEmpty) {
+        final trimmed = data.trim();
+        if (!trimmed.toLowerCase().contains('<html') && !trimmed.toLowerCase().contains('<!doctype')) {
+          extractedMessage = trimmed;
         }
       }
 
-      switch (response.statusCode) {
+      final statusCode = response.statusCode;
+      String fallbackMessage;
+      switch (statusCode) {
+        case 400:
+          fallbackMessage = 'Invalid request. Please verify your credentials or input.';
+          break;
+        case 401:
+          fallbackMessage = 'Invalid institutional email or password.';
+          break;
+        case 403:
+          fallbackMessage = 'You do not have permission to perform this action.';
+          break;
+        case 404:
+          fallbackMessage = 'Requested account or resource was not found.';
+          break;
+        case 409:
+          fallbackMessage = 'A data conflict occurred. Please refresh and try again.';
+          break;
+        case 422:
+          fallbackMessage = 'Validation failed. Please check the entered data.';
+          break;
+        case 500:
+        case 502:
+        case 503:
+        case 504:
+          fallbackMessage = 'ATLAS server is currently unavailable. Please ensure the backend is running.';
+          break;
+        default:
+          fallbackMessage = 'An unexpected server error occurred.';
+      }
+
+      final message = extractedMessage ?? fallbackMessage;
+
+      switch (statusCode) {
         case 401:
           return UnauthorizedException(message: message);
         case 403:
@@ -172,12 +231,17 @@ class ApiClient {
         default:
           return ApiException(
             message: message,
-            statusCode: response.statusCode,
+            statusCode: statusCode,
             errors: errors,
           );
       }
     }
 
-    return ApiException(message: error.message ?? 'Unknown network failure');
+    final netMsg = (error.message != null &&
+            error.message!.isNotEmpty &&
+            !error.message!.contains('XMLHttpRequest'))
+        ? error.message!
+        : 'Cannot connect to ATLAS server. Please check your network or ensure the backend is running.';
+    return NetworkException(message: netMsg);
   }
 }

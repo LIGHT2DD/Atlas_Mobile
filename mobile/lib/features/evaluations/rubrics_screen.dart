@@ -22,11 +22,13 @@ class RubricsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final rubricsAsync = ref.watch(rubricsListProvider);
     final authState = ref.watch(authControllerProvider);
     final isCoordinator = authState.user?.role.isCoordinator ?? false;
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Evaluation Rubrics',
         actions: [
@@ -83,10 +85,10 @@ class RubricsScreen extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 r.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                             ),
@@ -95,10 +97,10 @@ class RubricsScreen extends ConsumerWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               child: Text(
                                 '${r.weightPercentage.toInt()}% Weight',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  color: IosNeuColors.textPrimary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                             ),
@@ -108,20 +110,20 @@ class RubricsScreen extends ConsumerWidget {
                           const SizedBox(height: 6),
                           Text(
                             r.description!,
-                            style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                            style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
                           ),
                         ],
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            const Icon(TablerIcons.star, size: 16, color: IosNeuColors.activePill),
+                            Icon(TablerIcons.star, size: 16, color: neuTheme.accentColor),
                             const SizedBox(width: 4),
                             Text(
                               'Max Score: ${r.maxScore.toInt()} pts',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textMuted,
+                                color: neuTheme.textSecondary.withValues(alpha: 0.8),
                               ),
                             ),
                           ],
@@ -150,6 +152,7 @@ class RubricsScreen extends ConsumerWidget {
     final scoreController = TextEditingController(text: '25');
     final weightController = TextEditingController(text: '25');
 
+    final neuTheme = context.neuTheme;
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.35),
@@ -164,14 +167,14 @@ class RubricsScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   'New Rubric Criterion',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.3,
-                    color: IosNeuColors.textPrimary,
+                    color: neuTheme.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 18),

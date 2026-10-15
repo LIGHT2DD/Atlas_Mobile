@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/config/api_config.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
 import 'auth_controller.dart';
 
@@ -20,6 +21,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _rememberMe = false;
 
   @override
+  void initState() {
+    super.initState();
+    ref.read(secureStorageProvider).getServerUrl().then((savedUrl) {
+      if (savedUrl != null && savedUrl.isNotEmpty) {
+        ApiConfig.setCustomBaseUrl(savedUrl);
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -30,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final success = await ref.read(authControllerProvider.notifier).login(
-      email: _emailController.text,
+      email: _emailController.text.trim(),
       password: _passwordController.text,
       rememberMe: _rememberMe,
     );
@@ -43,14 +54,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         type: NeuToastType.success,
       );
       context.go('/dashboard');
-    } else if (mounted) {
-      final err = ref.read(authControllerProvider).errorMessage ?? 'Login failed';
-      NeuToast.show(
-        context,
-        message: err,
-        title: 'Authentication Error',
-        type: NeuToastType.error,
-      );
     }
   }
 
@@ -77,53 +80,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       backgroundColor: neuTheme.baseColor,
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Top theme toggle button
-            Positioned(
-              top: 12,
-              right: 16,
-              child: NeuIconButton(
-                icon: isDark ? TablerIcons.sun : TablerIcons.moon,
-                tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
-                iconColor: isDark ? const Color(0xFFF6E05E) : neuTheme.accentColor,
-                onPressed: () {
-                  ref.read(themeModeProvider.notifier).toggleTheme();
-                },
-              ),
-            ),
-
-            Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-                child: Form(
-                  key: _formKey,
-                  child: AutofillGroup(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                      // Extruded Neumorphic Logo
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.opaque,
+          child: Stack(
+            children: [
+              Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(left: 24, right: 24, top: 64, bottom: 40),
+                  child: Form(
+                    key: _formKey,
+                    child: AutofillGroup(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                      // Monochromatic iOS Soft-UI Logo Card
                       Center(
-                        child: NeuContainer(
+                        child: IosNeuCard(
                           shape: BoxShape.circle,
-                          width: 88,
-                          height: 88,
-                          depthType: NeuDepth.convex,
-                          depth: 4.5,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(6),
+                          padding: const EdgeInsets.all(12),
                           child: ClipOval(
                             child: Image.asset(
-                              'asset/icon/play_store_512.png',
-                              width: 76,
-                              height: 76,
+                              'assets/icon/play_store_512.png',
+                              width: 72,
+                              height: 72,
                               fit: BoxFit.contain,
-                              errorBuilder: (_, _, _) => Image.asset(
-                                'assets/icon/play_store_512.png',
-                                width: 76,
-                                height: 76,
-                                fit: BoxFit.contain,
-                              ),
                             ),
                           ),
                         ),
@@ -151,21 +132,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 36),
 
-                      // Error banner if any
+                      // Clean inline error banner without harsh concave shadow
                       if (authState.errorMessage != null) ...[
-                        NeuContainer(
-                          depthType: NeuDepth.concave,
-                          borderRadius: BorderRadius.circular(14),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          border: Border.all(color: neuTheme.dangerColor.withValues(alpha: 0.5), width: 1.2),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: neuTheme.dangerColor.withValues(alpha: isDark ? 0.15 : 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: neuTheme.dangerColor.withValues(alpha: 0.35),
+                              width: 1,
+                            ),
+                          ),
                           child: Row(
                             children: [
                               Icon(TablerIcons.alert_circle, color: neuTheme.dangerColor, size: 20),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   authState.errorMessage!,
-                                  style: TextStyle(color: neuTheme.dangerColor, fontSize: 13, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                    color: neuTheme.dangerColor,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => ref.read(authControllerProvider.notifier).clearError(),
+                                child: Icon(
+                                  TablerIcons.x,
+                                  size: 16,
+                                  color: neuTheme.dangerColor.withValues(alpha: 0.8),
                                 ),
                               ),
                             ],
@@ -249,11 +247,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 28),
 
-                      // Primary Raised Submit Button
-                      NeuButton(
+                      // Primary iOS Neumorphic Charcoal Submit Button
+                      IosNeuButton(
                         text: 'Sign In to ATLAS',
                         icon: TablerIcons.login,
-                        isAccent: true,
+                        isPrimary: true,
                         height: 52,
                         isLoading: authState.isLoading,
                         onPressed: authState.isLoading ? null : _handleLogin,
@@ -284,10 +282,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const SizedBox(height: 36),
 
                       // Tactile Quick Demo Roster Box
-                      NeuContainer(
-                        depthType: NeuDepth.convex,
-                        depth: 2.5,
-                        borderRadius: BorderRadius.circular(16),
+                      IosNeuCard(
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,8 +304,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                             const SizedBox(height: 12),
                             Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
+                              spacing: 8,
+                              runSpacing: 8,
                               children: [
                                 _demoButton('Coordinator', TablerIcons.shield_check, 'coordinator@atlas.edu', neuTheme),
                                 _demoButton('Supervisor', TablerIcons.school, 'supervisor1@atlas.edu', neuTheme),
@@ -325,31 +320,142 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
             ),
-            ),
-          ],
+          ),
+              // Top action buttons (Server Settings & Theme Toggle) on top of Stack for hit-testing
+              Positioned(
+                top: 12,
+                right: 16,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    NeuIconButton(
+                      icon: TablerIcons.server,
+                      tooltip: 'Server Settings',
+                      iconColor: neuTheme.textSecondary,
+                      onPressed: () => _showServerConfigDialog(context, neuTheme),
+                    ),
+                    const SizedBox(width: 8),
+                    NeuIconButton(
+                      icon: isDark ? TablerIcons.sun : TablerIcons.moon,
+                      tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+                      iconColor: isDark ? const Color(0xFFF6E05E) : neuTheme.accentColor,
+                      onPressed: () {
+                        ref.read(themeModeProvider.notifier).toggleTheme();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _demoButton(String label, IconData icon, String email, NeumorphicThemeData neuTheme) {
-    return NeuButton(
-      height: 36,
-      depth: 2.5,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    return IosNeuButton(
+      isPrimary: false,
+      height: 38,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       onPressed: () => _quickFill(email, 'Password123'),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 15, color: neuTheme.accentColor),
-          const SizedBox(width: 6),
+          Icon(icon, size: 16, color: neuTheme.textPrimary),
+          const SizedBox(width: 8),
           Text(
             label,
             style: TextStyle(
               color: neuTheme.textPrimary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showServerConfigDialog(BuildContext context, NeumorphicThemeData neuTheme) {
+    final controller = TextEditingController(text: ApiConfig.baseUrl);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: neuTheme.baseColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(TablerIcons.server, color: neuTheme.accentColor, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Server Settings',
+              style: TextStyle(color: neuTheme.textPrimary, fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Backend API URL:',
+              style: TextStyle(color: neuTheme.textSecondary, fontSize: 13),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: controller,
+              style: TextStyle(color: neuTheme.textPrimary, fontSize: 14),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: neuTheme.baseColor,
+                hintText: 'http://192.168.0.105:8000',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text('Quick Presets:', style: TextStyle(color: neuTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                ActionChip(
+                  label: const Text('192.168.0.105:8000', style: TextStyle(fontSize: 11)),
+                  onPressed: () => controller.text = 'http://192.168.0.105:8000',
+                ),
+                ActionChip(
+                  label: const Text('10.0.2.2:8000 (Emulator)', style: TextStyle(fontSize: 11)),
+                  onPressed: () => controller.text = 'http://10.0.2.2:8000',
+                ),
+                ActionChip(
+                  label: const Text('localhost:8000', style: TextStyle(fontSize: 11)),
+                  onPressed: () => controller.text = 'http://localhost:8000',
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel', style: TextStyle(color: neuTheme.textSecondary)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: neuTheme.accentColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              final newUrl = controller.text.trim();
+              if (newUrl.isNotEmpty) {
+                ApiConfig.setCustomBaseUrl(newUrl);
+                ref.read(secureStorageProvider).saveServerUrl(newUrl);
+                NeuToast.show(context, message: 'Server URL set to $newUrl', type: NeuToastType.success);
+              }
+              Navigator.pop(ctx);
+            },
+            child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

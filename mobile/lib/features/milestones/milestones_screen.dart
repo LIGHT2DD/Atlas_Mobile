@@ -48,8 +48,10 @@ class MilestonesScreen extends ConsumerWidget {
     }
 
     // Otherwise if student, look up own team
+    final neuTheme = context.neuTheme;
     final myTeamAsync = ref.watch(myTeamFutureProvider);
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Milestones & Deliverables',
         actions: [
@@ -108,6 +110,7 @@ class _MilestoneContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final milestonesAsync = ref.watch(milestonesListProvider);
     final submissionsAsync = targetTeamId != null
         ? ref.watch(teamSubmissionsProvider(targetTeamId!))
@@ -163,10 +166,10 @@ class _MilestoneContent extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               ms.title,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
+                                color: neuTheme.textPrimary,
                               ),
                             ),
                           ),
@@ -177,7 +180,7 @@ class _MilestoneContent extends ConsumerWidget {
                       if (ms.description != null && ms.description!.isNotEmpty) ...[
                         Text(
                           ms.description!,
-                          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                          style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
                         ),
                         const SizedBox(height: 10),
                       ],
@@ -301,9 +304,9 @@ class _MilestoneContent extends ConsumerWidget {
                                       padding: const EdgeInsets.only(top: 4.0),
                                       child: Text(
                                         'Feedback: ${sub.feedback}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
-                                          color: AppColors.textSecondary,
+                                          color: neuTheme.textSecondary,
                                         ),
                                       ),
                                     ),

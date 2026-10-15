@@ -65,7 +65,10 @@ class _ProposalReviewScreenState extends ConsumerState<ProposalReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(
         title: 'Proposal Evaluation',
       ),
@@ -76,19 +79,19 @@ class _ProposalReviewScreenState extends ConsumerState<ProposalReviewScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Supervisor Review Decision',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.3,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Evaluate the academic rigor, clarity, and viability of the submitted proposal. Provide constructive criticism or guidance.',
-                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: neuTheme.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 24),
 
@@ -98,16 +101,16 @@ class _ProposalReviewScreenState extends ConsumerState<ProposalReviewScreen> {
                   padding: const EdgeInsets.all(14),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(color: IosNeuColors.statusDanger, fontSize: 13, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: neuTheme.dangerColor, fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(height: 18),
               ],
 
               // Decision Selection with IosNeuSegmentPill
-              const Text(
+              Text(
                 'Formal Verdict *',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: IosNeuColors.textPrimary),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: neuTheme.textPrimary),
               ),
               const SizedBox(height: 12),
               Row(

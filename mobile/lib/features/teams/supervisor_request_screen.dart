@@ -66,9 +66,11 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
     final supervisorsAsync = ref.watch(supervisorsFutureProvider);
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(
         title: 'Request Faculty Supervisor',
       ),
@@ -77,7 +79,7 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
         error: (err, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Text('Failed to load faculty: $err', style: const TextStyle(color: AppColors.error)),
+            child: Text('Failed to load faculty: $err', style: TextStyle(color: neuTheme.dangerColor)),
           ),
         ),
         data: (supervisors) {
@@ -101,19 +103,19 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  Text(
                     'Supervision Proposal',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
-                      color: IosNeuColors.textPrimary,
+                      color: neuTheme.textPrimary,
                       letterSpacing: -0.5,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Select a faculty member whose research interests align with your topic and provide a concise proposal message.',
-                    style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
+                    style: TextStyle(fontSize: 14, color: neuTheme.textSecondary, height: 1.4),
                   ),
                   const SizedBox(height: 24),
 
@@ -123,7 +125,7 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
                       padding: const EdgeInsets.all(14),
                       child: Text(
                         _errorMessage!,
-                        style: const TextStyle(color: AppColors.error, fontSize: 13),
+                        style: TextStyle(color: neuTheme.dangerColor, fontSize: 13),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -136,13 +138,14 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
                       child: DropdownButtonFormField<String>(
                         initialValue: _selectedSupervisorId,
                         isExpanded: true,
-                        decoration: const InputDecoration(
+                        dropdownColor: neuTheme.baseColor,
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
-                          prefixIcon: Icon(TablerIcons.school, color: IosNeuColors.textSecondary, size: 20),
+                          prefixIcon: Icon(TablerIcons.school, color: neuTheme.textSecondary, size: 20),
                           hintText: 'Select Faculty Member *',
-                          hintStyle: TextStyle(color: IosNeuColors.textSecondary, fontSize: 14),
+                          hintStyle: TextStyle(color: neuTheme.textSecondary, fontSize: 14),
                         ),
                         items: supervisors.map((s) {
                           return DropdownMenuItem<String>(
@@ -150,7 +153,7 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
                             child: Text(
                               '${s.name} (${s.email})',
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 14, color: IosNeuColors.textPrimary),
+                              style: TextStyle(fontSize: 14, color: neuTheme.textPrimary),
                             ),
                           );
                         }).toList(),

@@ -179,8 +179,9 @@ alembic/versions/*.py
 Thumbs.db
 
 # Mobile Flutter Build Artifacts & IDE
+*.iml
+*.apk
 mobile/.dart_tool/
 mobile/.flutter-plugins-dependencies
 mobile/.idea/
-mobile/build/
-mobile/*.iml
+mobile/build/

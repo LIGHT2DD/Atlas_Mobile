@@ -392,6 +392,7 @@ class MyTeamScreen extends ConsumerWidget {
   }
 
   void _confirmLeaveTeam(BuildContext context, WidgetRef ref, TeamModel team) {
+    final neuTheme = context.neuTheme;
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -405,18 +406,18 @@ class MyTeamScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Leave Team?',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 10),
               Text(
                 'Are you sure you want to depart from "${team.name}"? If you are the leader and sole member, this action will disassociate the team.',
-                style: const TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: neuTheme.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 24),
               Row(

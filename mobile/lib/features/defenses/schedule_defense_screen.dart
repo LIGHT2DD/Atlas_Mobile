@@ -97,10 +97,11 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
     final facultyAsync = ref.watch(supervisorsFutureProvider);
 
     return Scaffold(
-      backgroundColor: IosNeuColors.canvas,
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(
         title: 'Schedule Defense Hearing',
       ),
@@ -111,19 +112,19 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Defense Session Booking',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                   letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Book an oral defense venue, timeslot, and assign the faculty examination panel. The scheduling conflict engine automatically detects room and examiner clashes.',
-                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: neuTheme.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 24),
 
@@ -151,7 +152,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                 controller: _teamIdController,
                 labelText: 'Team ID or Name *',
                 hintText: 'Enter candidate Team ID',
-                prefixIcon: const Icon(TablerIcons.users, color: IosNeuColors.textSecondary),
+                prefixIcon: Icon(TablerIcons.users, color: neuTheme.textSecondary),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Team ID is required';
                   return null;
@@ -170,7 +171,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(TablerIcons.calendar_event, size: 20, color: IosNeuColors.textPrimary),
+                          Icon(TablerIcons.calendar_event, size: 20, color: neuTheme.textPrimary),
                           const SizedBox(width: 12),
                           Text(
                             _selectedDate != null
@@ -180,13 +181,13 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                               fontSize: 14,
                               fontWeight: _selectedDate != null ? FontWeight.w600 : FontWeight.w400,
                               color: _selectedDate != null
-                                  ? IosNeuColors.textPrimary
-                                  : IosNeuColors.textSecondary,
+                                  ? neuTheme.textPrimary
+                                  : neuTheme.textSecondary,
                             ),
                           ),
                         ],
                       ),
-                      const Icon(TablerIcons.chevron_down, color: IosNeuColors.textSecondary, size: 20),
+                      Icon(TablerIcons.chevron_down, color: neuTheme.textSecondary, size: 20),
                     ],
                   ),
                 ),
@@ -200,7 +201,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                       controller: _startTimeController,
                       labelText: 'Start Time *',
                       hintText: '10:00',
-                      prefixIcon: const Icon(TablerIcons.clock, color: IosNeuColors.textSecondary),
+                      prefixIcon: Icon(TablerIcons.clock, color: neuTheme.textSecondary),
                       validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
                     ),
                   ),
@@ -210,7 +211,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                       controller: _endTimeController,
                       labelText: 'End Time *',
                       hintText: '11:00',
-                      prefixIcon: const Icon(TablerIcons.clock, color: IosNeuColors.textSecondary),
+                      prefixIcon: Icon(TablerIcons.clock, color: neuTheme.textSecondary),
                       validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
                     ),
                   ),
@@ -222,7 +223,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                 controller: _roomController,
                 labelText: 'Room / Venue *',
                 hintText: 'e.g. Auditorium Hall 204 or Lab 3',
-                prefixIcon: const Icon(TablerIcons.door_enter, color: IosNeuColors.textSecondary),
+                prefixIcon: Icon(TablerIcons.door_enter, color: neuTheme.textSecondary),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Room is required';
                   return null;
@@ -231,12 +232,12 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
               const SizedBox(height: 22),
 
               // Panel Selection
-              const Text(
+              Text(
                 'Assign Examination Panel *',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 10),
@@ -255,15 +256,15 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                           checkColor: Colors.white,
                           title: Text(
                             s.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: IosNeuColors.textPrimary,
+                              color: neuTheme.textPrimary,
                             ),
                           ),
                           subtitle: Text(
                             s.email,
-                            style: const TextStyle(fontSize: 12, color: IosNeuColors.textSecondary),
+                            style: TextStyle(fontSize: 12, color: neuTheme.textSecondary),
                           ),
                           value: isSelected,
                           onChanged: (checked) {

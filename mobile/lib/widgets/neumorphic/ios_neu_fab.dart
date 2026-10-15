@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import '../../core/theme/ios_neu_theme.dart';
+import '../../core/theme/neumorphic_theme.dart';
 
 /// Minimalist iOS Neumorphic Floating Action Button
 /// 64x64 px circular button with #E3E3E3 fill, prominent soft shadows, and a clean #333333 + icon (28px).
@@ -43,22 +43,12 @@ class _IosNeuFABState extends State<IosNeuFAB> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+    final isDark = context.isDarkMode;
+
     final shadows = _isPressed
-        ? IosNeuTheme.shadowsWithDepth(1.2)
-        : [
-            const BoxShadow(
-              color: IosNeuColors.lightHighlight,
-              offset: Offset(-6, -6),
-              blurRadius: 14,
-              spreadRadius: 1,
-            ),
-            const BoxShadow(
-              color: IosNeuColors.darkShadow,
-              offset: Offset(6, 6),
-              blurRadius: 14,
-              spreadRadius: 1,
-            ),
-          ];
+        ? neuTheme.convexShadowsWithDepth(1.2)
+        : neuTheme.convexShadowsWithDepth(4.5);
 
     Widget fab = GestureDetector(
       onTapDown: _onTapDown,
@@ -71,18 +61,21 @@ class _IosNeuFABState extends State<IosNeuFAB> {
         width: widget.size,
         height: widget.size,
         decoration: BoxDecoration(
-          color: IosNeuColors.canvas,
+          color: neuTheme.baseColor,
           shape: BoxShape.circle,
           gradient: _isPressed
-              ? IosNeuTheme.concaveGradient
-              : IosNeuTheme.convexGradient,
+              ? neuTheme.concaveGradient
+              : neuTheme.convexGradient,
           boxShadow: shadows,
+          border: isDark
+              ? Border.all(color: neuTheme.darkHighlight.withValues(alpha: 0.35), width: 1.0)
+              : null,
         ),
         alignment: Alignment.center,
         child: Icon(
           widget.icon,
           size: widget.iconSize,
-          color: IosNeuColors.activePill,
+          color: isDark ? neuTheme.accentColor : IosNeuColors.activePill,
         ),
       ),
     );

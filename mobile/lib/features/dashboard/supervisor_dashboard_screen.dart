@@ -13,8 +13,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final neuTheme = context.neuTheme;
-    final authState = ref.watch(authControllerProvider);
-    final user = authState.user;
+    final user = ref.watch(authControllerProvider.select((s) => s.user));
     final requestsAsync = ref.watch(supervisorRequestsProvider);
     final teamsAsync = ref.watch(supervisedTeamsProvider);
 
@@ -91,16 +90,10 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(4),
                       child: ClipOval(
                         child: Image.asset(
-                          'asset/icon/play_store_512.png',
+                          'assets/icon/play_store_512.png',
                           width: 46,
                           height: 46,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => Image.asset(
-                            'assets/icon/play_store_512.png',
-                            width: 46,
-                            height: 46,
-                            fit: BoxFit.contain,
-                          ),
                         ),
                       ),
                     ),

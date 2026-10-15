@@ -16,16 +16,17 @@ class ProfileScreen extends ConsumerWidget {
     final user = authState.user;
     final themeMode = ref.watch(themeModeProvider);
     final isDark = themeMode == ThemeMode.dark;
+    final neuTheme = context.neuTheme;
 
     return Scaffold(
-      backgroundColor: IosNeuColors.canvas,
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(title: 'User Profile'),
       drawer: const AtlasDrawer(),
       body: user == null
-          ? const Center(
+          ? Center(
               child: Text(
                 'No active session',
-                style: TextStyle(color: IosNeuColors.textSecondary),
+                style: TextStyle(color: neuTheme.textSecondary),
               ),
             )
           : ListView(
@@ -42,29 +43,29 @@ class ProfileScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(24),
                         child: Text(
                           user.firstName.isNotEmpty ? user.firstName[0].toUpperCase() : 'A',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w900,
-                            color: IosNeuColors.textPrimary,
+                            color: neuTheme.accentColor,
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         user.fullName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
-                          color: IosNeuColors.textPrimary,
+                          color: neuTheme.textPrimary,
                           letterSpacing: -0.5,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         user.email,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: IosNeuColors.textSecondary,
+                          color: neuTheme.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -84,12 +85,12 @@ class ProfileScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Account Information',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: IosNeuColors.textPrimary,
+                          color: neuTheme.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -116,12 +117,12 @@ class ProfileScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Appearance & Theme Mode',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: IosNeuColors.textPrimary,
+                          color: neuTheme.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -133,15 +134,15 @@ class ProfileScreen extends ConsumerWidget {
                               Icon(
                                 isDark ? TablerIcons.moon : TablerIcons.sun,
                                 size: 20,
-                                color: isDark ? const Color(0xFFF6E05E) : IosNeuColors.textPrimary,
+                                color: isDark ? const Color(0xFFF6E05E) : neuTheme.accentColor,
                               ),
                               const SizedBox(width: 10),
-                              const Text(
+                              Text(
                                 'Dark Mode Theme',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: IosNeuColors.textPrimary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                             ],
@@ -160,13 +161,13 @@ class ProfileScreen extends ConsumerWidget {
                       GestureDetector(
                         onTap: () => context.push('/forgot-password'),
                         behavior: HitTestBehavior.opaque,
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
-                                Icon(TablerIcons.lock_access, size: 20, color: IosNeuColors.textPrimary),
-                                SizedBox(width: 10),
+                                Icon(TablerIcons.lock_access, size: 20, color: neuTheme.textPrimary),
+                                const SizedBox(width: 10),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -175,21 +176,21 @@ class ProfileScreen extends ConsumerWidget {
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
-                                        color: IosNeuColors.textPrimary,
+                                        color: neuTheme.textPrimary,
                                       ),
                                     ),
                                     Text(
                                       'Dispatch password reset token',
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: IosNeuColors.textSecondary,
+                                        color: neuTheme.textSecondary,
                                       ),
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                            Icon(TablerIcons.chevron_right, size: 18, color: IosNeuColors.textSecondary),
+                            Icon(TablerIcons.chevron_right, size: 18, color: neuTheme.textSecondary),
                           ],
                         ),
                       ),
@@ -213,33 +214,40 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _divider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      child: Divider(
-        color: IosNeuColors.inactiveBadge,
-        thickness: 1,
-        height: 1,
-      ),
+    return Builder(
+      builder: (context) {
+        final neuTheme = context.neuTheme;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Divider(
+            color: neuTheme.darkShadow.withValues(alpha: 0.3),
+            thickness: 1,
+            height: 1,
+          ),
+        );
+      },
     );
   }
 
   Widget _infoRow(BuildContext context, {required String label, required String value}) {
+    final neuTheme = context.neuTheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 13, color: IosNeuColors.textSecondary, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, fontWeight: FontWeight.w500),
         ),
         Text(
           value,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: IosNeuColors.textPrimary),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: neuTheme.textPrimary),
         ),
       ],
     );
   }
 
   void _confirmSignOut(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -253,18 +261,18 @@ class ProfileScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Sign Out',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 'Are you sure you want to end your ATLAS mobile session?',
-                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: neuTheme.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 24),
               Row(

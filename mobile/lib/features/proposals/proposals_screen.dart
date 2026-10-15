@@ -86,9 +86,11 @@ class _ProposalView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final proposalAsync = ref.watch(proposalFutureProvider(teamId));
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Thesis Proposal Details',
         actions: [
@@ -165,27 +167,27 @@ class _ProposalView extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(
                         proposal.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          color: neuTheme.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'Abstract & Research Objectives',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
+                          color: neuTheme.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         proposal.abstractText,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textPrimary,
+                          color: neuTheme.textPrimary,
                           height: 1.5,
                         ),
                       ),
@@ -199,25 +201,25 @@ class _ProposalView extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          Icon(TablerIcons.message_circle, size: 20, color: AppColors.accent),
-                          SizedBox(width: 8),
+                          const Icon(TablerIcons.message_circle, size: 20, color: AppColors.accent),
+                          const SizedBox(width: 8),
                           Text(
                             'Faculty Evaluation & Feedback',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: neuTheme.textPrimary,
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
                       if (proposal.reviews.isEmpty) ...[
-                        const Text(
+                        Text(
                           'No formal faculty reviews have been submitted for this proposal yet.',
-                          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                          style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
                         ),
                       ] else ...[
                         ...proposal.reviews.map((r) {
@@ -233,10 +235,10 @@ class _ProposalView extends ConsumerWidget {
                                   children: [
                                     Text(
                                       r.reviewerName,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w700,
-                                        color: IosNeuColors.textPrimary,
+                                        color: neuTheme.textPrimary,
                                       ),
                                     ),
                                     StatusBadge(status: r.decision),
@@ -245,9 +247,9 @@ class _ProposalView extends ConsumerWidget {
                                 const SizedBox(height: 6),
                                 Text(
                                   r.comments,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
-                                    color: IosNeuColors.textPrimary,
+                                    color: neuTheme.textPrimary,
                                     height: 1.4,
                                   ),
                                 ),
@@ -266,16 +268,16 @@ class _ProposalView extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          Icon(TablerIcons.history, size: 20, color: AppColors.accent),
-                          SizedBox(width: 8),
+                          const Icon(TablerIcons.history, size: 20, color: AppColors.accent),
+                          const SizedBox(width: 8),
                           Text(
                             'Version History',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: neuTheme.textPrimary,
                             ),
                           ),
                         ],
@@ -314,9 +316,9 @@ class _ProposalView extends ConsumerWidget {
                                     if (v.changeSummary != null && v.changeSummary!.isNotEmpty)
                                       Text(
                                         'Changes: ${v.changeSummary}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
-                                          color: AppColors.textSecondary,
+                                          color: neuTheme.textSecondary,
                                         ),
                                       ),
                                     Text(

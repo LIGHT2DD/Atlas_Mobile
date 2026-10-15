@@ -89,9 +89,11 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
     final rubricsAsync = ref.watch(rubricsListProvider);
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Evaluate: ${widget.teamName ?? "Team"}',
       ),
@@ -118,19 +120,19 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   'Formal Defense Scoring',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.3,
-                    color: IosNeuColors.textPrimary,
+                    color: neuTheme.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   'Score each candidate presentation criterion according to university academic standards.',
-                  style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary),
+                  style: TextStyle(fontSize: 14, color: neuTheme.textSecondary),
                 ),
                 const SizedBox(height: 20),
 
@@ -156,10 +158,10 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
                               Expanded(
                                 child: Text(
                                   r.title,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
-                                    color: IosNeuColors.textPrimary,
+                                    color: neuTheme.textPrimary,
                                   ),
                                 ),
                               ),
@@ -168,21 +170,21 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 child: Text(
                                   'Max: ${r.maxScore.toInt()} (${r.weightPercentage.toInt()}%)',
-                                  style: const TextStyle(fontSize: 11, color: IosNeuColors.textPrimary, fontWeight: FontWeight.w700),
+                                  style: TextStyle(fontSize: 11, color: neuTheme.textPrimary, fontWeight: FontWeight.w700),
                                 ),
                               ),
                             ],
                           ),
                           if (r.description != null) ...[
                             const SizedBox(height: 6),
-                            Text(r.description!, style: const TextStyle(fontSize: 13, color: IosNeuColors.textSecondary)),
+                            Text(r.description!, style: TextStyle(fontSize: 13, color: neuTheme.textSecondary)),
                           ],
                           const SizedBox(height: 14),
                           NeuTextField(
                             controller: _scoreControllers[r.id],
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             labelText: 'Score Awarded (0 - ${r.maxScore.toInt()})',
-                            prefixIcon: const Icon(TablerIcons.gauge, size: 20, color: IosNeuColors.textSecondary),
+                            prefixIcon: Icon(TablerIcons.gauge, size: 20, color: neuTheme.textSecondary),
                           ),
                         ],
                       ),

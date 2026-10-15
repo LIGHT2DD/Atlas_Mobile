@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/theme/ios_neu_theme.dart';
+import '../../core/theme/neumorphic_theme.dart';
 
 /// Minimalist iOS Neumorphic Button with tactile depress dynamics & haptics
 class IosNeuButton extends StatefulWidget {
@@ -54,6 +54,8 @@ class _IosNeuButtonState extends State<IosNeuButton> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+    final isDark = context.isDarkMode;
     final isEnabled = widget.onPressed != null && !widget.isLoading;
     final effectiveRadius = widget.borderRadius ?? BorderRadius.circular(25.0);
 
@@ -62,20 +64,20 @@ class _IosNeuButtonState extends State<IosNeuButton> {
     List<BoxShadow> shadows;
 
     if (widget.isDanger) {
-      bgColor = widget.isPrimary ? IosNeuColors.statusDanger : IosNeuColors.canvas;
-      contentColor = widget.isPrimary ? Colors.white : IosNeuColors.statusDanger;
+      bgColor = widget.isPrimary ? neuTheme.dangerColor : neuTheme.baseColor;
+      contentColor = widget.isPrimary ? Colors.white : neuTheme.dangerColor;
       shadows = _isPressed
           ? []
           : [
               BoxShadow(
-                color: IosNeuColors.statusDanger.withValues(alpha: 0.35),
+                color: neuTheme.dangerColor.withValues(alpha: isDark ? 0.45 : 0.35),
                 offset: const Offset(0, 4),
                 blurRadius: 8,
               ),
             ];
     } else if (widget.isPrimary) {
-      bgColor = IosNeuColors.activePill;
-      contentColor = Colors.white;
+      bgColor = isDark ? neuTheme.accentColor : IosNeuColors.activePill;
+      contentColor = isDark ? const Color(0xFF15181C) : Colors.white;
       shadows = _isPressed
           ? [
               BoxShadow(
@@ -86,20 +88,20 @@ class _IosNeuButtonState extends State<IosNeuButton> {
             ]
           : [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.28),
+                color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.28),
                 offset: const Offset(2, 5),
                 blurRadius: 10,
               ),
-              const BoxShadow(
-                color: Colors.white24,
-                offset: Offset(-2, -2),
+              BoxShadow(
+                color: isDark ? Colors.white12 : Colors.white24,
+                offset: const Offset(-2, -2),
                 blurRadius: 6,
               ),
             ];
     } else {
-      bgColor = IosNeuColors.canvas;
-      contentColor = IosNeuColors.textPrimary;
-      shadows = _isPressed ? IosNeuTheme.shadowsWithDepth(1.0) : IosNeuTheme.standardShadows;
+      bgColor = neuTheme.baseColor;
+      contentColor = neuTheme.textPrimary;
+      shadows = _isPressed ? neuTheme.convexShadowsWithDepth(1.0) : neuTheme.convexShadowsWithDepth(3.0);
     }
 
     Widget content;
@@ -207,12 +209,13 @@ class _IosNeuIconButtonState extends State<IosNeuIconButton> {
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.iconColor ?? IosNeuColors.textPrimary;
+    final neuTheme = context.neuTheme;
+    final color = widget.iconColor ?? neuTheme.textPrimary;
     final isEnabled = widget.onPressed != null;
 
     final List<BoxShadow> shadows = _isPressed
-        ? IosNeuTheme.shadowsWithDepth(1.0)
-        : (widget.isSunken ? const <BoxShadow>[] : IosNeuTheme.subtleShadows);
+        ? neuTheme.convexShadowsWithDepth(1.0)
+        : (widget.isSunken ? const <BoxShadow>[] : neuTheme.convexShadowsWithDepth(2.5));
 
     Widget btn = GestureDetector(
       onTapDown: _onTapDown,
@@ -226,18 +229,21 @@ class _IosNeuIconButtonState extends State<IosNeuIconButton> {
         height: widget.size,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: IosNeuColors.canvas,
+          color: neuTheme.baseColor,
           shape: widget.isCircle ? BoxShape.circle : BoxShape.rectangle,
           borderRadius: widget.isCircle ? null : BorderRadius.circular(16),
           boxShadow: shadows,
           gradient: widget.isSunken || _isPressed
-              ? IosNeuTheme.concaveGradient
-              : IosNeuTheme.convexGradient,
+              ? neuTheme.concaveGradient
+              : neuTheme.convexGradient,
+          border: neuTheme.isDark
+              ? Border.all(color: neuTheme.darkHighlight.withValues(alpha: 0.3), width: 0.8)
+              : null,
         ),
         child: Icon(
           widget.icon,
           size: widget.iconSize,
-          color: isEnabled ? color : IosNeuColors.textSecondary.withValues(alpha: 0.5),
+          color: isEnabled ? color : neuTheme.textSecondary.withValues(alpha: 0.5),
         ),
       ),
     );

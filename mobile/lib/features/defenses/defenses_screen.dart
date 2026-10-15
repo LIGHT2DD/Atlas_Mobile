@@ -24,12 +24,14 @@ class DefensesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final defensesAsync = ref.watch(defensesListProvider);
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
     final isCoordinator = user?.role.isCoordinator ?? false;
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Oral Defense Hearings',
         actions: [
@@ -93,10 +95,10 @@ class DefensesScreen extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 d.teamName,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                             ),
@@ -115,16 +117,12 @@ class DefensesScreen extends ConsumerWidget {
                         const SizedBox(height: 12),
 
                         // Time & Venue Container
-                        Container(
+                        IosNeuCard(
+                          isSunken: true,
                           padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.border),
-                          ),
                           child: Row(
                             children: [
-                              const Icon(TablerIcons.clock, size: 20, color: AppColors.primary),
+                              Icon(TablerIcons.clock, size: 20, color: neuTheme.accentColor),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Column(
@@ -132,29 +130,29 @@ class DefensesScreen extends ConsumerWidget {
                                   children: [
                                     Text(
                                       d.date != null ? '${d.date}' : 'Date TBD',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
-                                        color: AppColors.textPrimary,
+                                        color: neuTheme.textPrimary,
                                       ),
                                     ),
                                     Text(
                                       '${d.startTime} - ${d.endTime}',
-                                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                      style: TextStyle(fontSize: 12, color: neuTheme.textSecondary),
                                     ),
                                   ],
                                 ),
                               ),
-                              Container(height: 24, width: 1, color: AppColors.border),
+                              Container(height: 24, width: 1, color: neuTheme.darkShadow),
                               const SizedBox(width: 12),
-                              const Icon(TablerIcons.door_enter, size: 20, color: AppColors.accent),
+                              Icon(TablerIcons.door_enter, size: 20, color: neuTheme.accentColor),
                               const SizedBox(width: 6),
                               Text(
                                 d.room,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.primary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                             ],
@@ -163,12 +161,12 @@ class DefensesScreen extends ConsumerWidget {
                         const SizedBox(height: 12),
 
                         // Examination Panel
-                        const Text(
+                        Text(
                           'Examination Panel:',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textSecondary,
+                            color: neuTheme.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -190,17 +188,17 @@ class DefensesScreen extends ConsumerWidget {
                           IosNeuCard(
                             isSunken: true,
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(TablerIcons.star, size: 16, color: IosNeuColors.activePill),
-                                SizedBox(width: 8),
+                                const Icon(TablerIcons.star, size: 16, color: IosNeuColors.activePill),
+                                const SizedBox(width: 8),
                                 Text(
                                   'You are an assigned examiner on this panel',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color: IosNeuColors.textPrimary,
+                                    color: neuTheme.textPrimary,
                                   ),
                                 ),
                               ],

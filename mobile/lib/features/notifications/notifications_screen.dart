@@ -92,10 +92,21 @@ class NotificationsScreen extends ConsumerWidget {
                 final isUnread = !n.isRead;
 
                 return NeuContainer(
-                  depthType: isUnread ? NeuDepth.concave : NeuDepth.convex,
-                  depth: isUnread ? 2.5 : 3.0,
+                  depthType: NeuDepth.convex,
+                  depth: isUnread ? 3.5 : 2.0,
                   borderRadius: BorderRadius.circular(16),
                   padding: const EdgeInsets.all(16),
+                  border: isUnread
+                      ? Border.all(
+                          color: neuTheme.accentColor.withValues(alpha: neuTheme.isDark ? 0.5 : 0.3),
+                          width: 1.2,
+                        )
+                      : (neuTheme.isDark
+                          ? Border.all(
+                              color: neuTheme.darkHighlight.withValues(alpha: 0.25),
+                              width: 0.8,
+                            )
+                          : null),
                   onTap: () async {
                     if (isUnread) {
                       final repo = ref.read(notificationsRepositoryProvider);
@@ -110,7 +121,7 @@ class NotificationsScreen extends ConsumerWidget {
                         shape: BoxShape.circle,
                         width: 42,
                         height: 42,
-                        depthType: NeuDepth.convex,
+                        depthType: isUnread ? NeuDepth.convex : NeuDepth.flat,
                         depth: 2.5,
                         alignment: Alignment.center,
                         child: Icon(

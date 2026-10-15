@@ -21,9 +21,11 @@ class SemestersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final neuTheme = context.neuTheme;
     final semestersAsync = ref.watch(semestersListProvider);
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Academic Semesters',
         actions: [
@@ -79,10 +81,10 @@ class SemestersScreen extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 s.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                             ),
@@ -157,6 +159,7 @@ class SemestersScreen extends ConsumerWidget {
     final startController = TextEditingController();
     final endController = TextEditingController();
 
+    final neuTheme = context.neuTheme;
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.35),
@@ -171,14 +174,14 @@ class SemestersScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   'Create Academic Term',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.3,
-                    color: IosNeuColors.textPrimary,
+                    color: neuTheme.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 18),

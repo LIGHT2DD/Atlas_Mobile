@@ -13,8 +13,8 @@ class AtlasApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      precacheImage(const AssetImage('asset/icon/play_store_512.png'), context).catchError((_) {});
       precacheImage(const AssetImage('assets/icon/play_store_512.png'), context).catchError((_) {});
+      precacheImage(const AssetImage('assets/Logo.png'), context).catchError((_) {});
     });
 
     return MaterialApp.router(

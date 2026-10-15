@@ -180,5 +180,59 @@ void main() {
       expect(find.text('Sprint Progress'), findsOneWidget);
       expect(find.text('75%'), findsOneWidget);
     });
+
+    testWidgets('NeuSkeletonCard renders and pulses without exception', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: NeuSkeletonCard(height: 100),
+          ),
+        ),
+      );
+
+      expect(find.byType(NeuSkeletonCard), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 300));
+    });
+
+    testWidgets('NeuIconButton renders icon and triggers callback on tap', (WidgetTester tester) async {
+      bool iconTapped = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: NeuIconButton(
+              icon: Icons.check,
+              tooltip: 'Confirm Action',
+              onPressed: () {
+                iconTapped = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(NeuIconButton), findsOneWidget);
+      expect(find.byIcon(Icons.check), findsOneWidget);
+      await tester.tap(find.byType(NeuIconButton));
+      await tester.pump();
+      expect(iconTapped, isTrue);
+    });
+
+    testWidgets('IosNeuSegmentPill renders label and reflects selected state', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: IosNeuSegmentPill(
+              label: 'Active Filter',
+              isSelected: true,
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Active Filter'), findsOneWidget);
+      expect(find.byType(IosNeuSegmentPill), findsOneWidget);
+    });
   });
 }

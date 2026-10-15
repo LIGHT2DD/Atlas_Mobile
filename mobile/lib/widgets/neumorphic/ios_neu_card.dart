@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/theme/ios_neu_theme.dart';
+import '../../core/theme/neumorphic_theme.dart';
 
 /// Minimalist iOS Neumorphic Card / Container with continuous curved geometry
 class IosNeuCard extends StatelessWidget {
@@ -35,10 +35,12 @@ class IosNeuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+    final isDark = context.isDarkMode;
     final effectiveRadius = shape == BoxShape.circle
         ? null
         : (borderRadius ?? BorderRadius.circular(isLarge ? 32.0 : 24.0));
-    final effectiveColor = color ?? IosNeuColors.canvas;
+    final effectiveColor = color ?? neuTheme.baseColor;
 
     BoxDecoration decoration;
     if (isSunken) {
@@ -46,10 +48,10 @@ class IosNeuCard extends StatelessWidget {
         color: effectiveColor,
         shape: shape,
         borderRadius: effectiveRadius,
-        gradient: IosNeuTheme.concaveGradient,
+        gradient: neuTheme.concaveGradient,
         border: border ??
             Border.all(
-              color: IosNeuColors.darkShadow.withValues(alpha: 0.35),
+              color: neuTheme.darkShadow.withValues(alpha: isDark ? 0.35 : 0.25),
               width: 1.0,
             ),
       );
@@ -58,9 +60,15 @@ class IosNeuCard extends StatelessWidget {
         color: effectiveColor,
         shape: shape,
         borderRadius: effectiveRadius,
-        gradient: IosNeuTheme.convexGradient,
-        boxShadow: IosNeuTheme.standardShadows,
-        border: border,
+        gradient: neuTheme.convexGradient,
+        boxShadow: neuTheme.convexShadowsWithDepth(isLarge ? 4.5 : 3.5),
+        border: border ??
+            (isDark
+                ? Border.all(
+                    color: neuTheme.darkHighlight.withValues(alpha: 0.35),
+                    width: 0.8,
+                  )
+                : null),
       );
     }
 
@@ -70,7 +78,13 @@ class IosNeuCard extends StatelessWidget {
       margin: margin,
       padding: padding ?? const EdgeInsets.all(20.0),
       decoration: decoration,
-      child: child,
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: neuTheme.textPrimary),
+        child: IconTheme.merge(
+          data: IconThemeData(color: neuTheme.textPrimary),
+          child: child,
+        ),
+      ),
     );
 
     if (onTap != null) {

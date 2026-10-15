@@ -50,14 +50,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         type: NeuToastType.success,
       );
       context.go('/dashboard');
-    } else if (mounted) {
-      final err = ref.read(authControllerProvider).errorMessage ?? 'Registration failed';
-      NeuToast.show(
-        context,
-        message: err,
-        title: 'Registration Error',
-        type: NeuToastType.error,
-      );
     }
   }
 
@@ -69,8 +61,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return Scaffold(
       backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(title: 'Student Registration'),
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: SafeArea(
+          child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Form(
             key: _formKey,
@@ -78,10 +73,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                NeuContainer(
-                  depthType: NeuDepth.convex,
-                  depth: 3.0,
-                  borderRadius: BorderRadius.circular(18),
+                IosNeuCard(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,20 +103,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 24),
 
                 if (authState.errorMessage != null) ...[
-                  NeuContainer(
-                    depthType: NeuDepth.concave,
-                    borderRadius: BorderRadius.circular(14),
-                    padding: const EdgeInsets.all(14),
-                    border: Border.all(color: neuTheme.dangerColor.withValues(alpha: 0.5), width: 1.2),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: neuTheme.dangerColor.withValues(alpha: neuTheme.isDark ? 0.15 : 0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: neuTheme.dangerColor.withValues(alpha: 0.35), width: 1.0),
+                    ),
                     child: Row(
                       children: [
                         Icon(TablerIcons.alert_circle, color: neuTheme.dangerColor, size: 20),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             authState.errorMessage!,
                             style: TextStyle(color: neuTheme.dangerColor, fontSize: 13, fontWeight: FontWeight.w600),
                           ),
+                        ),
+                        GestureDetector(
+                          onTap: () => ref.read(authControllerProvider.notifier).clearError(),
+                          child: Icon(TablerIcons.x, size: 16, color: neuTheme.dangerColor.withValues(alpha: 0.8)),
                         ),
                       ],
                     ),
@@ -208,10 +206,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 28),
 
-                NeuButton(
+                IosNeuButton(
                   text: 'Complete Registration',
                   icon: TablerIcons.check,
-                  isAccent: true,
+                  isPrimary: true,
                   height: 52,
                   isLoading: authState.isLoading,
                   onPressed: authState.isLoading ? null : _handleRegister,
@@ -220,8 +218,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
           ),
         ),
-        ),
       ),
-    );
+    ),
+  ),
+);
   }
 }

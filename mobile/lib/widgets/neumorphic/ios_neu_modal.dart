@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/ios_neu_theme.dart';
+import '../../core/theme/neumorphic_theme.dart';
 
 /// Minimalist iOS Neumorphic Bottom Sheet
 class IosNeuBottomSheet extends StatelessWidget {
@@ -37,23 +37,31 @@ class IosNeuBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+    final isDark = context.isDarkMode;
+
     return Container(
       decoration: BoxDecoration(
-        color: IosNeuColors.canvas,
+        color: neuTheme.baseColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32.0)),
-        gradient: IosNeuTheme.convexGradient,
-        boxShadow: const [
+        gradient: neuTheme.convexGradient,
+        boxShadow: [
           BoxShadow(
-            color: IosNeuColors.lightHighlight,
-            offset: Offset(0, -4),
+            color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.15),
+            offset: const Offset(0, -4),
             blurRadius: 16,
           ),
           BoxShadow(
-            color: IosNeuColors.darkShadow,
-            offset: Offset(0, -2),
+            color: neuTheme.darkShadow.withValues(alpha: isDark ? 0.3 : 0.2),
+            offset: const Offset(0, -2),
             blurRadius: 10,
           ),
         ],
+        border: isDark
+            ? Border(
+                top: BorderSide(color: neuTheme.darkHighlight.withValues(alpha: 0.35), width: 1.0),
+              )
+            : null,
       ),
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -72,7 +80,7 @@ class IosNeuBottomSheet extends StatelessWidget {
                   height: 5,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: IosNeuColors.inactiveBadge,
+                    color: isDark ? neuTheme.darkHighlight : IosNeuColors.inactiveBadge,
                     borderRadius: BorderRadius.circular(2.5),
                   ),
                 ),
@@ -80,11 +88,11 @@ class IosNeuBottomSheet extends StatelessWidget {
               if (title != null) ...[
                 Text(
                   title!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.2,
-                    color: IosNeuColors.textPrimary,
+                    color: neuTheme.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -136,16 +144,22 @@ class IosNeuDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+    final isDark = context.isDarkMode;
+
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Container(
         decoration: BoxDecoration(
-          color: IosNeuColors.canvas,
+          color: neuTheme.baseColor,
           borderRadius: BorderRadius.circular(32.0),
-          gradient: IosNeuTheme.convexGradient,
-          boxShadow: IosNeuTheme.standardShadows,
+          gradient: neuTheme.convexGradient,
+          boxShadow: neuTheme.convexShadowsWithDepth(4.5),
+          border: isDark
+              ? Border.all(color: neuTheme.darkHighlight.withValues(alpha: 0.35), width: 0.8)
+              : null,
         ),
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -155,11 +169,11 @@ class IosNeuDialog extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 19,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.3,
-                color: IosNeuColors.textPrimary,
+                color: neuTheme.textPrimary,
               ),
             ),
             if (message != null) ...[
@@ -167,11 +181,11 @@ class IosNeuDialog extends StatelessWidget {
               Text(
                 message!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   height: 1.4,
-                  color: IosNeuColors.textSecondary,
+                  color: neuTheme.textSecondary,
                 ),
               ),
             ],

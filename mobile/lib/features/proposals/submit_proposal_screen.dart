@@ -108,8 +108,10 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Scaffold(
-      backgroundColor: IosNeuColors.canvas,
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(title: 'Submit Thesis Proposal'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -129,29 +131,29 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                         children: [
                           Container(
                             padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(
-                              color: IosNeuColors.activePill,
+                            decoration: BoxDecoration(
+                              color: neuTheme.accentColor,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(TablerIcons.file_description, color: Colors.white, size: 20),
                           ),
                           const SizedBox(width: 12),
-                          const Expanded(
+                          Expanded(
                             child: Text(
                               'Proposal Submission',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
-                                color: IosNeuColors.textPrimary,
+                                color: neuTheme.textPrimary,
                               ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'Submit your official research synopsis for supervisor approval. If revising, specify what changes were incorporated.',
-                        style: TextStyle(fontSize: 13, color: IosNeuColors.textSecondary, height: 1.4),
+                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
                       ),
                     ],
                   ),
@@ -162,7 +164,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                   controller: _titleController,
                   labelText: 'Research Title *',
                   hintText: 'e.g. Adaptive Federated Learning Architecture',
-                  prefixIcon: const Icon(TablerIcons.heading, color: IosNeuColors.textSecondary),
+                  prefixIcon: Icon(TablerIcons.heading, color: neuTheme.textSecondary),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Title is required';
@@ -193,17 +195,17 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                   controller: _changeSummaryController,
                   labelText: 'Revision Summary (Optional)',
                   hintText: 'e.g. Addressed supervisor comments on Section 3 methodology',
-                  prefixIcon: const Icon(TablerIcons.notes, color: IosNeuColors.textSecondary),
+                  prefixIcon: Icon(TablerIcons.notes, color: neuTheme.textSecondary),
                 ),
                 const SizedBox(height: 24),
 
                 // Recessed Dropzone Container
-                const Text(
+                Text(
                   'DOCUMENT DELIVERABLE',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: IosNeuColors.textSecondary,
+                    color: neuTheme.textSecondary,
                     letterSpacing: 0.8,
                   ),
                 ),

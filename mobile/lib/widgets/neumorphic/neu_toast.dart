@@ -7,6 +7,8 @@ enum NeuToastType { info, success, warning, error }
 
 /// Floating Neumorphic Toast Banner with dual soft shadows
 class NeuToast {
+  static OverlayEntry? _activeEntry;
+
   static void show(
     BuildContext context, {
     required String message,
@@ -14,6 +16,12 @@ class NeuToast {
     NeuToastType type = NeuToastType.info,
     Duration duration = const Duration(seconds: 4),
   }) {
+    // Dismiss any active toast immediately to avoid stacked overlay overshadow
+    if (_activeEntry != null && _activeEntry!.mounted) {
+      _activeEntry!.remove();
+      _activeEntry = null;
+    }
+
     final overlayState = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
@@ -25,16 +33,19 @@ class NeuToast {
         onDismiss: () {
           if (overlayEntry.mounted) {
             overlayEntry.remove();
+            if (_activeEntry == overlayEntry) _activeEntry = null;
           }
         },
       ),
     );
 
+    _activeEntry = overlayEntry;
     overlayState.insert(overlayEntry);
 
     Future.delayed(duration, () {
       if (overlayEntry.mounted) {
         overlayEntry.remove();
+        if (_activeEntry == overlayEntry) _activeEntry = null;
       }
     });
   }
@@ -124,10 +135,10 @@ class _NeuToastWidgetState extends State<_NeuToastWidget>
                 color: Colors.transparent,
                 child: NeuContainer(
                   depthType: NeuDepth.convex,
-                  depth: 5.0,
+                  depth: 1.8,
                   borderRadius: BorderRadius.circular(16),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  border: Border.all(color: typeColor.withValues(alpha: 0.35), width: 1.2),
+                  border: Border.all(color: typeColor.withValues(alpha: 0.25), width: 1.0),
                   child: Row(
                     children: [
                       Container(

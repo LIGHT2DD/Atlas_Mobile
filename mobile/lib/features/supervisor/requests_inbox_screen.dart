@@ -17,8 +17,10 @@ class RequestsInboxScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final requestsAsync = ref.watch(supervisorRequestsFutureProvider);
+    final neuTheme = context.neuTheme;
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Supervision Requests',
         actions: [
@@ -63,45 +65,45 @@ class RequestsInboxScreen extends ConsumerWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: AtlasCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                req.teamName,
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  req.teamName,
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: neuTheme.textPrimary,
+                                  ),
                                 ),
                               ),
-                            ),
-                            StatusBadge(status: req.status),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          req.projectTitle,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.accent,
+                              StatusBadge(status: req.status),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(TablerIcons.user, size: 14, color: AppColors.textMuted),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Requested by: ${req.requestedByName}',
-                              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                          const SizedBox(height: 4),
+                          Text(
+                            req.projectTitle,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: neuTheme.accentColor,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(TablerIcons.user, size: 14, color: neuTheme.textSecondary),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Requested by: ${req.requestedByName}',
+                                style: TextStyle(fontSize: 12, color: neuTheme.textSecondary),
+                              ),
+                            ],
+                          ),
                         const Divider(height: 20),
                         IosNeuCard(
                           isSunken: true,
@@ -109,18 +111,18 @@ class RequestsInboxScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Student Pitch Message:',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: IosNeuColors.textSecondary,
+                                  color: neuTheme.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               Text(
                                 req.message,
-                                style: const TextStyle(fontSize: 13, color: IosNeuColors.textPrimary, height: 1.4),
+                                style: TextStyle(fontSize: 13, color: neuTheme.textPrimary, height: 1.4),
                               ),
                             ],
                           ),
@@ -167,6 +169,7 @@ class RequestsInboxScreen extends ConsumerWidget {
   ) {
     final notesController = TextEditingController();
     final isAccept = action == 'accept';
+    final neuTheme = context.neuTheme;
 
     showDialog(
       context: context,
@@ -183,10 +186,10 @@ class RequestsInboxScreen extends ConsumerWidget {
             children: [
               Text(
                 isAccept ? 'Accept Supervision' : 'Decline Supervision',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -194,7 +197,7 @@ class RequestsInboxScreen extends ConsumerWidget {
                 isAccept
                     ? 'Confirm acceptance to become the official thesis supervisor for "${req.teamName}".'
                     : 'Decline this supervision request. You may optionally provide constructive rationale.',
-                style: const TextStyle(fontSize: 13, color: IosNeuColors.textSecondary),
+                style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
               ),
               const SizedBox(height: 16),
               NeuTextField(

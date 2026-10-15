@@ -87,8 +87,10 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Scaffold(
-      backgroundColor: IosNeuColors.canvas,
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(
         title: 'New Milestone Configuration',
       ),
@@ -99,19 +101,19 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Academic Deliverable Schedule',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                   letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Define institutional deliverables, point weightages, and strict submission cutoff dates for the current semester.',
-                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: neuTheme.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 24),
 
@@ -131,7 +133,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                 controller: _titleController,
                 labelText: 'Milestone Title *',
                 hintText: 'e.g. Midterm Progress & Architecture Evaluation',
-                prefixIcon: const Icon(TablerIcons.flag, color: IosNeuColors.textSecondary),
+                prefixIcon: Icon(TablerIcons.flag, color: neuTheme.textSecondary),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return 'Milestone title is required';
@@ -160,7 +162,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(TablerIcons.calendar_event, size: 20, color: IosNeuColors.textPrimary),
+                          Icon(TablerIcons.calendar_event, size: 20, color: neuTheme.textPrimary),
                           const SizedBox(width: 12),
                           Text(
                             _selectedDueDate != null
@@ -170,13 +172,13 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                               fontSize: 14,
                               fontWeight: _selectedDueDate != null ? FontWeight.w600 : FontWeight.w400,
                               color: _selectedDueDate != null
-                                  ? IosNeuColors.textPrimary
-                                  : IosNeuColors.textSecondary,
+                                  ? neuTheme.textPrimary
+                                  : neuTheme.textSecondary,
                             ),
                           ),
                         ],
                       ),
-                      const Icon(TablerIcons.chevron_down, color: IosNeuColors.textSecondary, size: 20),
+                      Icon(TablerIcons.chevron_down, color: neuTheme.textSecondary, size: 20),
                     ],
                   ),
                 ),
@@ -190,7 +192,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                       controller: _scoreController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       labelText: 'Max Score *',
-                      prefixIcon: const Icon(TablerIcons.numbers, color: IosNeuColors.textSecondary),
+                      prefixIcon: Icon(TablerIcons.numbers, color: neuTheme.textSecondary),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) return 'Required';
                         if (double.tryParse(val.trim()) == null) return 'Invalid';
@@ -204,7 +206,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                       controller: _weightController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       labelText: 'Weight (%) *',
-                      prefixIcon: const Icon(TablerIcons.percentage, color: IosNeuColors.textSecondary),
+                      prefixIcon: Icon(TablerIcons.percentage, color: neuTheme.textSecondary),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) return 'Required';
                         if (double.tryParse(val.trim()) == null) return 'Invalid';

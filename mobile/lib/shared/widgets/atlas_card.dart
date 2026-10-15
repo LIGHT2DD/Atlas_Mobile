@@ -24,14 +24,16 @@ class AtlasCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NeuContainer(
-      depthType: depthType,
-      depth: depth,
-      borderRadius: borderRadius ?? BorderRadius.circular(24),
-      color: color,
-      padding: padding ?? const EdgeInsets.all(20),
-      onTap: onTap,
-      child: child,
+    return RepaintBoundary(
+      child: NeuContainer(
+        depthType: depthType,
+        depth: depth,
+        borderRadius: borderRadius ?? BorderRadius.circular(24),
+        color: color,
+        padding: padding ?? const EdgeInsets.all(20),
+        onTap: onTap,
+        child: child,
+      ),
     );
   }
 }

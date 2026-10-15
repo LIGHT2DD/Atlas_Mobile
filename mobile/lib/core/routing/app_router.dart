@@ -41,7 +41,12 @@ class RouterNotifier extends ChangeNotifier {
   RouterNotifier(this._ref) {
     _ref.listen<AuthState>(
       authControllerProvider,
-      (previous, next) => notifyListeners(),
+      (previous, next) {
+        if (previous?.isAuthenticated != next.isAuthenticated ||
+            previous?.isInitialized != next.isInitialized) {
+          notifyListeners();
+        }
+      },
     );
   }
 }

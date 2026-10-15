@@ -74,8 +74,10 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Scaffold(
-      backgroundColor: IosNeuColors.canvas,
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(
         title: 'Grade Deliverable',
       ),
@@ -93,16 +95,16 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
                   children: [
                     Text(
                       widget.submissionTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: IosNeuColors.textPrimary,
+                        color: neuTheme.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       'Maximum points available: ${widget.maxScore.toInt()} pts',
-                      style: const TextStyle(fontSize: 13, color: IosNeuColors.textSecondary),
+                      style: TextStyle(fontSize: 13, color: neuTheme.textSecondary),
                     ),
                   ],
                 ),
@@ -115,7 +117,7 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
                   padding: const EdgeInsets.all(14),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(color: AppColors.error, fontSize: 13),
+                    style: TextStyle(color: neuTheme.dangerColor, fontSize: 13),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -126,7 +128,7 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 labelText: 'Points Awarded (0 - ${widget.maxScore.toInt()}) *',
                 hintText: 'e.g. 88.5',
-                prefixIcon: const Icon(TablerIcons.award, color: IosNeuColors.textSecondary),
+                prefixIcon: Icon(TablerIcons.award, color: neuTheme.textSecondary),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return 'Score is required';

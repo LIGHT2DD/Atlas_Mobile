@@ -52,6 +52,8 @@ class NeumorphicThemeData {
   final Offset darkOffset;
   final double blurRadius;
 
+  Color get darkHighlight => highlightShadow;
+
   const NeumorphicThemeData({
     required this.isDark,
     required this.baseColor,
@@ -103,12 +105,12 @@ class NeumorphicThemeData {
   /// Generate dual BoxShadow for convex / extruded surfaces
   List<BoxShadow> get convexShadows => [
         BoxShadow(
-          color: highlightShadow.withValues(alpha: isDark ? 0.35 : 0.9),
+          color: highlightShadow.withValues(alpha: isDark ? 0.25 : 0.85),
           offset: highlightOffset,
           blurRadius: blurRadius,
         ),
         BoxShadow(
-          color: darkShadow.withValues(alpha: isDark ? 0.65 : 0.6),
+          color: darkShadow.withValues(alpha: isDark ? 0.35 : 0.22),
           offset: darkOffset,
           blurRadius: blurRadius,
         ),
@@ -117,12 +119,12 @@ class NeumorphicThemeData {
   /// Generate dual BoxShadow with customized depth multiplier
   List<BoxShadow> convexShadowsWithDepth(double depth) => [
         BoxShadow(
-          color: highlightShadow.withValues(alpha: isDark ? 0.35 : 0.9),
+          color: highlightShadow.withValues(alpha: isDark ? 0.25 : 0.85),
           offset: highlightOffset * (depth / 4.0),
           blurRadius: blurRadius * (depth / 4.0),
         ),
         BoxShadow(
-          color: darkShadow.withValues(alpha: isDark ? 0.65 : 0.6),
+          color: darkShadow.withValues(alpha: isDark ? 0.35 : 0.22),
           offset: darkOffset * (depth / 4.0),
           blurRadius: blurRadius * (depth / 4.0),
         ),
@@ -133,9 +135,9 @@ class NeumorphicThemeData {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          darkShadow.withValues(alpha: isDark ? 0.45 : 0.35),
+          darkShadow.withValues(alpha: isDark ? 0.20 : 0.10),
           baseColor,
-          highlightShadow.withValues(alpha: isDark ? 0.2 : 0.6),
+          highlightShadow.withValues(alpha: isDark ? 0.12 : 0.45),
         ],
         stops: const [0.0, 0.5, 1.0],
       );

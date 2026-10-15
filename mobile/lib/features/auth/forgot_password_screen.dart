@@ -61,8 +61,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Scaffold(
-      backgroundColor: IosNeuColors.canvas,
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(title: 'Password Recovery'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -74,25 +76,25 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 child: IosNeuCard(
                   shape: BoxShape.circle,
                   padding: const EdgeInsets.all(22),
-                  child: const Icon(TablerIcons.lock_access, size: 36, color: IosNeuColors.textPrimary),
+                  child: Icon(TablerIcons.lock_access, size: 36, color: neuTheme.accentColor),
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Reset Your Password',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
-                  color: IosNeuColors.textPrimary,
+                  color: neuTheme.textPrimary,
                   letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Enter the institutional email associated with your ATLAS account to receive a secure recovery token.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: neuTheme.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 32),
 
@@ -101,7 +103,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 labelText: 'Institutional Email',
                 hintText: 'name@atlas.edu',
                 keyboardType: TextInputType.emailAddress,
-                prefixIcon: const Icon(TablerIcons.mail, size: 20, color: IosNeuColors.textSecondary),
+                prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),
               ),
               const SizedBox(height: 28),
 

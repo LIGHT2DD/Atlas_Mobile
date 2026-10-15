@@ -32,9 +32,11 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
     final logsAsync = ref.watch(auditLogsFutureProvider);
 
     return Scaffold(
+      backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
         title: 'Institutional Audit Logs',
         actions: [
@@ -121,7 +123,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                                 child: Icon(
                                   _getActionIcon(log.action),
                                   size: 19,
-                                  color: IosNeuColors.textPrimary,
+                                  color: neuTheme.textPrimary,
                                 ),
                               ),
                               const SizedBox(width: 14),
@@ -134,19 +136,19 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                                       children: [
                                         Text(
                                           log.action.toUpperCase(),
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w800,
                                             letterSpacing: 0.2,
-                                            color: IosNeuColors.textPrimary,
+                                            color: neuTheme.textPrimary,
                                           ),
                                         ),
                                         if (log.createdAt != null)
                                           Text(
                                             log.createdAt!,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 11,
-                                              color: IosNeuColors.textSecondary,
+                                              color: neuTheme.textSecondary,
                                             ),
                                           ),
                                       ],
@@ -154,19 +156,19 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                                     const SizedBox(height: 4),
                                     Text(
                                       'By: ${log.userName} • ${log.resourceType}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
-                                        color: IosNeuColors.textPrimary,
+                                        color: neuTheme.textPrimary,
                                       ),
                                     ),
                                     if (log.details != null && log.details!.isNotEmpty) ...[
                                       const SizedBox(height: 3),
                                       Text(
                                         log.details!,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
-                                          color: IosNeuColors.textSecondary,
+                                          color: neuTheme.textSecondary,
                                         ),
                                       ),
                                     ],

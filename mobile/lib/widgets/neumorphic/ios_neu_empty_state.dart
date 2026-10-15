@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/ios_neu_theme.dart';
+import '../../core/theme/neumorphic_theme.dart';
 import 'ios_neu_button.dart';
 
 /// Minimalist iOS Neumorphic Empty State
@@ -31,6 +31,9 @@ class IosNeuEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+    final isDark = context.isDarkMode;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 40.0),
@@ -43,27 +46,30 @@ class IosNeuEmptyState extends StatelessWidget {
               width: 84.0,
               height: 84.0,
               decoration: BoxDecoration(
-                color: IosNeuColors.canvas,
+                color: neuTheme.baseColor,
                 shape: BoxShape.circle,
-                gradient: IosNeuTheme.convexGradient,
-                boxShadow: IosNeuTheme.standardShadows,
+                gradient: neuTheme.convexGradient,
+                boxShadow: neuTheme.convexShadowsWithDepth(3.5),
+                border: isDark
+                    ? Border.all(color: neuTheme.darkHighlight.withValues(alpha: 0.35), width: 1.0)
+                    : null,
               ),
               alignment: Alignment.center,
               child: Icon(
                 icon,
                 size: 38.0,
-                color: IosNeuColors.activePill,
+                color: isDark ? neuTheme.accentColor : IosNeuColors.activePill,
               ),
             ),
             const SizedBox(height: 24),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.3,
-                color: IosNeuColors.textPrimary,
+                color: neuTheme.textPrimary,
               ),
             ),
             if (_description.isNotEmpty) ...[
@@ -71,11 +77,11 @@ class IosNeuEmptyState extends StatelessWidget {
               Text(
                 _description,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   height: 1.45,
-                  color: IosNeuColors.textSecondary,
+                  color: neuTheme.textSecondary,
                 ),
               ),
             ],

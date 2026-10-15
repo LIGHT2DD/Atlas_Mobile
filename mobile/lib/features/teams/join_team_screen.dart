@@ -56,8 +56,10 @@ class _JoinTeamScreenState extends ConsumerState<JoinTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final neuTheme = context.neuTheme;
+
     return Scaffold(
-      backgroundColor: IosNeuColors.canvas,
+      backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(title: 'Join Thesis Team'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -77,29 +79,29 @@ class _JoinTeamScreenState extends ConsumerState<JoinTeamScreen> {
                         children: [
                           Container(
                             padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(
-                              color: IosNeuColors.activePill,
+                            decoration: BoxDecoration(
+                              color: neuTheme.accentColor,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(TablerIcons.link, color: Colors.white, size: 20),
                           ),
                           const SizedBox(width: 12),
-                          const Expanded(
+                          Expanded(
                             child: Text(
                               'Enter Invitation Code',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
-                                color: IosNeuColors.textPrimary,
+                                color: neuTheme.textPrimary,
                               ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'Enter the 6-character invitation code provided by your team leader to join their registered thesis group.',
-                        style: TextStyle(fontSize: 13, color: IosNeuColors.textSecondary, height: 1.4),
+                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
                       ),
                     ],
                   ),
@@ -110,7 +112,7 @@ class _JoinTeamScreenState extends ConsumerState<JoinTeamScreen> {
                   controller: _codeController,
                   labelText: 'Invitation Code',
                   hintText: 'e.g. ABC123',
-                  prefixIcon: const Icon(TablerIcons.key, color: IosNeuColors.textSecondary),
+                  prefixIcon: Icon(TablerIcons.key, color: neuTheme.textSecondary),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Please enter the invite code';

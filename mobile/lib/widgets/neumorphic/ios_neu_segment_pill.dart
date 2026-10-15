@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/theme/ios_neu_theme.dart';
+import '../../core/theme/neumorphic_theme.dart';
 
 /// Minimalist iOS Neumorphic Segment Filter Pill
 class IosNeuSegmentPill extends StatelessWidget {
@@ -21,20 +21,31 @@ class IosNeuSegmentPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isSelected ? IosNeuColors.activePill : IosNeuColors.canvas;
-    final textColor = isSelected ? Colors.white : IosNeuColors.textPrimary;
-    final badgeBg = isSelected ? IosNeuColors.activeBadge : IosNeuColors.inactiveBadge;
-    final badgeTextColor = isSelected ? Colors.white : IosNeuColors.textPrimary;
+    final neuTheme = context.neuTheme;
+    final isDark = context.isDarkMode;
+
+    final bgColor = isSelected
+        ? (isDark ? neuTheme.accentColor : IosNeuColors.activePill)
+        : neuTheme.baseColor;
+    final textColor = isSelected
+        ? (isDark ? const Color(0xFF15181C) : Colors.white)
+        : neuTheme.textPrimary;
+    final badgeBg = isSelected
+        ? (isDark ? const Color(0xFF2B3037) : IosNeuColors.activeBadge)
+        : (isDark ? neuTheme.darkHighlight : IosNeuColors.inactiveBadge);
+    final badgeTextColor = isSelected
+        ? (isDark ? Colors.white : Colors.white)
+        : neuTheme.textPrimary;
 
     final shadows = isSelected
         ? [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.25),
+              color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.25),
               offset: const Offset(2, 4),
               blurRadius: 8,
             ),
           ]
-        : IosNeuTheme.subtleShadows;
+        : neuTheme.convexShadowsWithDepth(2.0);
 
     return GestureDetector(
       onTap: () {

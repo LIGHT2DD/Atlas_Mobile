@@ -86,16 +86,10 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(4),
                       child: ClipOval(
                         child: Image.asset(
-                          'asset/icon/play_store_512.png',
+                          'assets/icon/play_store_512.png',
                           width: 46,
                           height: 46,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => Image.asset(
-                            'assets/icon/play_store_512.png',
-                            width: 46,
-                            height: 46,
-                            fit: BoxFit.contain,
-                          ),
                         ),
                       ),
                     ),
@@ -117,12 +111,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
               const SizedBox(height: 14),
 
               reportAsync.when(
-                loading: () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                loading: () => const NeuSkeletonCard(height: 120),
                 error: (e, _) => NeuContainer(
                   depthType: NeuDepth.concave,
                   borderRadius: BorderRadius.circular(16),
