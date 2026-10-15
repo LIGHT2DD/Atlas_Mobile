@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     PYTHON_ENV: str = config("PYTHON_ENV")
     SECRET_KEY: str = config("SECRET_KEY")
     ALGORITHM: str = config("ALGORITHM")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = config("ACCESS_TOKEN_EXPIRE_MINUTES")
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = config("REFRESH_TOKEN_EXPIRE_MINUTES")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = config("ACCESS_TOKEN_EXPIRE_MINUTES", default=4320, cast=int)
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = config("REFRESH_TOKEN_EXPIRE_MINUTES", default=43200, cast=int)
     # ALLOWED_ORIGINS: list = config("ALLOWED_ORIGINS", cast=lambda v: [s.strip() for s in v.split(',')])
     # ALLOWED_ORIGINS: list = [origin.strip() for origin in config('ALLOWED_ORIGINS').split(',')]
 

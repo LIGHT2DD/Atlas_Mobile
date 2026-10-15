@@ -54,15 +54,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _handleGoogleSignIn() {
-    NeuToast.show(
-      context,
-      message: 'Redirecting to University Google OAuth Single Sign-On...',
-      title: 'Google Sign-In',
-      type: NeuToastType.info,
-    );
-  }
-
   void _quickFill(String email, String password) {
     setState(() {
       _emailController.text = email;
@@ -263,16 +254,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         height: 52,
                         isLoading: authState.isLoading,
                         onPressed: authState.isLoading ? null : _handleLogin,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Tactile Google OAuth Button
-                      NeuButton(
-                        text: 'Continue with Google',
-                        icon: TablerIcons.brand_google,
-                        height: 50,
-                        depth: 3.5,
-                        onPressed: authState.isLoading ? null : _handleGoogleSignIn,
                       ),
                       const SizedBox(height: 24),
 

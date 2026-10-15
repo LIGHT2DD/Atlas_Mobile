@@ -180,10 +180,11 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   void onSessionExpired() {
-    state = const AuthState(
+    final wasAuthenticated = state.isAuthenticated;
+    state = AuthState(
       isInitialized: true,
       isAuthenticated: false,
-      errorMessage: 'Your session has expired. Please sign in again.',
+      errorMessage: wasAuthenticated ? 'Your session has expired. Please sign in again.' : null,
     );
   }
 
