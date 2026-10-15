@@ -1,4 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final secureStorageProvider = Provider<SecureStorageService>((ref) {
+  return SecureStorageService();
+});
 
 class SecureStorageService {
   final FlutterSecureStorage _storage;
@@ -11,6 +16,7 @@ class SecureStorageService {
   static const _keyRefreshToken = 'atlas_refresh_token';
   static const _keyUserId = 'atlas_user_id';
   static const _keyUserRole = 'atlas_user_role';
+  static const _keyThemeMode = 'atlas_theme_mode';
 
   Future<void> saveTokens({required String accessToken, required String refreshToken}) async {
     _memoryFallback[_keyAccessToken] = accessToken;
@@ -59,6 +65,21 @@ class SecureStorageService {
       return await _storage.read(key: _keyUserId) ?? _memoryFallback[_keyUserId];
     } catch (_) {
       return _memoryFallback[_keyUserId];
+    }
+  }
+
+  Future<void> saveThemeMode(String mode) async {
+    _memoryFallback[_keyThemeMode] = mode;
+    try {
+      await _storage.write(key: _keyThemeMode, value: mode);
+    } catch (_) {}
+  }
+
+  Future<String?> getThemeMode() async {
+    try {
+      return await _storage.read(key: _keyThemeMode) ?? _memoryFallback[_keyThemeMode];
+    } catch (_) {
+      return _memoryFallback[_keyThemeMode];
     }
   }
 

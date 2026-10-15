@@ -4,10 +4,9 @@ import '../../core/storage/secure_storage.dart';
 import '../../shared/models/user_model.dart';
 import 'auth_repository.dart';
 
+export '../../core/storage/secure_storage.dart' show secureStorageProvider;
+
 // Providers
-final secureStorageProvider = Provider<SecureStorageService>((ref) {
-  return SecureStorageService();
-});
 
 final apiClientProvider = Provider<ApiClient>((ref) {
   final storage = ref.watch(secureStorageProvider);

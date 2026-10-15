@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../storage/secure_storage.dart';
 
 /// Neumorphism Color Palette & Theme Tokens
 /// Background and surface colors are identical so elements appear
@@ -150,23 +151,54 @@ class NeumorphicThemeData {
       );
 }
 
-/// Global ThemeMode Riverpod Notifier for Light/Dark toggling
+/// Global ThemeMode Riverpod Notifier for Light/Dark toggling with SecureStorage persistence
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
-  ThemeModeNotifier() : super(ThemeMode.light);
+  final SecureStorageService? _storage;
+
+  ThemeModeNotifier([this._storage]) : super(ThemeMode.light) {
+    _loadSavedTheme();
+  }
+
+  Future<void> _loadSavedTheme() async {
+    if (_storage == null) return;
+    try {
+      final saved = await _storage.getThemeMode();
+      if (saved == 'dark') {
+        state = ThemeMode.dark;
+      } else if (saved == 'light') {
+        state = ThemeMode.light;
+      } else if (saved == 'system') {
+        state = ThemeMode.system;
+      }
+    } catch (_) {}
+  }
 
   void toggleTheme() {
-    state = state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    final next = state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    setTheme(next);
   }
 
   void setTheme(ThemeMode mode) {
     state = mode;
+    _persistTheme(mode);
+  }
+
+  void _persistTheme(ThemeMode mode) {
+    if (_storage == null) return;
+    final value = mode == ThemeMode.dark
+        ? 'dark'
+        : mode == ThemeMode.light
+            ? 'light'
+            : 'system';
+    _storage.saveThemeMode(value);
   }
 
   bool get isDarkMode => state == ThemeMode.dark;
 }
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
-  return ThemeModeNotifier();
+  final storage = ref.watch(secureStorageProvider);
+  return ThemeModeNotifier(storage);
 });
 
 /// Context extension for quick neumorphic theme resolution in any build method
