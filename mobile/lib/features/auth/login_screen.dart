@@ -114,15 +114,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Center(
                         child: NeuContainer(
                           shape: BoxShape.circle,
-                          width: 80,
-                          height: 80,
+                          width: 88,
+                          height: 88,
                           depthType: NeuDepth.convex,
                           depth: 4.5,
                           alignment: Alignment.center,
-                          child: Icon(
-                            TablerIcons.school,
-                            color: neuTheme.accentColor,
-                            size: 40,
+                          padding: const EdgeInsets.all(6),
+                          child: ClipOval(
+                            child: Image.asset(
+                              'asset/icon/play_store_512.png',
+                              width: 76,
+                              height: 76,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, _, _) => Image.asset(
+                                'assets/icon/play_store_512.png',
+                                width: 76,
+                                height: 76,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           ),
                         ),
                       ),

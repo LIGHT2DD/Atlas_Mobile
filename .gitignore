@@ -169,6 +169,8 @@ serviceAccount.json
 .history
 *.db
 *.db-journal
+*.db-wal
+*.db-shm
 alembic/versions/*.py
 
 # OS Artifacts

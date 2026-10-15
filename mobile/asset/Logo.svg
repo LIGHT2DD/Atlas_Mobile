@@ -1,0 +1,76 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E6EBF2"/>
+      <stop offset="100%" stop-color="#D8DFE8"/>
+    </linearGradient>
+
+    <!-- Extruded Outer Card Shadow -->
+    <filter id="neuExtrude" x="40" y="40" width="944" height="944" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dx="28" dy="28"/>
+      <feGaussianBlur stdDeviation="32"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.639 0 0 0 0 0.694 0 0 0 0 0.776 0 0 0 0.65 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="darkShadow"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dx="-28" dy="-28"/>
+      <feGaussianBlur stdDeviation="32"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0"/>
+      <feBlend mode="normal" in2="darkShadow" result="lightShadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="lightShadow" result="shape"/>
+    </filter>
+
+    <!-- Sunken/Concave Inner Well Gradient -->
+    <linearGradient id="neuConcave" x1="240" y1="240" x2="784" y2="784" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#BEC8D6"/>
+      <stop offset="45%" stop-color="#E0E5EC"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+
+    <!-- Indigo Accent Gradient for the Atlas "A" Compass -->
+    <linearGradient id="indigoGrad" x1="350" y1="260" x2="680" y2="740" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6B8AFF"/>
+      <stop offset="100%" stop-color="#3B5BDB"/>
+    </linearGradient>
+
+    <!-- Accent Glow Filter -->
+    <filter id="accentGlow" x="250" y="200" width="524" height="624" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="12" dy="16" stdDeviation="20" flood-color="#4A6CF7" flood-opacity="0.38"/>
+      <feDropShadow dx="-8" dy="-8" stdDeviation="14" flood-color="#FFFFFF" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+
+  <!-- Full Bleed Background (For Android Adaptive Icon compatibility) -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bgGrad)"/>
+
+  <!-- Raised Neumorphic Squircle Plate -->
+  <g filter="url(#neuExtrude)">
+    <rect x="140" y="140" width="744" height="744" rx="180" fill="#E0E5EC"/>
+    <rect x="142" y="142" width="740" height="740" rx="178" stroke="#FFFFFF" stroke-opacity="0.65" stroke-width="4"/>
+  </g>
+
+  <!-- Recessed / Carved-In Circular Compass Well -->
+  <circle cx="512" cy="512" r="268" fill="url(#neuConcave)"/>
+  <circle cx="512" cy="512" r="244" fill="#E0E5EC"/>
+
+  <!-- Subtle Neumorphic Cardinal Tick Marks -->
+  <rect x="506" y="286" width="12" height="28" rx="6" fill="#A3B1C6"/>
+  <rect x="506" y="710" width="12" height="28" rx="6" fill="#A3B1C6"/>
+  <rect x="286" y="506" width="28" height="12" rx="6" fill="#A3B1C6"/>
+  <rect x="710" y="506" width="28" height="12" rx="6" fill="#A3B1C6"/>
+
+  <!-- Orbital Globe Ring -->
+  <ellipse cx="512" cy="530" rx="195" ry="68" transform="rotate(-22 512 530)" stroke="#A3B1C6" stroke-width="10" stroke-linecap="round" stroke-dasharray="260 140"/>
+
+  <!-- Extruded Indigo "A" / Compass Needle Emblem -->
+  <g filter="url(#accentGlow)">
+    <path d="M512 290 C522 290 530 296 535 305 L672 645 C678 660 663 676 648 669 L512 602 L376 669 C361 676 346 660 352 645 L489 305 C494 296 502 290 512 290 Z" fill="url(#indigoGrad)"/>
+    <!-- Inner Cutout of the "A" -->
+    <path d="M512 405 L446 565 L512 534 L578 565 L512 405 Z" fill="#E0E5EC"/>
+  </g>
+
+  <!-- Center Raised Pivot Dot -->
+  <circle cx="512" cy="502" r="16" fill="#FFFFFF"/>
+</svg>
