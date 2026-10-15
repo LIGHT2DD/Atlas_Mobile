@@ -112,15 +112,25 @@ class NotificationsRepository {
   Future<List<NotificationModel>> getNotifications() async {
     try {
       final res = await _client.dio.get('${ApiConfig.apiMobileV1}/notifications');
-      final list = res.data['data'] as List? ?? [];
+      final dynamic rawData = res.data['data'];
+      final List list;
+      if (rawData is List) {
+        list = rawData;
+      } else if (rawData is Map && rawData['notifications'] is List) {
+        list = rawData['notifications'] as List;
+      } else {
+        list = [];
+      }
       return list
           .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
       final token = await _client.storage.getAccessToken();
-      final isNetwork = e.type == DioExceptionType.connectionTimeout ||
+      final isNetwork = e.response == null ||
+          e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout ||
           e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.unknown ||
           e.response?.statusCode == 404;
       if ((token != null && token.startsWith('demo_token_')) || isNetwork) {
         return _resolveDemoNotifications();

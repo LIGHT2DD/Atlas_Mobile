@@ -19,11 +19,11 @@ class NotificationModel {
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
-      id: json['id'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
       title: json['title'] as String?,
-      content: json['content'] as String? ?? '',
+      content: json['content']?.toString() ?? '',
       type: json['type'] as String? ?? 'system',
-      isRead: json['is_read'] as bool? ?? false,
+      isRead: json['is_read'] == true || json['is_read'] == 1,
       link: json['link'] as String?,
       createdAt: json['created_at'] as String?,
     );

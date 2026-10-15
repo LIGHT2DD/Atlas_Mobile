@@ -230,6 +230,15 @@ void main() {
       expect(notif.title, 'Proposal Approved');
       expect(notif.isRead, isFalse);
       expect(notif.type, 'proposal');
+
+      final notifSqlite = NotificationModel.fromJson({
+        'id': 'nt-2',
+        'title': 'Graded',
+        'content': 'Milestone scored',
+        'type': 'grade',
+        'is_read': 1,
+      });
+      expect(notifSqlite.isRead, isTrue);
     });
 
     test('SupervisorRequestItem parsing handles full and null fields gracefully', () {

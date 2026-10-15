@@ -104,8 +104,21 @@
                 </div>
                 <div class="flex flex-col min-w-0 sidebar-label">
                     <span class="text-sm font-semibold text-secondary-900 truncate">{{ request.state.current_user.first_name }} {{ request.state.current_user.last_name }}</span>
-                    <span class="text-xs text-secondary-400 capitalize">{{ request.state.current_user.role }}</span>
                 </div>
+            </div>
+
+            <!-- About ATLAS Card -->
+            <div class="sidebar-label px-3 py-2.5 mb-2 rounded-lg bg-primary-50/70 border border-primary-100 text-xs transition-all">
+                <div class="flex items-center gap-1.5 font-bold text-primary mb-1">
+                    <i class="fa-solid fa-circle-info text-[11px]"></i>
+                    <span class="tracking-wider uppercase text-[10px]">About ATLAS</span>
+                </div>
+                <p class="font-semibold text-secondary-800 leading-tight mb-1 text-[11px]">
+                    Academic Thesis Lifecycle & Assessment Suite
+                </p>
+                <p class="text-[10px] text-secondary-500 leading-snug">
+                    Centralized platform coordinating thesis proposals, milestone progress, oral defenses, and rubric assessments.
+                </p>
             </div>
             {% endif %}
             

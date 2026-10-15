@@ -23,144 +23,138 @@ class AtlasDrawer extends ConsumerWidget {
       child: SafeArea(
         child: Column(
           children: [
-            // Neumorphic Header Card
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: NeuContainer(
-                depthType: NeuDepth.convex,
-                depth: 3.5,
-                borderRadius: BorderRadius.circular(20),
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        NeuContainer(
-                          shape: BoxShape.circle,
-                          width: 52,
-                          height: 52,
-                          depthType: NeuDepth.convex,
-                          depth: 3.0,
-                          alignment: Alignment.center,
-                          child: Text(
-                            user != null && user.firstName.isNotEmpty
-                                ? user.firstName[0].toUpperCase()
-                                : 'A',
-                            style: TextStyle(
-                              color: neuTheme.accentColor,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                        NeuIconButton(
-                          icon: isDark ? TablerIcons.sun : TablerIcons.moon,
-                          size: 38,
-                          iconSize: 18,
-                          tooltip: isDark ? 'Light Mode' : 'Dark Mode',
-                          iconColor: isDark ? const Color(0xFFF6E05E) : neuTheme.accentColor,
-                          onPressed: () {
-                            ref.read(themeModeProvider.notifier).toggleTheme();
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      user?.fullName ?? 'ATLAS User',
-                      style: TextStyle(
-                        color: neuTheme.textPrimary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      user?.email ?? '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: neuTheme.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    NeuBadge.fromStatus(role.name),
-                  ],
-                ),
-              ),
-            ),
-
-            // Compact "About ATLAS" Card
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: NeuContainer(
-                depthType: NeuDepth.convex,
-                depth: 2.0,
-                borderRadius: BorderRadius.circular(16),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        NeuContainer(
-                          shape: BoxShape.circle,
-                          width: 24,
-                          height: 24,
-                          depthType: NeuDepth.convex,
-                          depth: 1.5,
-                          alignment: Alignment.center,
-                          child: Icon(
-                            TablerIcons.info_circle,
-                            size: 14,
-                            color: neuTheme.accentColor,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'ABOUT ATLAS',
-                          style: TextStyle(
-                            color: neuTheme.accentColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Academic Thesis Lifecycle & Assessment Suite',
-                      style: TextStyle(
-                        color: neuTheme.textPrimary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        height: 1.25,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'A centralized academic platform coordinating thesis proposals, milestone progress, oral defense hearings, and rubric evaluations for students, supervisors, and coordinators.',
-                      style: TextStyle(
-                        color: neuTheme.textSecondary,
-                        fontSize: 11,
-                        height: 1.35,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Navigation List
+            // Scrollable drawer body containing Header, About ATLAS, and Navigation Items
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 children: [
+                  // Neumorphic Header Card
+                  NeuContainer(
+                    depthType: NeuDepth.convex,
+                    depth: 3.5,
+                    borderRadius: BorderRadius.circular(20),
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            NeuContainer(
+                              shape: BoxShape.circle,
+                              width: 52,
+                              height: 52,
+                              depthType: NeuDepth.convex,
+                              depth: 3.0,
+                              alignment: Alignment.center,
+                              child: Text(
+                                user != null && user.firstName.isNotEmpty
+                                    ? user.firstName[0].toUpperCase()
+                                    : 'A',
+                                style: TextStyle(
+                                  color: neuTheme.accentColor,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            NeuIconButton(
+                              icon: isDark ? TablerIcons.sun : TablerIcons.moon,
+                              size: 38,
+                              iconSize: 18,
+                              tooltip: isDark ? 'Light Mode' : 'Dark Mode',
+                              iconColor: isDark ? const Color(0xFFF6E05E) : neuTheme.accentColor,
+                              onPressed: () {
+                                ref.read(themeModeProvider.notifier).toggleTheme();
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          user?.fullName ?? 'ATLAS User',
+                          style: TextStyle(
+                            color: neuTheme.textPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          user?.email ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: neuTheme.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        NeuBadge.fromStatus(role.name),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Compact "About ATLAS" Card
+                  NeuContainer(
+                    depthType: NeuDepth.convex,
+                    depth: 2.0,
+                    borderRadius: BorderRadius.circular(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            NeuContainer(
+                              shape: BoxShape.circle,
+                              width: 24,
+                              height: 24,
+                              depthType: NeuDepth.convex,
+                              depth: 1.5,
+                              alignment: Alignment.center,
+                              child: Icon(
+                                TablerIcons.info_circle,
+                                size: 14,
+                                color: neuTheme.accentColor,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'ABOUT ATLAS',
+                              style: TextStyle(
+                                color: neuTheme.accentColor,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Academic Thesis Lifecycle & Assessment Suite',
+                          style: TextStyle(
+                            color: neuTheme.textPrimary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            height: 1.25,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'A centralized academic platform coordinating thesis proposals, milestone progress, oral defense hearings, and rubric evaluations for students, supervisors, and coordinators.',
+                          style: TextStyle(
+                            color: neuTheme.textSecondary,
+                            fontSize: 11,
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
                   _drawerItem(
                     context,
                     icon: TablerIcons.layout_dashboard,
