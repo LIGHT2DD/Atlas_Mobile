@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
   final FlutterSecureStorage _storage;
+  final Map<String, String> _memoryFallback = {};
 
   SecureStorageService([FlutterSecureStorage? storage])
       : _storage = storage ?? const FlutterSecureStorage();
@@ -12,35 +13,63 @@ class SecureStorageService {
   static const _keyUserRole = 'atlas_user_role';
 
   Future<void> saveTokens({required String accessToken, required String refreshToken}) async {
-    await _storage.write(key: _keyAccessToken, value: accessToken);
-    await _storage.write(key: _keyRefreshToken, value: refreshToken);
+    _memoryFallback[_keyAccessToken] = accessToken;
+    _memoryFallback[_keyRefreshToken] = refreshToken;
+    try {
+      await _storage.write(key: _keyAccessToken, value: accessToken);
+      await _storage.write(key: _keyRefreshToken, value: refreshToken);
+    } catch (_) {}
   }
 
   Future<String?> getAccessToken() async {
-    return await _storage.read(key: _keyAccessToken);
+    try {
+      return await _storage.read(key: _keyAccessToken) ?? _memoryFallback[_keyAccessToken];
+    } catch (_) {
+      return _memoryFallback[_keyAccessToken];
+    }
   }
 
   Future<String?> getRefreshToken() async {
-    return await _storage.read(key: _keyRefreshToken);
+    try {
+      return await _storage.read(key: _keyRefreshToken) ?? _memoryFallback[_keyRefreshToken];
+    } catch (_) {
+      return _memoryFallback[_keyRefreshToken];
+    }
   }
 
   Future<void> saveUserMeta({required String userId, required String role}) async {
-    await _storage.write(key: _keyUserId, value: userId);
-    await _storage.write(key: _keyUserRole, value: role);
+    _memoryFallback[_keyUserId] = userId;
+    _memoryFallback[_keyUserRole] = role;
+    try {
+      await _storage.write(key: _keyUserId, value: userId);
+      await _storage.write(key: _keyUserRole, value: role);
+    } catch (_) {}
   }
 
   Future<String?> getUserRole() async {
-    return await _storage.read(key: _keyUserRole);
+    try {
+      return await _storage.read(key: _keyUserRole) ?? _memoryFallback[_keyUserRole];
+    } catch (_) {
+      return _memoryFallback[_keyUserRole];
+    }
   }
 
   Future<String?> getUserId() async {
-    return await _storage.read(key: _keyUserId);
+    try {
+      return await _storage.read(key: _keyUserId) ?? _memoryFallback[_keyUserId];
+    } catch (_) {
+      return _memoryFallback[_keyUserId];
+    }
   }
 
   Future<void> clearAuth() async {
-    await _storage.delete(key: _keyAccessToken);
-    await _storage.delete(key: _keyRefreshToken);
-    await _storage.delete(key: _keyUserId);
-    await _storage.delete(key: _keyUserRole);
+    _memoryFallback.clear();
+    try {
+      await _storage.delete(key: _keyAccessToken);
+      await _storage.delete(key: _keyRefreshToken);
+      await _storage.delete(key: _keyUserId);
+      await _storage.delete(key: _keyUserRole);
+    } catch (_) {}
   }
 }
+
