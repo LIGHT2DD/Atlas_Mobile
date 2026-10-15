@@ -9,6 +9,7 @@ import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../auth/auth_controller.dart';
 import 'evaluation_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final rubricsListProvider = FutureProvider.autoDispose<List<RubricCriteriaModel>>((ref) async {
   final repo = ref.watch(evaluationRepositoryProvider);
@@ -29,7 +30,7 @@ class RubricsScreen extends ConsumerWidget {
         title: const Text('Evaluation Rubrics'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(rubricsListProvider),
           ),
         ],
@@ -47,7 +48,7 @@ class RubricsScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.rule_outlined,
+                  icon: TablerIcons.ruler,
                   title: 'No Rubrics Defined',
                   subtitle:
                       'Institutional assessment matrices and scoring weightages will be shown here once configured.',
@@ -111,7 +112,7 @@ class RubricsScreen extends ConsumerWidget {
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            const Icon(Icons.star_border, size: 16, color: AppColors.warning),
+                            const Icon(TablerIcons.star, size: 16, color: AppColors.warning),
                             const SizedBox(width: 4),
                             Text(
                               'Max Score: ${r.maxScore.toInt()} pts',
@@ -134,7 +135,7 @@ class RubricsScreen extends ConsumerWidget {
       ),
       floatingActionButton: isCoordinator
           ? FloatingActionButton.extended(
-              icon: const Icon(Icons.add),
+              icon: const Icon(TablerIcons.plus),
               label: const Text('Add Criterion'),
               onPressed: () => _showAddCriteriaDialog(context, ref),
             )

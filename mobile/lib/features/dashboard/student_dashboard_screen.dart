@@ -7,6 +7,7 @@ import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/status_badge.dart';
 import '../auth/auth_controller.dart';
 import '../teams/team_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class StudentDashboardScreen extends ConsumerWidget {
   const StudentDashboardScreen({super.key});
@@ -22,7 +23,7 @@ class StudentDashboardScreen extends ConsumerWidget {
         title: const Text('Student Workspace'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
+            icon: const Icon(TablerIcons.bell),
             onPressed: () => context.push('/notifications'),
           ),
         ],
@@ -90,7 +91,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                         children: [
                           Row(
                             children: const [
-                              Icon(Icons.group_add_outlined, color: AppColors.accent, size: 24),
+                              Icon(TablerIcons.user_plus, color: AppColors.accent, size: 24),
                               SizedBox(width: 10),
                               Text(
                                 'Form Your Thesis Team',
@@ -109,7 +110,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                               Expanded(
                                 child: ElevatedButton.icon(
                                   onPressed: () => context.push('/teams/create'),
-                                  icon: const Icon(Icons.add, size: 18),
+                                  icon: const Icon(TablerIcons.plus, size: 18),
                                   label: const Text('Create Team'),
                                 ),
                               ),
@@ -117,7 +118,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                               Expanded(
                                 child: OutlinedButton.icon(
                                   onPressed: () => context.push('/teams/join'),
-                                  icon: const Icon(Icons.link, size: 18),
+                                  icon: const Icon(TablerIcons.link, size: 18),
                                   label: const Text('Join with Code'),
                                 ),
                               ),
@@ -164,7 +165,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.people_outline, size: 18, color: AppColors.textSecondary),
+                                const Icon(TablerIcons.users, size: 18, color: AppColors.textSecondary),
                                 const SizedBox(width: 6),
                                 Text(
                                   '${team.members.length} Members',
@@ -175,7 +176,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                             if (team.supervisor != null)
                               Row(
                                 children: [
-                                  const Icon(Icons.school_outlined, size: 18, color: AppColors.accent),
+                                  const Icon(TablerIcons.school, size: 18, color: AppColors.accent),
                                   const SizedBox(width: 6),
                                   Text(
                                     team.supervisor!.name,
@@ -223,7 +224,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                 children: [
                   _actionTile(
                     context,
-                    icon: Icons.description_outlined,
+                    icon: TablerIcons.file_description,
                     title: 'Thesis Proposal',
                     subtitle: 'Draft & Revisions',
                     color: const Color(0xFFE0E7FF),
@@ -232,7 +233,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                   ),
                   _actionTile(
                     context,
-                    icon: Icons.flag_outlined,
+                    icon: TablerIcons.flag,
                     title: 'Milestones',
                     subtitle: 'Code & Reports',
                     color: const Color(0xFFDCFCE7),
@@ -241,7 +242,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                   ),
                   _actionTile(
                     context,
-                    icon: Icons.gavel_outlined,
+                    icon: TablerIcons.gavel,
                     title: 'Defense Hearing',
                     subtitle: 'Venue & Panel',
                     color: const Color(0xFFFEF3C7),
@@ -250,7 +251,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                   ),
                   _actionTile(
                     context,
-                    icon: Icons.workspace_premium_outlined,
+                    icon: TablerIcons.award,
                     title: 'Official Grades',
                     subtitle: 'Score Transcript',
                     color: const Color(0xFFEDE9FE),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import 'team_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class JoinTeamScreen extends ConsumerStatefulWidget {
   const JoinTeamScreen({super.key});
@@ -108,7 +109,7 @@ class _JoinTeamScreenState extends ConsumerState<JoinTeamScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Invite Code',
                   hintText: 'e.g. ABC123',
-                  prefixIcon: Icon(Icons.vpn_key_outlined),
+                  prefixIcon: Icon(TablerIcons.key),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {

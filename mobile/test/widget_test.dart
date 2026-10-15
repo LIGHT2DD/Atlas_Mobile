@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:atlas_mobile/shared/widgets/atlas_card.dart';
 import 'package:atlas_mobile/shared/widgets/empty_state.dart';
 import 'package:atlas_mobile/shared/widgets/loading_indicator.dart';
@@ -61,7 +62,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: EmptyState(
-              icon: Icons.inbox,
+              icon: TablerIcons.inbox,
               title: 'Empty State Title',
               message: 'Detailed description message',
               actionLabel: 'Primary Action',

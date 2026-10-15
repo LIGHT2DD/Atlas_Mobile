@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import 'milestone_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class NewSubmissionScreen extends ConsumerStatefulWidget {
   final String milestoneId;
@@ -150,7 +151,7 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Deliverable Title *',
                   hintText: 'e.g. Sprint 2 Prototype & Test Results',
-                  prefixIcon: Icon(Icons.title),
+                  prefixIcon: Icon(TablerIcons.heading),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
@@ -178,7 +179,7 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Code Repository URL (Optional)',
                   hintText: 'https://github.com/organization/project',
-                  prefixIcon: Icon(Icons.code),
+                  prefixIcon: Icon(TablerIcons.code),
                 ),
               ),
               const SizedBox(height: 20),
@@ -196,7 +197,7 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.attach_file, size: 18, color: AppColors.accent),
+                        Icon(TablerIcons.paperclip, size: 18, color: AppColors.accent),
                         SizedBox(width: 8),
                         Text(
                           'Deliverable Archive / Report (ZIP, PDF)',
@@ -212,7 +213,7 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                     if (_selectedFileName != null) ...[
                       Row(
                         children: [
-                          const Icon(Icons.folder_zip_outlined, color: AppColors.primary, size: 20),
+                          const Icon(TablerIcons.file_zip, color: AppColors.primary, size: 20),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -222,7 +223,7 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close, size: 18, color: AppColors.error),
+                            icon: const Icon(TablerIcons.x, size: 18, color: AppColors.error),
                             onPressed: () {
                               setState(() {
                                 _selectedFileBytes = null;
@@ -234,7 +235,7 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                       ),
                     ] else ...[
                       OutlinedButton.icon(
-                        icon: const Icon(Icons.upload_file),
+                        icon: const Icon(TablerIcons.upload),
                         label: const Text('Attach Deliverable File'),
                         onPressed: _pickFile,
                       ),

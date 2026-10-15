@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import 'auth_controller.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -64,7 +65,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.lock_reset_rounded, size: 54, color: AppColors.accent),
+              const Icon(TablerIcons.lock_access, size: 54, color: AppColors.accent),
               const SizedBox(height: 16),
               const Text(
                 'Reset Your Password',
@@ -113,7 +114,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Account Email',
                   hintText: 'name@atlas.edu',
-                  prefixIcon: Icon(Icons.email_outlined, size: 20),
+                  prefixIcon: Icon(TablerIcons.mail, size: 20),
                 ),
               ),
               const SizedBox(height: 24),

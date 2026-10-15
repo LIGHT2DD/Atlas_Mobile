@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import 'team_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class CreateTeamScreen extends ConsumerStatefulWidget {
   const CreateTeamScreen({super.key});
@@ -109,7 +110,7 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Team Name *',
                   hintText: 'e.g. Quantum Innovators',
-                  prefixIcon: Icon(Icons.group_work_outlined),
+                  prefixIcon: Icon(TablerIcons.circles_relation),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
@@ -128,7 +129,7 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Thesis / Project Title *',
                   hintText: 'e.g. Distributed Consensus in Edge Networks',
-                  prefixIcon: Icon(Icons.menu_book_outlined),
+                  prefixIcon: Icon(TablerIcons.book),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {

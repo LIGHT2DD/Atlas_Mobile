@@ -6,6 +6,7 @@ import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../auth/auth_controller.dart';
 import '../supervisor/supervisor_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class SupervisorDashboardScreen extends ConsumerWidget {
   const SupervisorDashboardScreen({super.key});
@@ -22,7 +23,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
         title: const Text('Faculty Portal'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
+            icon: const Icon(TablerIcons.bell),
             onPressed: () => context.push('/notifications'),
           ),
         ],
@@ -131,7 +132,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'Supervision Requests Inbox',
                 description: 'Review student team mentorship invitations',
-                icon: Icons.mark_email_unread_outlined,
+                icon: TablerIcons.mail_opened,
                 badgeCount: requestsAsync.valueOrNull?.length,
                 onTap: () => context.push('/supervisor/requests'),
               ),
@@ -141,7 +142,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'Assigned Teams Roster',
                 description: 'Review proposals, monitor deliverable milestones',
-                icon: Icons.groups_outlined,
+                icon: TablerIcons.users,
                 badgeCount: teamsAsync.valueOrNull?.length,
                 onTap: () => context.push('/supervisor/teams'),
               ),
@@ -151,7 +152,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'Deliverables & Submissions',
                 description: 'Inspect code repositories and submit grades',
-                icon: Icons.assignment_outlined,
+                icon: TablerIcons.clipboard_list,
                 onTap: () => context.push('/milestones'),
               ),
               const SizedBox(height: 10),
@@ -160,7 +161,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'Defense Hearings & Rubrics',
                 description: 'Examine candidates and enter multi-criteria scores',
-                icon: Icons.gavel_outlined,
+                icon: TablerIcons.gavel,
                 onTap: () => context.push('/defenses'),
               ),
             ],
@@ -214,7 +215,7 @@ class SupervisorDashboardScreen extends ConsumerWidget {
               ),
             ),
           const SizedBox(width: 4),
-          const Icon(Icons.chevron_right, color: AppColors.textMuted),
+          const Icon(TablerIcons.chevron_right, color: AppColors.textMuted),
         ],
       ),
     );

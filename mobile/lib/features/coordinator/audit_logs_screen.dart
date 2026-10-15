@@ -6,6 +6,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import 'coordinator_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final auditLogsFutureProvider = FutureProvider.autoDispose<List<AuditLogItem>>((ref) async {
   final repo = ref.watch(coordinatorRepositoryProvider);
@@ -38,7 +39,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
         title: const Text('Institutional Audit Logs'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(auditLogsFutureProvider),
           ),
         ],
@@ -53,10 +54,10 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search by user, action, or entity...',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(TablerIcons.search),
                 suffixIcon: _filterQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(TablerIcons.x),
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _filterQuery = '');
@@ -92,7 +93,7 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
                     child: Padding(
                       padding: EdgeInsets.all(24.0),
                       child: EmptyState(
-                        icon: Icons.shield_outlined,
+                        icon: TablerIcons.shield_check,
                         title: 'No Matching Logs',
                         subtitle: 'No system actions matched your search criteria.',
                       ),
@@ -162,11 +163,11 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
   IconData _getActionIcon(String action) {
     final a = action.toLowerCase();
-    if (a.contains('login') || a.contains('auth')) return Icons.login;
-    if (a.contains('create')) return Icons.add_circle_outline;
-    if (a.contains('delete') || a.contains('leave')) return Icons.delete_outline;
-    if (a.contains('submit')) return Icons.upload_file;
-    if (a.contains('grade') || a.contains('publish')) return Icons.grade_outlined;
-    return Icons.history;
+    if (a.contains('login') || a.contains('auth')) return TablerIcons.login;
+    if (a.contains('create')) return TablerIcons.circle_plus;
+    if (a.contains('delete') || a.contains('leave')) return TablerIcons.trash;
+    if (a.contains('submit')) return TablerIcons.upload;
+    if (a.contains('grade') || a.contains('publish')) return TablerIcons.award;
+    return TablerIcons.history;
   }
 }

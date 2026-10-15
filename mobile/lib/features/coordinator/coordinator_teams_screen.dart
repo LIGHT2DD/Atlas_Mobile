@@ -12,6 +12,7 @@ import '../../shared/widgets/status_badge.dart';
 import '../evaluations/evaluation_repository.dart';
 import '../teams/team_repository.dart';
 import 'coordinator_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final allTeamsFutureProvider = FutureProvider.autoDispose<List<TeamModel>>((ref) async {
   final repo = ref.watch(coordinatorRepositoryProvider);
@@ -30,7 +31,7 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
         title: const Text('All Thesis Teams'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(allTeamsFutureProvider),
           ),
         ],
@@ -48,7 +49,7 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.groups_3_outlined,
+                  icon: TablerIcons.users,
                   title: 'No Registered Teams',
                   subtitle: 'Student project teams will appear here once registered.',
                 ),
@@ -97,14 +98,14 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            const Icon(Icons.people_alt_outlined, size: 14, color: AppColors.textMuted),
+                            const Icon(TablerIcons.users, size: 14, color: AppColors.textMuted),
                             const SizedBox(width: 4),
                             Text(
                               '${team.members.length} members',
                               style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
                             ),
                             const SizedBox(width: 16),
-                            const Icon(Icons.school_outlined, size: 14, color: AppColors.textMuted),
+                            const Icon(TablerIcons.school, size: 14, color: AppColors.textMuted),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
@@ -132,26 +133,26 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                           alignment: WrapAlignment.end,
                           children: [
                             OutlinedButton.icon(
-                              icon: const Icon(Icons.person_add, size: 16),
+                              icon: const Icon(TablerIcons.user_plus, size: 16),
                               label: const Text('Assign Supervisor'),
                               onPressed: () => _assignSupervisorDialog(context, ref, team),
                             ),
                             TextButton.icon(
-                              icon: const Icon(Icons.article_outlined, size: 16),
+                              icon: const Icon(TablerIcons.article, size: 16),
                               label: const Text('Proposal'),
                               onPressed: () {
                                 context.push('/proposals', extra: team.id);
                               },
                             ),
                             TextButton.icon(
-                              icon: const Icon(Icons.flag_outlined, size: 16),
+                              icon: const Icon(TablerIcons.flag, size: 16),
                               label: const Text('Milestones'),
                               onPressed: () {
                                 context.push('/milestones', extra: team.id);
                               },
                             ),
                             ElevatedButton.icon(
-                              icon: const Icon(Icons.rate_review_outlined, size: 16),
+                              icon: const Icon(TablerIcons.message_report, size: 16),
                               label: const Text('Score'),
                               onPressed: () {
                                 context.push('/evaluations/score', extra: {
@@ -163,7 +164,7 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                             if (!team.gradePublished) ...[
                               ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-                                icon: const Icon(Icons.publish, size: 16),
+                                icon: const Icon(TablerIcons.upload, size: 16),
                                 label: const Text('Publish Grade'),
                                 onPressed: () => _publishGrade(context, ref, team),
                               ),
@@ -202,7 +203,7 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                     itemBuilder: (context, i) {
                       final s = supervisors[i];
                       return ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.person, size: 18)),
+                        leading: const CircleAvatar(child: Icon(TablerIcons.user, size: 18)),
                         title: Text(s.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                         subtitle: Text(s.email, style: const TextStyle(fontSize: 12)),
                         onTap: () async {

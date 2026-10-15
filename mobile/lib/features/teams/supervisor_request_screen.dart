@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import 'team_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class SupervisorRequestScreen extends ConsumerStatefulWidget {
   final String teamId;
@@ -129,7 +130,7 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
                     initialValue: _selectedSupervisorId,
                     decoration: const InputDecoration(
                       labelText: 'Select Faculty Member *',
-                      prefixIcon: Icon(Icons.school_outlined),
+                      prefixIcon: Icon(TablerIcons.school),
                     ),
                     items: supervisors.map((s) {
                       return DropdownMenuItem<String>(

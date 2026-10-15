@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../models/user_model.dart';
 import '../../features/auth/auth_controller.dart';
 import 'status_badge.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class AtlasDrawer extends ConsumerWidget {
   const AtlasDrawer({super.key});
@@ -74,7 +75,7 @@ class AtlasDrawer extends ConsumerWidget {
                 children: [
                   _drawerItem(
                     context,
-                    icon: Icons.dashboard_outlined,
+                    icon: TablerIcons.layout_dashboard,
                     title: 'Dashboard',
                     route: '/dashboard',
                   ),
@@ -83,105 +84,105 @@ class AtlasDrawer extends ConsumerWidget {
                   if (role.isStudent) ...[
                     _drawerItem(
                       context,
-                      icon: Icons.group_outlined,
+                      icon: TablerIcons.users,
                       title: 'My Thesis Team',
                       route: '/teams/my-team',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.description_outlined,
+                      icon: TablerIcons.file_description,
                       title: 'Thesis Proposal',
                       route: '/proposals',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.flag_outlined,
+                      icon: TablerIcons.flag,
                       title: 'Milestones & Submissions',
                       route: '/milestones',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.event_seat_outlined,
+                      icon: TablerIcons.armchair,
                       title: 'Oral Defense',
                       route: '/defenses',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.workspace_premium_outlined,
+                      icon: TablerIcons.award,
                       title: 'Official Grades',
                       route: '/grades',
                     ),
                   ] else if (role.isSupervisor) ...[
                     _drawerItem(
                       context,
-                      icon: Icons.group_work_outlined,
+                      icon: TablerIcons.circles_relation,
                       title: 'Supervised Teams',
                       route: '/supervisor/teams',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.mark_email_unread_outlined,
+                      icon: TablerIcons.mail_opened,
                       title: 'Supervision Requests',
                       route: '/supervisor/requests',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.assignment_outlined,
+                      icon: TablerIcons.clipboard_list,
                       title: 'Milestones & Submissions',
                       route: '/milestones',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.gavel_outlined,
+                      icon: TablerIcons.gavel,
                       title: 'Defense Hearings',
                       route: '/defenses',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.fact_check_outlined,
+                      icon: TablerIcons.checklist,
                       title: 'Rubric Evaluations',
                       route: '/evaluations/rubrics',
                     ),
                   ] else if (role.isCoordinator) ...[
                     _drawerItem(
                       context,
-                      icon: Icons.groups_3_outlined,
+                      icon: TablerIcons.users,
                       title: 'All Thesis Teams',
                       route: '/coordinator/teams',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.calendar_month_outlined,
+                      icon: TablerIcons.calendar,
                       title: 'Academic Semesters',
                       route: '/coordinator/semesters',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.flag_outlined,
+                      icon: TablerIcons.flag,
                       title: 'Milestone Configuration',
                       route: '/milestones',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.schedule_outlined,
+                      icon: TablerIcons.clock,
                       title: 'Defense Scheduling',
                       route: '/defenses',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.rule_outlined,
+                      icon: TablerIcons.ruler,
                       title: 'Rubric Matrices',
                       route: '/evaluations/rubrics',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.shield_outlined,
+                      icon: TablerIcons.shield_check,
                       title: 'Audit Logs',
                       route: '/coordinator/audit-logs',
                     ),
                     _drawerItem(
                       context,
-                      icon: Icons.bar_chart_outlined,
+                      icon: TablerIcons.chart_bar,
                       title: 'Department Reports',
                       route: '/coordinator/reports',
                     ),
@@ -190,13 +191,13 @@ class AtlasDrawer extends ConsumerWidget {
                   const Divider(),
                   _drawerItem(
                     context,
-                    icon: Icons.notifications_outlined,
+                    icon: TablerIcons.bell,
                     title: 'Notifications',
                     route: '/notifications',
                   ),
                   _drawerItem(
                     context,
-                    icon: Icons.person_outline,
+                    icon: TablerIcons.user,
                     title: 'User Profile',
                     route: '/profile',
                   ),
@@ -211,7 +212,7 @@ class AtlasDrawer extends ConsumerWidget {
                 border: Border(top: BorderSide(color: AppColors.border)),
               ),
               child: ListTile(
-                leading: const Icon(Icons.logout, color: AppColors.error),
+                leading: const Icon(TablerIcons.logout, color: AppColors.error),
                 title: const Text(
                   'Sign Out',
                   style: TextStyle(

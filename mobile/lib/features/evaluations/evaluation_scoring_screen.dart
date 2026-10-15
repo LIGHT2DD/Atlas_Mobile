@@ -7,6 +7,7 @@ import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import 'evaluation_repository.dart';
 import 'rubrics_screen.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class EvaluationScoringScreen extends ConsumerStatefulWidget {
   final String teamId;
@@ -172,7 +173,7 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             decoration: InputDecoration(
                               labelText: 'Score Awarded (0 - ${r.maxScore.toInt()})',
-                              prefixIcon: const Icon(Icons.speed),
+                              prefixIcon: const Icon(TablerIcons.gauge),
                             ),
                           ),
                         ],

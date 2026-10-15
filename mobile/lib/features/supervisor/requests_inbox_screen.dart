@@ -8,6 +8,7 @@ import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
 import 'supervisor_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class RequestsInboxScreen extends ConsumerWidget {
   const RequestsInboxScreen({super.key});
@@ -21,7 +22,7 @@ class RequestsInboxScreen extends ConsumerWidget {
         title: const Text('Supervision Requests'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(supervisorRequestsFutureProvider),
           ),
         ],
@@ -39,7 +40,7 @@ class RequestsInboxScreen extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.inbox_outlined,
+                  icon: TablerIcons.inbox,
                   title: 'No Pending Requests',
                   subtitle: 'When student teams submit supervision proposals to you, they will appear in this inbox.',
                 ),
@@ -88,7 +89,7 @@ class RequestsInboxScreen extends ConsumerWidget {
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            const Icon(Icons.person_outline, size: 14, color: AppColors.textMuted),
+                            const Icon(TablerIcons.user, size: 14, color: AppColors.textMuted),
                             const SizedBox(width: 4),
                             Text(
                               'Requested by: ${req.requestedByName}',

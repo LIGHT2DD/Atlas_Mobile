@@ -12,6 +12,7 @@ import '../../shared/widgets/status_badge.dart';
 import '../auth/auth_controller.dart';
 import '../teams/team_repository.dart';
 import 'milestone_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final milestonesListProvider = FutureProvider.autoDispose<List<MilestoneModel>>((ref) async {
   final repo = ref.watch(milestoneRepositoryProvider);
@@ -52,7 +53,7 @@ class MilestonesScreen extends ConsumerWidget {
         title: const Text('Milestones & Deliverables'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () {
               ref.invalidate(milestonesListProvider);
               ref.invalidate(myTeamFutureProvider);
@@ -77,7 +78,7 @@ class MilestonesScreen extends ConsumerWidget {
       ),
       floatingActionButton: isCoordinator
           ? FloatingActionButton.extended(
-              icon: const Icon(Icons.add),
+              icon: const Icon(TablerIcons.plus),
               label: const Text('New Milestone'),
               onPressed: () {
                 context.push('/milestones/create').then((_) {
@@ -127,7 +128,7 @@ class _MilestoneContent extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.flag_outlined,
+                  icon: TablerIcons.flag,
                   title: 'No Milestones Configured',
                   subtitle:
                       'No academic deliverables or milestones have been published for this semester yet.',
@@ -178,7 +179,7 @@ class _MilestoneContent extends ConsumerWidget {
                       ],
                       Row(
                         children: [
-                          const Icon(Icons.event_outlined, size: 14, color: AppColors.textMuted),
+                          const Icon(TablerIcons.calendar_event, size: 14, color: AppColors.textMuted),
                           const SizedBox(width: 4),
                           Text(
                             ms.dueDate != null ? 'Due: ${ms.dueDate}' : 'No fixed deadline',
@@ -189,7 +190,7 @@ class _MilestoneContent extends ConsumerWidget {
                             ),
                           ),
                           const Spacer(),
-                          const Icon(Icons.pie_chart_outline, size: 14, color: AppColors.textMuted),
+                          const Icon(TablerIcons.chart_pie, size: 14, color: AppColors.textMuted),
                           const SizedBox(width: 4),
                           Text(
                             'Weight: ${ms.weightPercentage}% (Max ${ms.maxScore.toInt()} pts)',
@@ -214,7 +215,7 @@ class _MilestoneContent extends ConsumerWidget {
                             ),
                             if (targetTeamId != null && !isCoordinator && !isSupervisor) ...[
                               ElevatedButton.icon(
-                                icon: const Icon(Icons.upload_file, size: 16),
+                                icon: const Icon(TablerIcons.upload, size: 16),
                                 label: const Text('Submit Deliverable'),
                                 onPressed: () {
                                   context
@@ -280,7 +281,7 @@ class _MilestoneContent extends ConsumerWidget {
                                   const SizedBox(height: 6),
                                   Row(
                                     children: [
-                                      const Icon(Icons.stars, color: AppColors.warning, size: 16),
+                                      const Icon(TablerIcons.sparkles, color: AppColors.warning, size: 16),
                                       const SizedBox(width: 4),
                                       Text(
                                         'Grade: ${sub.score} / ${ms.maxScore}',
@@ -309,7 +310,7 @@ class _MilestoneContent extends ConsumerWidget {
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: ElevatedButton.icon(
-                                      icon: const Icon(Icons.grading, size: 16),
+                                      icon: const Icon(TablerIcons.certificate, size: 16),
                                       label: const Text('Grade Deliverable'),
                                       onPressed: () {
                                         context

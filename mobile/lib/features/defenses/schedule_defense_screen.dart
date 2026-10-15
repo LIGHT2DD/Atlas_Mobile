@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import '../teams/team_repository.dart';
 import 'defense_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class ScheduleDefenseScreen extends ConsumerStatefulWidget {
   const ScheduleDefenseScreen({super.key});
@@ -133,7 +134,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 20),
+                      const Icon(TablerIcons.alert_triangle, color: AppColors.error, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -152,7 +153,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Team ID or Name *',
                   hintText: 'Enter candidate Team ID',
-                  prefixIcon: Icon(Icons.groups_outlined),
+                  prefixIcon: Icon(TablerIcons.users),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Team ID is required';
@@ -176,7 +177,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today, size: 20, color: AppColors.accent),
+                          const Icon(TablerIcons.calendar_event, size: 20, color: AppColors.accent),
                           const SizedBox(width: 12),
                           Text(
                             _selectedDate != null
@@ -191,7 +192,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                           ),
                         ],
                       ),
-                      const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                      const Icon(TablerIcons.chevron_down, color: AppColors.textSecondary),
                     ],
                   ),
                 ),
@@ -206,7 +207,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Start Time *',
                         hintText: '10:00',
-                        prefixIcon: Icon(Icons.access_time),
+                        prefixIcon: Icon(TablerIcons.clock),
                       ),
                       validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
                     ),
@@ -218,7 +219,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                       decoration: const InputDecoration(
                         labelText: 'End Time *',
                         hintText: '11:00',
-                        prefixIcon: Icon(Icons.access_time_filled),
+                        prefixIcon: Icon(TablerIcons.clock),
                       ),
                       validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
                     ),
@@ -232,7 +233,7 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Room / Venue *',
                   hintText: 'e.g. Auditorium Hall 204 or Lab 3',
-                  prefixIcon: Icon(Icons.meeting_room_outlined),
+                  prefixIcon: Icon(TablerIcons.door_enter),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Room is required';

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import 'milestone_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class GradeSubmissionScreen extends ConsumerStatefulWidget {
   final String submissionId;
@@ -120,7 +121,7 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
                 decoration: InputDecoration(
                   labelText: 'Points Awarded (0 - ${widget.maxScore.toInt()}) *',
                   hintText: 'e.g. 88.5',
-                  prefixIcon: const Icon(Icons.grade_outlined),
+                  prefixIcon: const Icon(TablerIcons.award),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {

@@ -7,6 +7,7 @@ import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
 import 'coordinator_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final reportSummaryFutureProvider = FutureProvider.autoDispose<ReportSummaryModel>((ref) async {
   final repo = ref.watch(coordinatorRepositoryProvider);
@@ -25,7 +26,7 @@ class ReportsScreen extends ConsumerWidget {
         title: const Text('Departmental Reports'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(reportSummaryFutureProvider),
           ),
         ],
@@ -65,7 +66,7 @@ class ReportsScreen extends ConsumerWidget {
                       child: _metricCard(
                         title: 'Total Students',
                         value: report.totalStudents.toString(),
-                        icon: Icons.person_outline,
+                        icon: TablerIcons.user,
                         color: AppColors.primary,
                       ),
                     ),
@@ -74,7 +75,7 @@ class ReportsScreen extends ConsumerWidget {
                       child: _metricCard(
                         title: 'Supervisors',
                         value: report.totalSupervisors.toString(),
-                        icon: Icons.school_outlined,
+                        icon: TablerIcons.school,
                         color: AppColors.accent,
                       ),
                     ),
@@ -87,7 +88,7 @@ class ReportsScreen extends ConsumerWidget {
                       child: _metricCard(
                         title: 'Thesis Teams',
                         value: report.totalTeams.toString(),
-                        icon: Icons.groups_3_outlined,
+                        icon: TablerIcons.users,
                         color: AppColors.info,
                       ),
                     ),
@@ -96,7 +97,7 @@ class ReportsScreen extends ConsumerWidget {
                       child: _metricCard(
                         title: 'Active Proposals',
                         value: report.activeProposals.toString(),
-                        icon: Icons.description_outlined,
+                        icon: TablerIcons.file_description,
                         color: AppColors.warning,
                       ),
                     ),
@@ -106,7 +107,7 @@ class ReportsScreen extends ConsumerWidget {
                 _metricCard(
                   title: 'Oral Defenses Concluded',
                   value: report.completedDefenses.toString(),
-                  icon: Icons.workspace_premium_outlined,
+                  icon: TablerIcons.award,
                   color: AppColors.success,
                 ),
                 const SizedBox(height: 20),

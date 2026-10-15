@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import 'proposal_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class SubmitProposalScreen extends ConsumerStatefulWidget {
   final String teamId;
@@ -144,7 +145,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Research Title *',
                   hintText: 'e.g. Adaptive Federated Learning Architecture',
-                  prefixIcon: Icon(Icons.title_outlined),
+                  prefixIcon: Icon(TablerIcons.heading),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
@@ -180,7 +181,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Revision Summary (Optional)',
                   hintText: 'e.g. Addressed supervisor comments on Section 3 methodology',
-                  prefixIcon: Icon(Icons.notes_outlined),
+                  prefixIcon: Icon(TablerIcons.notes),
                 ),
               ),
               const SizedBox(height: 20),
@@ -198,7 +199,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.attach_file, size: 18, color: AppColors.accent),
+                        Icon(TablerIcons.paperclip, size: 18, color: AppColors.accent),
                         SizedBox(width: 8),
                         Text(
                           'Document Attachment (PDF / DOCX)',
@@ -214,7 +215,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                     if (_selectedFileName != null) ...[
                       Row(
                         children: [
-                          const Icon(Icons.insert_drive_file, color: AppColors.primary, size: 20),
+                          const Icon(TablerIcons.file, color: AppColors.primary, size: 20),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -224,7 +225,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close, size: 18, color: AppColors.error),
+                            icon: const Icon(TablerIcons.x, size: 18, color: AppColors.error),
                             onPressed: () {
                               setState(() {
                                 _selectedFileBytes = null;
@@ -236,7 +237,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                       ),
                     ] else ...[
                       OutlinedButton.icon(
-                        icon: const Icon(Icons.upload_file),
+                        icon: const Icon(TablerIcons.upload),
                         label: const Text('Select Proposal Document'),
                         onPressed: _pickDocument,
                       ),

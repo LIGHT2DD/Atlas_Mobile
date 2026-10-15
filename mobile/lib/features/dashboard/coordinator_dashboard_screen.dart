@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../coordinator/coordinator_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class CoordinatorDashboardScreen extends ConsumerWidget {
   const CoordinatorDashboardScreen({super.key});
@@ -18,7 +19,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
         title: const Text('Coordinator Administration'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
+            icon: const Icon(TablerIcons.bell),
             onPressed: () => context.push('/notifications'),
           ),
         ],
@@ -81,12 +82,12 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                   crossAxisSpacing: 10,
                   childAspectRatio: 1.1,
                   children: [
-                    _kpiMiniCard('Teams', '${data.totalTeams}', Icons.groups_3),
-                    _kpiMiniCard('Proposals', '${data.activeProposals}', Icons.check_circle_outline),
-                    _kpiMiniCard('Defenses', '${data.completedDefenses}', Icons.event_available),
-                    _kpiMiniCard('Students', '${data.totalStudents}', Icons.person),
-                    _kpiMiniCard('Faculty', '${data.totalSupervisors}', Icons.school),
-                    _kpiMiniCard('Completed', '${data.completedDefenses}', Icons.workspace_premium),
+                    _kpiMiniCard('Teams', '${data.totalTeams}', TablerIcons.users),
+                    _kpiMiniCard('Proposals', '${data.activeProposals}', TablerIcons.circle_check),
+                    _kpiMiniCard('Defenses', '${data.completedDefenses}', TablerIcons.calendar_event),
+                    _kpiMiniCard('Students', '${data.totalStudents}', TablerIcons.user),
+                    _kpiMiniCard('Faculty', '${data.totalSupervisors}', TablerIcons.school),
+                    _kpiMiniCard('Completed', '${data.completedDefenses}', TablerIcons.award),
                   ],
                 ),
               ),
@@ -103,7 +104,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'All Thesis Teams',
                 description: 'Manage rosters, assign or rebalance faculty supervisors',
-                icon: Icons.groups_outlined,
+                icon: TablerIcons.users,
                 route: '/coordinator/teams',
               ),
               const SizedBox(height: 10),
@@ -112,7 +113,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'Academic Semesters',
                 description: 'Activate academic terms, configure team size limits',
-                icon: Icons.calendar_month_outlined,
+                icon: TablerIcons.calendar,
                 route: '/coordinator/semesters',
               ),
               const SizedBox(height: 10),
@@ -121,7 +122,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'Defense Scheduling & Conflicts',
                 description: 'Schedule oral defenses with automated collision prevention',
-                icon: Icons.schedule_outlined,
+                icon: TablerIcons.clock,
                 route: '/defenses',
               ),
               const SizedBox(height: 10),
@@ -130,7 +131,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'Rubrics & Grade Publishing',
                 description: 'Configure weighted criteria and authoritatively publish transcripts',
-                icon: Icons.rule_outlined,
+                icon: TablerIcons.ruler,
                 route: '/evaluations/rubrics',
               ),
               const SizedBox(height: 10),
@@ -139,7 +140,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'University Audit Logs',
                 description: 'Chronological activity stream for accreditation compliance',
-                icon: Icons.shield_outlined,
+                icon: TablerIcons.shield_check,
                 route: '/coordinator/audit-logs',
               ),
               const SizedBox(height: 10),
@@ -148,7 +149,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
                 context,
                 title: 'Academic Reports & Analytics',
                 description: 'Departmental progression, exportable metrics, and grades',
-                icon: Icons.bar_chart_outlined,
+                icon: TablerIcons.chart_bar,
                 route: '/coordinator/reports',
               ),
             ],
@@ -213,7 +214,7 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textMuted),
+          const Icon(TablerIcons.chevron_right, color: AppColors.textMuted),
         ],
       ),
     );

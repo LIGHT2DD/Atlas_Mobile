@@ -8,6 +8,7 @@ import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
 import 'coordinator_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final semestersListProvider = FutureProvider.autoDispose<List<SemesterModel>>((ref) async {
   final repo = ref.watch(coordinatorRepositoryProvider);
@@ -26,7 +27,7 @@ class SemestersScreen extends ConsumerWidget {
         title: const Text('Academic Semesters'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(semestersListProvider),
           ),
         ],
@@ -44,7 +45,7 @@ class SemestersScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.calendar_today_outlined,
+                  icon: TablerIcons.calendar_event,
                   title: 'No Semesters Configured',
                   subtitle: 'Create academic terms to anchor project cycles, deadlines, and cohorts.',
                   actionLabel: 'New Semester',
@@ -103,7 +104,7 @@ class SemestersScreen extends ConsumerWidget {
                           Align(
                             alignment: Alignment.centerRight,
                             child: OutlinedButton.icon(
-                              icon: const Icon(Icons.check_circle_outline, size: 16),
+                              icon: const Icon(TablerIcons.circle_check, size: 16),
                               label: const Text('Set as Active Semester'),
                               onPressed: () async {
                                 try {
@@ -136,7 +137,7 @@ class SemestersScreen extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.add),
+        icon: const Icon(TablerIcons.plus),
         label: const Text('New Term'),
         onPressed: () => _createSemesterDialog(context, ref),
       ),

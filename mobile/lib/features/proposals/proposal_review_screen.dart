@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import 'proposal_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class ProposalReviewScreen extends ConsumerStatefulWidget {
   final String proposalId;
@@ -116,17 +117,17 @@ class _ProposalReviewScreenState extends ConsumerState<ProposalReviewScreen> {
                   ButtonSegment(
                     value: 'approved',
                     label: Text('Approve'),
-                    icon: Icon(Icons.check_circle_outline),
+                    icon: Icon(TablerIcons.circle_check),
                   ),
                   ButtonSegment(
                     value: 'changes_requested',
                     label: Text('Revisions'),
-                    icon: Icon(Icons.edit_outlined),
+                    icon: Icon(TablerIcons.pencil),
                   ),
                   ButtonSegment(
                     value: 'rejected',
                     label: Text('Reject'),
-                    icon: Icon(Icons.cancel_outlined),
+                    icon: Icon(TablerIcons.circle_x),
                   ),
                 ],
                 selected: {_selectedDecision},

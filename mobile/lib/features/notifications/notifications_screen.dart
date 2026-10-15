@@ -7,6 +7,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import 'notifications_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final notificationsListProvider =
     FutureProvider.autoDispose<List<NotificationModel>>((ref) async {
@@ -26,7 +27,7 @@ class NotificationsScreen extends ConsumerWidget {
         title: const Text('Notifications'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.done_all),
+            icon: const Icon(TablerIcons.checks),
             tooltip: 'Mark all as read',
             onPressed: () async {
               final repo = ref.read(notificationsRepositoryProvider);
@@ -35,7 +36,7 @@ class NotificationsScreen extends ConsumerWidget {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(notificationsListProvider),
           ),
         ],
@@ -53,7 +54,7 @@ class NotificationsScreen extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.notifications_none_outlined,
+                  icon: TablerIcons.bell,
                   title: 'All Caught Up!',
                   subtitle:
                       'You have no pending notifications. Updates regarding proposals, submissions, and defenses will appear here.',
@@ -140,15 +141,15 @@ class NotificationsScreen extends ConsumerWidget {
   IconData _getNotificationIcon(String type) {
     switch (type.toLowerCase()) {
       case 'proposal':
-        return Icons.article_outlined;
+        return TablerIcons.article;
       case 'milestone':
-        return Icons.flag_outlined;
+        return TablerIcons.flag;
       case 'defense':
-        return Icons.event_seat_outlined;
+        return TablerIcons.armchair;
       case 'grade':
-        return Icons.workspace_premium_outlined;
+        return TablerIcons.award;
       default:
-        return Icons.notifications_outlined;
+        return TablerIcons.bell;
     }
   }
 }

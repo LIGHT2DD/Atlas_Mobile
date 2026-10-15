@@ -9,6 +9,7 @@ import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
 import 'evaluation_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final myGradeFutureProvider = FutureProvider.autoDispose<TeamGradeModel>((ref) async {
   final repo = ref.watch(evaluationRepositoryProvider);
@@ -27,7 +28,7 @@ class MyGradeScreen extends ConsumerWidget {
         title: const Text('Official Academic Grades'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(myGradeFutureProvider),
           ),
         ],
@@ -45,7 +46,7 @@ class MyGradeScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.lock_clock_outlined,
+                  icon: TablerIcons.clock,
                   title: 'Grades Not Yet Published',
                   subtitle: grade.reason ??
                       'Final defense evaluations are pending coordinator publication and institutional approval.',
@@ -63,7 +64,7 @@ class MyGradeScreen extends ConsumerWidget {
                 AtlasCard(
                   child: Column(
                     children: [
-                      const Icon(Icons.workspace_premium, size: 56, color: AppColors.accent),
+                      const Icon(TablerIcons.award, size: 56, color: AppColors.accent),
                       const SizedBox(height: 12),
                       const Text(
                         'OFFICIAL THESIS ASSESSMENT',

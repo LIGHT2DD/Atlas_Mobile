@@ -12,6 +12,7 @@ import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
 import '../auth/auth_controller.dart';
 import 'team_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class MyTeamScreen extends ConsumerWidget {
   const MyTeamScreen({super.key});
@@ -27,7 +28,7 @@ class MyTeamScreen extends ConsumerWidget {
         title: const Text('My Thesis Team'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(myTeamFutureProvider),
           ),
         ],
@@ -45,7 +46,7 @@ class MyTeamScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.group_off_outlined,
+                  icon: TablerIcons.user_off,
                   title: 'No Team Formed Yet',
                   subtitle:
                       'Join an existing team with an invitation code, or initiate your own project team as leader.',
@@ -146,7 +147,7 @@ class MyTeamScreen extends ConsumerWidget {
                               ],
                             ),
                             IconButton(
-                              icon: const Icon(Icons.copy, size: 20, color: AppColors.accent),
+                              icon: const Icon(TablerIcons.copy, size: 20, color: AppColors.accent),
                               tooltip: 'Copy Invite Code',
                               onPressed: () {
                                 Clipboard.setData(ClipboardData(text: team.inviteCode));
@@ -173,7 +174,7 @@ class MyTeamScreen extends ConsumerWidget {
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.school_outlined, size: 20, color: AppColors.accent),
+                          Icon(TablerIcons.school, size: 20, color: AppColors.accent),
                           SizedBox(width: 8),
                           Text(
                             'Academic Supervisor',
@@ -191,7 +192,7 @@ class MyTeamScreen extends ConsumerWidget {
                           contentPadding: EdgeInsets.zero,
                           leading: const CircleAvatar(
                             backgroundColor: AppColors.primary,
-                            child: Icon(Icons.person, color: Colors.white),
+                            child: Icon(TablerIcons.user, color: Colors.white),
                           ),
                           title: Text(
                             team.supervisor!.name,
@@ -213,7 +214,7 @@ class MyTeamScreen extends ConsumerWidget {
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton.icon(
-                              icon: const Icon(Icons.person_add_alt),
+                              icon: const Icon(TablerIcons.user_plus),
                               label: const Text('Request Faculty Supervisor'),
                               onPressed: () {
                                 context.push('/teams/request-supervisor', extra: team.id).then((_) {
@@ -239,7 +240,7 @@ class MyTeamScreen extends ConsumerWidget {
                         children: [
                           const Row(
                             children: [
-                              Icon(Icons.people_outline, size: 20, color: AppColors.accent),
+                              Icon(TablerIcons.users, size: 20, color: AppColors.accent),
                               SizedBox(width: 8),
                               Text(
                                 'Team Roster',
@@ -324,7 +325,7 @@ class MyTeamScreen extends ConsumerWidget {
                 // Leave Team Button
                 Center(
                   child: TextButton.icon(
-                    icon: const Icon(Icons.exit_to_app, color: AppColors.error),
+                    icon: const Icon(TablerIcons.logout, color: AppColors.error),
                     label: const Text(
                       'Leave Team',
                       style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w600),

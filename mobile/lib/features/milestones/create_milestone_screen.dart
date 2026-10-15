@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import 'milestone_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class CreateMilestoneScreen extends ConsumerStatefulWidget {
   const CreateMilestoneScreen({super.key});
@@ -132,7 +133,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Milestone Title *',
                   hintText: 'e.g. Midterm Progress & Architecture Evaluation',
-                  prefixIcon: Icon(Icons.flag_outlined),
+                  prefixIcon: Icon(TablerIcons.flag),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
@@ -169,7 +170,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today, size: 20, color: AppColors.accent),
+                          const Icon(TablerIcons.calendar_event, size: 20, color: AppColors.accent),
                           const SizedBox(width: 12),
                           Text(
                             _selectedDueDate != null
@@ -184,7 +185,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                           ),
                         ],
                       ),
-                      const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                      const Icon(TablerIcons.chevron_down, color: AppColors.textSecondary),
                     ],
                   ),
                 ),
@@ -199,7 +200,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: const InputDecoration(
                         labelText: 'Max Score *',
-                        prefixIcon: Icon(Icons.numbers),
+                        prefixIcon: Icon(TablerIcons.numbers),
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) return 'Required';
@@ -215,7 +216,7 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: const InputDecoration(
                         labelText: 'Weight (%) *',
-                        prefixIcon: Icon(Icons.percent),
+                        prefixIcon: Icon(TablerIcons.percentage),
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) return 'Required';

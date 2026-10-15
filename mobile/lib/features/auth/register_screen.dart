@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import 'auth_controller.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -122,7 +123,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: const InputDecoration(
                     labelText: 'University Email',
                     hintText: 'student@atlas.edu',
-                    prefixIcon: Icon(Icons.email_outlined, size: 20),
+                    prefixIcon: Icon(TablerIcons.mail, size: 20),
                   ),
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) return 'Please enter your email.';
@@ -137,9 +138,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                    prefixIcon: const Icon(TablerIcons.lock, size: 20),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 20),
+                      icon: Icon(_obscurePassword ? TablerIcons.eye_off : TablerIcons.eye, size: 20),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
@@ -155,7 +156,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscureText: _obscurePassword,
                   decoration: const InputDecoration(
                     labelText: 'Confirm Password',
-                    prefixIcon: Icon(Icons.lock_reset, size: 20),
+                    prefixIcon: Icon(TablerIcons.lock_access, size: 20),
                   ),
                   validator: (v) {
                     if (v != _passwordController.text) return 'Passwords do not match.';

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import 'auth_controller.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -69,7 +70,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Icon(
-                        Icons.school_rounded,
+                        TablerIcons.school,
                         color: Colors.white,
                         size: 36,
                       ),
@@ -109,7 +110,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                          const Icon(TablerIcons.alert_circle, color: AppColors.error, size: 20),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -130,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     decoration: const InputDecoration(
                       labelText: 'Institutional Email',
                       hintText: 'name@atlas.edu',
-                      prefixIcon: Icon(Icons.email_outlined, size: 20),
+                      prefixIcon: Icon(TablerIcons.mail, size: 20),
                     ),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) return 'Please enter your email.';
@@ -146,10 +147,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                      prefixIcon: const Icon(TablerIcons.lock, size: 20),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          _obscurePassword ? TablerIcons.eye_off : TablerIcons.eye,
                           size: 20,
                         ),
                         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -240,17 +241,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           children: [
                             ActionChip(
                               label: const Text('Coordinator', style: TextStyle(fontSize: 12)),
-                              avatar: const Icon(Icons.shield_outlined, size: 16),
+                              avatar: const Icon(TablerIcons.shield_check, size: 16),
                               onPressed: () => _quickFill('coordinator@atlas.edu', 'Password123'),
                             ),
                             ActionChip(
                               label: const Text('Supervisor', style: TextStyle(fontSize: 12)),
-                              avatar: const Icon(Icons.school_outlined, size: 16),
+                              avatar: const Icon(TablerIcons.school, size: 16),
                               onPressed: () => _quickFill('supervisor1@atlas.edu', 'Password123'),
                             ),
                             ActionChip(
                               label: const Text('Student', style: TextStyle(fontSize: 12)),
-                              avatar: const Icon(Icons.person_outline, size: 16),
+                              avatar: const Icon(TablerIcons.user, size: 16),
                               onPressed: () => _quickFill('student1@atlas.edu', 'Password123'),
                             ),
                           ],

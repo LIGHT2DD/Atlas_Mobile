@@ -12,6 +12,7 @@ import '../../shared/widgets/status_badge.dart';
 import '../auth/auth_controller.dart';
 import '../teams/team_repository.dart';
 import 'proposal_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final proposalFutureProvider =
     FutureProvider.autoDispose.family<ProposalModel?, String>((ref, teamId) async {
@@ -55,7 +56,7 @@ class ProposalsScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.group_off_outlined,
+                  icon: TablerIcons.user_off,
                   title: 'No Team Found',
                   subtitle: 'You must form or join a thesis team before drafting a proposal.',
                   actionLabel: 'Go to Team Management',
@@ -91,7 +92,7 @@ class _ProposalView extends ConsumerWidget {
         title: const Text('Thesis Proposal Details'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(proposalFutureProvider(teamId)),
           ),
         ],
@@ -108,7 +109,7 @@ class _ProposalView extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.description_outlined,
+                  icon: TablerIcons.file_description,
                   title: 'No Proposal Submitted',
                   subtitle: isStudent
                       ? 'Prepare your research proposal draft, outline the objectives, and submit for faculty review.'
@@ -195,7 +196,7 @@ class _ProposalView extends ConsumerWidget {
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.feedback_outlined, size: 20, color: AppColors.accent),
+                          Icon(TablerIcons.message_circle, size: 20, color: AppColors.accent),
                           SizedBox(width: 8),
                           Text(
                             'Faculty Evaluation & Feedback',
@@ -265,7 +266,7 @@ class _ProposalView extends ConsumerWidget {
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.history_outlined, size: 20, color: AppColors.accent),
+                          Icon(TablerIcons.history, size: 20, color: AppColors.accent),
                           SizedBox(width: 8),
                           Text(
                             'Version History',
@@ -338,7 +339,7 @@ class _ProposalView extends ConsumerWidget {
                 // Action Buttons
                 if (canSubmitRevision) ...[
                   ElevatedButton.icon(
-                    icon: const Icon(Icons.edit_document),
+                    icon: const Icon(TablerIcons.file_pencil),
                     label: const Text('Submit Revised Proposal'),
                     onPressed: () {
                       context.push('/proposals/submit', extra: teamId).then((_) {
@@ -350,7 +351,7 @@ class _ProposalView extends ConsumerWidget {
                 if (canReview) ...[
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-                    icon: const Icon(Icons.rate_review_outlined),
+                    icon: const Icon(TablerIcons.message_report),
                     label: const Text('Submit Review Decision'),
                     onPressed: () {
                       context.push('/proposals/review/${proposal.id}').then((_) {

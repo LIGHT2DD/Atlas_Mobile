@@ -6,6 +6,7 @@ import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/status_badge.dart';
 import '../auth/auth_controller.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -114,10 +115,10 @@ class ProfileScreen extends ConsumerWidget {
                       const SizedBox(height: 8),
                       ListTile(
                         contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.lock_reset, color: AppColors.accent),
+                        leading: const Icon(TablerIcons.lock_access, color: AppColors.accent),
                         title: const Text('Password Recovery'),
                         subtitle: const Text('Dispatch a password reset link to your email'),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+                        trailing: const Icon(TablerIcons.chevron_right, size: 14),
                         onTap: () {
                           context.push('/forgot-password');
                         },
@@ -132,7 +133,7 @@ class ProfileScreen extends ConsumerWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.error,
                   ),
-                  icon: const Icon(Icons.logout),
+                  icon: const Icon(TablerIcons.logout),
                   label: const Text('Sign Out of ATLAS'),
                   onPressed: () => _confirmSignOut(context, ref),
                 ),

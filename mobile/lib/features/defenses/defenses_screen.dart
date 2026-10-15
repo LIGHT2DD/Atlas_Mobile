@@ -11,6 +11,7 @@ import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
 import '../auth/auth_controller.dart';
 import 'defense_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final defensesListProvider = FutureProvider.autoDispose<List<DefenseModel>>((ref) async {
   final repo = ref.watch(defenseRepositoryProvider);
@@ -32,7 +33,7 @@ class DefensesScreen extends ConsumerWidget {
         title: const Text('Oral Defense Hearings'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(defensesListProvider),
           ),
         ],
@@ -50,7 +51,7 @@ class DefensesScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.event_seat_outlined,
+                  icon: TablerIcons.armchair,
                   title: 'No Defenses Scheduled',
                   subtitle:
                       'Institutional defense schedules, panel assignments, and venue details will appear here once booked.',
@@ -118,7 +119,7 @@ class DefensesScreen extends ConsumerWidget {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.access_time_filled, size: 20, color: AppColors.primary),
+                              const Icon(TablerIcons.clock, size: 20, color: AppColors.primary),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Column(
@@ -141,7 +142,7 @@ class DefensesScreen extends ConsumerWidget {
                               ),
                               Container(height: 24, width: 1, color: AppColors.border),
                               const SizedBox(width: 12),
-                              const Icon(Icons.meeting_room_outlined, size: 20, color: AppColors.accent),
+                              const Icon(TablerIcons.door_enter, size: 20, color: AppColors.accent),
                               const SizedBox(width: 6),
                               Text(
                                 d.room,
@@ -199,7 +200,7 @@ class DefensesScreen extends ConsumerWidget {
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.star, size: 14, color: AppColors.primary),
+                                Icon(TablerIcons.star, size: 14, color: AppColors.primary),
                                 SizedBox(width: 4),
                                 Text(
                                   'You are an assigned examiner on this panel',
@@ -224,7 +225,7 @@ class DefensesScreen extends ConsumerWidget {
       ),
       floatingActionButton: isCoordinator
           ? FloatingActionButton.extended(
-              icon: const Icon(Icons.add),
+              icon: const Icon(TablerIcons.plus),
               label: const Text('Schedule Defense'),
               onPressed: () {
                 context.push('/defenses/schedule').then((_) {

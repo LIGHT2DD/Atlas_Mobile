@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class ErrorView extends StatelessWidget {
   final String message;
@@ -25,7 +26,7 @@ class ErrorView extends StatelessWidget {
                 color: AppColors.errorBg,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.error_outline, size: 40, color: AppColors.error),
+              child: const Icon(TablerIcons.alert_circle, size: 40, color: AppColors.error),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -49,7 +50,7 @@ class ErrorView extends StatelessWidget {
               const SizedBox(height: 20),
               OutlinedButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh, size: 18),
+                icon: const Icon(TablerIcons.rotate_clockwise, size: 18),
                 label: const Text('Try Again'),
               ),
             ],

@@ -9,6 +9,7 @@ import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
 import 'supervisor_repository.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 class SupervisedTeamsScreen extends ConsumerWidget {
   const SupervisedTeamsScreen({super.key});
@@ -22,7 +23,7 @@ class SupervisedTeamsScreen extends ConsumerWidget {
         title: const Text('Supervised Teams'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(TablerIcons.rotate_clockwise),
             onPressed: () => ref.refresh(supervisedTeamsFutureProvider),
           ),
         ],
@@ -40,7 +41,7 @@ class SupervisedTeamsScreen extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.all(24.0),
                 child: EmptyState(
-                  icon: Icons.groups_outlined,
+                  icon: TablerIcons.users,
                   title: 'No Supervised Teams Yet',
                   subtitle:
                       'Teams that have been assigned to you or whose supervision requests you have accepted will appear here.',
@@ -99,7 +100,7 @@ class SupervisedTeamsScreen extends ConsumerWidget {
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            const Icon(Icons.people_alt_outlined, size: 14, color: AppColors.textMuted),
+                            const Icon(TablerIcons.users, size: 14, color: AppColors.textMuted),
                             const SizedBox(width: 4),
                             Text(
                               '${team.members.length} members',
@@ -107,7 +108,7 @@ class SupervisedTeamsScreen extends ConsumerWidget {
                             ),
                             const SizedBox(width: 16),
                             if (team.semesterName != null) ...[
-                              const Icon(Icons.calendar_today_outlined, size: 14, color: AppColors.textMuted),
+                              const Icon(TablerIcons.calendar_event, size: 14, color: AppColors.textMuted),
                               const SizedBox(width: 4),
                               Text(
                                 team.semesterName!,
@@ -121,7 +122,7 @@ class SupervisedTeamsScreen extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             TextButton.icon(
-                              icon: const Icon(Icons.article_outlined, size: 18),
+                              icon: const Icon(TablerIcons.article, size: 18),
                               label: const Text('Proposal'),
                               onPressed: () {
                                 context.push('/proposals', extra: team.id);
@@ -129,7 +130,7 @@ class SupervisedTeamsScreen extends ConsumerWidget {
                             ),
                             const SizedBox(width: 8),
                             ElevatedButton.icon(
-                              icon: const Icon(Icons.assignment_turned_in_outlined, size: 18),
+                              icon: const Icon(TablerIcons.clipboard_check, size: 18),
                               label: const Text('Milestones'),
                               onPressed: () {
                                 context.push('/milestones', extra: team.id);
