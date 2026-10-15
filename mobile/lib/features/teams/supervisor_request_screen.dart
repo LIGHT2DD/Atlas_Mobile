@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/loading_indicator.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'team_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -67,8 +69,8 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
     final supervisorsAsync = ref.watch(supervisorsFutureProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Request Faculty Supervisor'),
+      appBar: const NeuAppBar(
+        title: 'Request Faculty Supervisor',
       ),
       body: supervisorsAsync.when(
         loading: () => const LoadingIndicator(message: 'Loading available faculty...'),
@@ -83,7 +85,11 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
             return const Center(
               child: Padding(
                 padding: EdgeInsets.all(24.0),
-                child: Text('No faculty supervisors are currently available for selection.'),
+                child: EmptyState(
+                  icon: TablerIcons.school,
+                  title: 'No Faculty Available',
+                  subtitle: 'No faculty supervisors are currently available for selection.',
+                ),
               ),
             );
           }
@@ -98,26 +104,23 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
                   const Text(
                     'Supervision Proposal',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: IosNeuColors.textPrimary,
+                      letterSpacing: -0.5,
                     ),
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     'Select a faculty member whose research interests align with your topic and provide a concise proposal message.',
-                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+                    style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
                   ),
                   const SizedBox(height: 24),
 
                   if (_errorMessage != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.errorBg,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.error),
-                      ),
+                    IosNeuCard(
+                      isSunken: true,
+                      padding: const EdgeInsets.all(14),
                       child: Text(
                         _errorMessage!,
                         style: const TextStyle(color: AppColors.error, fontSize: 13),
@@ -126,34 +129,46 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
                     const SizedBox(height: 16),
                   ],
 
-                  DropdownButtonFormField<String>(
-                    initialValue: _selectedSupervisorId,
-                    decoration: const InputDecoration(
-                      labelText: 'Select Faculty Member *',
-                      prefixIcon: Icon(TablerIcons.school),
+                  IosNeuCard(
+                    isSunken: true,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButtonFormField<String>(
+                        initialValue: _selectedSupervisorId,
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          prefixIcon: Icon(TablerIcons.school, color: IosNeuColors.textSecondary, size: 20),
+                          hintText: 'Select Faculty Member *',
+                          hintStyle: TextStyle(color: IosNeuColors.textSecondary, fontSize: 14),
+                        ),
+                        items: supervisors.map((s) {
+                          return DropdownMenuItem<String>(
+                            value: s.id,
+                            child: Text(
+                              '${s.name} (${s.email})',
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 14, color: IosNeuColors.textPrimary),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          setState(() => _selectedSupervisorId = val);
+                        },
+                        validator: (val) => val == null ? 'Please select a supervisor' : null,
+                      ),
                     ),
-                    items: supervisors.map((s) {
-                      return DropdownMenuItem<String>(
-                        value: s.id,
-                        child: Text('${s.name} (${s.email})', overflow: TextOverflow.ellipsis),
-                      );
-                    }).toList(),
-                    onChanged: (val) {
-                      setState(() => _selectedSupervisorId = val);
-                    },
-                    validator: (val) => val == null ? 'Please select a supervisor' : null,
                   ),
                   const SizedBox(height: 16),
 
-                  TextFormField(
+                  NeuTextField(
                     controller: _msgController,
                     maxLines: 5,
-                    decoration: const InputDecoration(
-                      labelText: 'Proposal / Request Message *',
-                      hintText:
-                          'Introduce your project concept, motivation, and why you are seeking guidance from this faculty member...',
-                      alignLabelWithHint: true,
-                    ),
+                    labelText: 'Proposal / Request Message *',
+                    hintText:
+                        'Introduce your project concept, motivation, and why you are seeking guidance from this faculty member...',
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
                         return 'Request message is required';
@@ -163,15 +178,11 @@ class _SupervisorRequestScreenState extends ConsumerState<SupervisorRequestScree
                   ),
                   const SizedBox(height: 28),
 
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Text('Send Supervision Request'),
+                  IosNeuButton(
+                    text: 'Send Supervision Request',
+                    isLoading: _isLoading,
+                    isPrimary: true,
+                    onPressed: _submit,
                   ),
                 ],
               ),

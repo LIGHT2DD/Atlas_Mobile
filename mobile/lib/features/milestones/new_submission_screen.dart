@@ -114,47 +114,50 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final neuTheme = context.neuTheme;
-
     return Scaffold(
-      backgroundColor: neuTheme.baseColor,
+      backgroundColor: IosNeuColors.canvas,
       appBar: const NeuAppBar(title: 'Submit Deliverable'),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                NeuContainer(
-                  depthType: NeuDepth.convex,
-                  depth: 3.0,
-                  borderRadius: BorderRadius.circular(18),
+                IosNeuCard(
+                  borderRadius: BorderRadius.circular(24),
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(TablerIcons.flag, color: neuTheme.accentColor, size: 24),
-                          const SizedBox(width: 10),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: IosNeuColors.activePill,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(TablerIcons.flag, color: Colors.white, size: 20),
+                          ),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               widget.milestoneTitle,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: neuTheme.textPrimary,
+                                fontWeight: FontWeight.w700,
+                                color: IosNeuColors.textPrimary,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 12),
+                      const Text(
                         'Upload your project deliverable archive, report document, or provide a link to the version control repository.',
-                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
+                        style: TextStyle(fontSize: 13, color: IosNeuColors.textSecondary, height: 1.4),
                       ),
                     ],
                   ),
@@ -165,7 +168,7 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                   controller: _titleController,
                   labelText: 'Deliverable Title *',
                   hintText: 'e.g. Sprint 2 Prototype & Test Results',
-                  prefixIcon: Icon(TablerIcons.heading, color: neuTheme.textSecondary),
+                  prefixIcon: const Icon(TablerIcons.heading, color: IosNeuColors.textSecondary),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Title is required';
@@ -188,16 +191,16 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                   labelText: 'Code Repository URL (Optional)',
                   hintText: 'https://github.com/organization/project',
                   keyboardType: TextInputType.url,
-                  prefixIcon: Icon(TablerIcons.code, color: neuTheme.textSecondary),
+                  prefixIcon: const Icon(TablerIcons.code, color: IosNeuColors.textSecondary),
                 ),
                 const SizedBox(height: 24),
 
-                Text(
+                const Text(
                   'DELIVERABLE ARCHIVE / REPORT',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: neuTheme.textSecondary,
+                    color: IosNeuColors.textSecondary,
                     letterSpacing: 0.8,
                   ),
                 ),
@@ -215,10 +218,10 @@ class _NewSubmissionScreenState extends ConsumerState<NewSubmissionScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                NeuButton(
+                IosNeuButton(
                   text: 'Confirm Submission',
                   icon: TablerIcons.cloud_upload,
-                  isAccent: true,
+                  isPrimary: true,
                   height: 52,
                   isLoading: _isLoading,
                   onPressed: _isLoading ? null : _submit,

@@ -61,10 +61,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final neuTheme = context.neuTheme;
-
     return Scaffold(
-      backgroundColor: neuTheme.baseColor,
+      backgroundColor: IosNeuColors.canvas,
       appBar: const NeuAppBar(title: 'Password Recovery'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -73,31 +71,28 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Center(
-                child: NeuContainer(
+                child: IosNeuCard(
                   shape: BoxShape.circle,
-                  width: 76,
-                  height: 76,
-                  depthType: NeuDepth.convex,
-                  depth: 4.0,
-                  alignment: Alignment.center,
-                  child: Icon(TablerIcons.lock_access, size: 36, color: neuTheme.accentColor),
+                  padding: const EdgeInsets.all(22),
+                  child: const Icon(TablerIcons.lock_access, size: 36, color: IosNeuColors.textPrimary),
                 ),
               ),
               const SizedBox(height: 24),
-              Text(
+              const Text(
                 'Reset Your Password',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 24,
                   fontWeight: FontWeight.w800,
-                  color: neuTheme.textPrimary,
+                  color: IosNeuColors.textPrimary,
+                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Enter the institutional email associated with your ATLAS account to receive a secure recovery token.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 32),
 
@@ -106,14 +101,14 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 labelText: 'Institutional Email',
                 hintText: 'name@atlas.edu',
                 keyboardType: TextInputType.emailAddress,
-                prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),
+                prefixIcon: const Icon(TablerIcons.mail, size: 20, color: IosNeuColors.textSecondary),
               ),
               const SizedBox(height: 28),
 
-              NeuButton(
+              IosNeuButton(
                 text: 'Send Recovery Instructions',
                 icon: TablerIcons.send,
-                isAccent: true,
+                isPrimary: true,
                 height: 52,
                 isLoading: _isLoading,
                 onPressed: _isLoading ? null : _handleSubmit,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/models/defense_model.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/atlas_drawer.dart';
@@ -29,12 +30,16 @@ class DefensesScreen extends ConsumerWidget {
     final isCoordinator = user?.role.isCoordinator ?? false;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Oral Defense Hearings'),
+      appBar: NeuAppBar(
+        title: 'Oral Defense Hearings',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(defensesListProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Defenses',
+              onPressed: () => ref.refresh(defensesListProvider),
+            ),
           ),
         ],
       ),
@@ -169,45 +174,33 @@ class DefensesScreen extends ConsumerWidget {
                         const SizedBox(height: 6),
                         Wrap(
                           spacing: 8,
-                          runSpacing: 4,
+                          runSpacing: 8,
                           children: d.panelMembers.map((p) {
-                            return Chip(
-                              avatar: CircleAvatar(
-                                backgroundColor: AppColors.primary,
-                                child: Text(
-                                  p.name.isNotEmpty ? p.name[0].toUpperCase() : 'E',
-                                  style: const TextStyle(fontSize: 11, color: Colors.white),
-                                ),
-                              ),
-                              label: Text(
-                                p.name,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                              backgroundColor: AppColors.card,
-                              visualDensity: VisualDensity.compact,
+                            return IosNeuSegmentPill(
+                              label: p.name,
+                              icon: TablerIcons.user,
+                              isSelected: false,
+                              onTap: () {},
                             );
                           }).toList(),
                         ),
 
                         if (isUserOnPanel) ...[
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.infoBg,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                          const SizedBox(height: 12),
+                          IosNeuCard(
+                            isSunken: true,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(TablerIcons.star, size: 14, color: AppColors.primary),
-                                SizedBox(width: 4),
+                                Icon(TablerIcons.star, size: 16, color: IosNeuColors.activePill),
+                                SizedBox(width: 8),
                                 Text(
                                   'You are an assigned examiner on this panel',
                                   style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.primary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: IosNeuColors.textPrimary,
                                   ),
                                 ),
                               ],
@@ -224,9 +217,8 @@ class DefensesScreen extends ConsumerWidget {
         },
       ),
       floatingActionButton: isCoordinator
-          ? FloatingActionButton.extended(
-              icon: const Icon(TablerIcons.plus),
-              label: const Text('Schedule Defense'),
+          ? IosNeuFAB(
+              tooltip: 'Schedule Defense Hearing',
               onPressed: () {
                 context.push('/defenses/schedule').then((_) {
                   ref.invalidate(defensesListProvider);

@@ -37,12 +37,12 @@ class EmptyState extends StatelessWidget {
           children: [
             NeuContainer(
               shape: BoxShape.circle,
-              width: 80,
-              height: 80,
+              width: 84,
+              height: 84,
               depthType: NeuDepth.convex,
               depth: 3.5,
               alignment: Alignment.center,
-              child: Icon(icon, size: 36, color: neuTheme.accentColor),
+              child: Icon(icon, size: 38, color: neuTheme.accentColor),
             ),
             const SizedBox(height: 24),
             Text(
@@ -50,8 +50,9 @@ class EmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: neuTheme.textPrimary,
-                fontSize: 18,
+                fontSize: 19,
                 fontWeight: FontWeight.w800,
+                letterSpacing: -0.3,
               ),
             ),
             if (_displayDescription.isNotEmpty) ...[
@@ -61,7 +62,7 @@ class EmptyState extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: neuTheme.textSecondary,
-                  fontSize: 13,
+                  fontSize: 14,
                   height: 1.45,
                 ),
               ),
@@ -71,7 +72,8 @@ class EmptyState extends StatelessWidget {
               NeuButton(
                 text: actionLabel!,
                 isAccent: true,
-                height: 44,
+                height: 48,
+                borderRadius: BorderRadius.circular(24),
                 onPressed: onAction,
               ),
             ],
@@ -79,8 +81,9 @@ class EmptyState extends StatelessWidget {
               const SizedBox(height: 12),
               NeuButton(
                 text: secondaryActionLabel!,
-                height: 42,
+                height: 44,
                 depth: 2.5,
+                borderRadius: BorderRadius.circular(22),
                 onPressed: onSecondaryAction,
               ),
             ],

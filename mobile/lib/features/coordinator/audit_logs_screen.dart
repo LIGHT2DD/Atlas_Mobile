@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'coordinator_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -35,38 +35,33 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
     final logsAsync = ref.watch(auditLogsFutureProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Institutional Audit Logs'),
+      appBar: NeuAppBar(
+        title: 'Institutional Audit Logs',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(auditLogsFutureProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Logs',
+              onPressed: () => ref.refresh(auditLogsFutureProvider),
+            ),
           ),
         ],
       ),
       drawer: const AtlasDrawer(),
       body: Column(
         children: [
-          // Search Bar
+          // Minimalist iOS Stadium Search Bar
           Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 10),
+            child: IosNeuSearchBar(
               controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search by user, action, or entity...',
-                prefixIcon: const Icon(TablerIcons.search),
-                suffixIcon: _filterQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(TablerIcons.x),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() => _filterQuery = '');
-                        },
-                      )
-                    : null,
-              ),
+              hintText: 'Search by user, action, or entity...',
               onChanged: (val) {
                 setState(() => _filterQuery = val.trim().toLowerCase());
+              },
+              onClear: () {
+                setState(() => _filterQuery = '');
               },
             ),
           ),
@@ -103,51 +98,83 @@ class _AuditLogsScreenState extends ConsumerState<AuditLogsScreen> {
 
                 return RefreshIndicator(
                   onRefresh: () async => ref.refresh(auditLogsFutureProvider),
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     itemCount: filtered.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final log = filtered[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: AppColors.infoBg,
-                          child: Icon(
-                            _getActionIcon(log.action),
-                            size: 18,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              log.action.toUpperCase(),
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                            ),
-                            if (log.createdAt != null)
-                              Text(
-                                log.createdAt!,
-                                style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: IosNeuCard(
+                          padding: const EdgeInsets.all(14),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
+                                decoration: const BoxDecoration(
+                                  color: IosNeuColors.inactiveBadge,
+                                  shape: BoxShape.circle,
+                                ),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  _getActionIcon(log.action),
+                                  size: 19,
+                                  color: IosNeuColors.textPrimary,
+                                ),
                               ),
-                          ],
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 2),
-                            Text(
-                              'By: ${log.userName} • Resource: ${log.resourceType}',
-                              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                            ),
-                            if (log.details != null && log.details!.isNotEmpty) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                log.details!,
-                                style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          log.action.toUpperCase(),
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.2,
+                                            color: IosNeuColors.textPrimary,
+                                          ),
+                                        ),
+                                        if (log.createdAt != null)
+                                          Text(
+                                            log.createdAt!,
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              color: IosNeuColors.textSecondary,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'By: ${log.userName} • ${log.resourceType}',
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: IosNeuColors.textPrimary,
+                                      ),
+                                    ),
+                                    if (log.details != null && log.details!.isNotEmpty) ...[
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        log.details!,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: IosNeuColors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             ],
-                          ],
+                          ),
                         ),
                       );
                     },

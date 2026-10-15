@@ -8,6 +8,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'evaluation_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -24,12 +25,16 @@ class MyGradeScreen extends ConsumerWidget {
     final gradeAsync = ref.watch(myGradeFutureProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Official Academic Grades'),
+      appBar: NeuAppBar(
+        title: 'Official Academic Grades',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(myGradeFutureProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Grades',
+              onPressed: () => ref.refresh(myGradeFutureProvider),
+            ),
           ),
         ],
       ),
@@ -64,7 +69,7 @@ class MyGradeScreen extends ConsumerWidget {
                 AtlasCard(
                   child: Column(
                     children: [
-                      const Icon(TablerIcons.award, size: 56, color: AppColors.accent),
+                      const Icon(TablerIcons.award, size: 56, color: IosNeuColors.activePill),
                       const SizedBox(height: 12),
                       const Text(
                         'OFFICIAL THESIS ASSESSMENT',
@@ -72,7 +77,7 @@ class MyGradeScreen extends ConsumerWidget {
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.5,
-                          color: AppColors.textMuted,
+                          color: IosNeuColors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -81,7 +86,7 @@ class MyGradeScreen extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 54,
                           fontWeight: FontWeight.w900,
-                          color: AppColors.primary,
+                          color: IosNeuColors.textPrimary,
                         ),
                       ),
                       if (grade.finalScore != null) ...[
@@ -90,7 +95,7 @@ class MyGradeScreen extends ConsumerWidget {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.accent,
+                            color: IosNeuColors.textPrimary,
                           ),
                         ),
                       ],

@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../shared/models/evaluation_model.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/loading_indicator.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'evaluation_repository.dart';
 import 'rubrics_screen.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -91,8 +92,8 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
     final rubricsAsync = ref.watch(rubricsListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Evaluate: ${widget.teamName ?? "Team"}'),
+      appBar: NeuAppBar(
+        title: 'Evaluate: ${widget.teamName ?? "Team"}',
       ),
       body: rubricsAsync.when(
         loading: () => const LoadingIndicator(message: 'Loading assessment rubrics...'),
@@ -113,37 +114,38 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
                   'Formal Defense Scoring',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    color: IosNeuColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 const Text(
                   'Score each candidate presentation criterion according to university academic standards.',
-                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
                 if (_errorMessage != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorBg,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.error),
-                    ),
-                    child: Text(_errorMessage!, style: const TextStyle(color: AppColors.error, fontSize: 13)),
+                  IosNeuCard(
+                    isSunken: true,
+                    padding: const EdgeInsets.all(14),
+                    child: Text(_errorMessage!, style: const TextStyle(color: IosNeuColors.statusDanger, fontSize: 13, fontWeight: FontWeight.w600)),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 18),
                 ],
 
                 ...rubrics.map((r) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 14.0),
+                    padding: const EdgeInsets.only(bottom: 16.0),
                     child: AtlasCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,27 +156,33 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
                               Expanded(
                                 child: Text(
                                   r.title,
-                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: IosNeuColors.textPrimary,
+                                  ),
                                 ),
                               ),
-                              Text(
-                                'Max: ${r.maxScore.toInt()} pts (${r.weightPercentage.toInt()}%)',
-                                style: const TextStyle(fontSize: 12, color: AppColors.accent, fontWeight: FontWeight.w600),
+                              IosNeuCard(
+                                isSunken: true,
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                child: Text(
+                                  'Max: ${r.maxScore.toInt()} (${r.weightPercentage.toInt()}%)',
+                                  style: const TextStyle(fontSize: 11, color: IosNeuColors.textPrimary, fontWeight: FontWeight.w700),
+                                ),
                               ),
                             ],
                           ),
                           if (r.description != null) ...[
-                            const SizedBox(height: 4),
-                            Text(r.description!, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                            const SizedBox(height: 6),
+                            Text(r.description!, style: const TextStyle(fontSize: 13, color: IosNeuColors.textSecondary)),
                           ],
-                          const SizedBox(height: 10),
-                          TextField(
+                          const SizedBox(height: 14),
+                          NeuTextField(
                             controller: _scoreControllers[r.id],
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: InputDecoration(
-                              labelText: 'Score Awarded (0 - ${r.maxScore.toInt()})',
-                              prefixIcon: const Icon(TablerIcons.gauge),
-                            ),
+                            labelText: 'Score Awarded (0 - ${r.maxScore.toInt()})',
+                            prefixIcon: const Icon(TablerIcons.gauge, size: 20, color: IosNeuColors.textSecondary),
                           ),
                         ],
                       ),
@@ -183,24 +191,23 @@ class _EvaluationScoringScreenState extends ConsumerState<EvaluationScoringScree
                 }),
 
                 const SizedBox(height: 8),
-                TextField(
+                NeuTextField(
                   controller: _commentsController,
                   maxLines: 4,
-                  decoration: const InputDecoration(
-                    labelText: 'Examiner Overall Commentary (Optional)',
-                    hintText: 'Summary of thesis defense performance, technical depth, and presentation clarity...',
-                    alignLabelWithHint: true,
-                  ),
+                  labelText: 'Examiner Overall Commentary (Optional)',
+                  hintText: 'Summary of thesis defense performance, technical depth, and presentation clarity...',
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
-                ElevatedButton(
+                IosNeuButton(
+                  text: 'Submit Official Evaluation',
+                  isPrimary: true,
+                  isLoading: _isLoading,
+                  height: 52,
+                  borderRadius: BorderRadius.circular(26),
                   onPressed: _isLoading ? null : () => _submit(rubrics),
-                  child: _isLoading
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Text('Submit Official Evaluation'),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
               ],
             ),
           );

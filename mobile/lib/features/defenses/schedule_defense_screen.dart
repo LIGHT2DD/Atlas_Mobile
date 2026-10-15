@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../teams/team_repository.dart';
 import 'defense_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -99,11 +100,12 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
     final facultyAsync = ref.watch(supervisorsFutureProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Schedule Defense Hearing'),
+      backgroundColor: IosNeuColors.canvas,
+      appBar: const NeuAppBar(
+        title: 'Schedule Defense Hearing',
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -112,26 +114,23 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
               const Text(
                 'Defense Session Booking',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: IosNeuColors.textPrimary,
+                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
               const Text(
                 'Book an oral defense venue, timeslot, and assign the faculty examination panel. The scheduling conflict engine automatically detects room and examiner clashes.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 24),
 
               if (_errorMessage != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.errorBg,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.error),
-                  ),
+                IosNeuCard(
+                  isSunken: true,
+                  padding: const EdgeInsets.all(14),
                   child: Row(
                     children: [
                       const Icon(TablerIcons.alert_triangle, color: AppColors.error, size: 20),
@@ -148,36 +147,30 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                 const SizedBox(height: 16),
               ],
 
-              TextFormField(
+              NeuTextField(
                 controller: _teamIdController,
-                decoration: const InputDecoration(
-                  labelText: 'Team ID or Name *',
-                  hintText: 'Enter candidate Team ID',
-                  prefixIcon: Icon(TablerIcons.users),
-                ),
+                labelText: 'Team ID or Name *',
+                hintText: 'Enter candidate Team ID',
+                prefixIcon: const Icon(TablerIcons.users, color: IosNeuColors.textSecondary),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Team ID is required';
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
               // Date Picker
-              InkWell(
+              GestureDetector(
                 onTap: _pickDate,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.border),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                child: IosNeuCard(
+                  isSunken: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          const Icon(TablerIcons.calendar_event, size: 20, color: AppColors.accent),
+                          const Icon(TablerIcons.calendar_event, size: 20, color: IosNeuColors.textPrimary),
                           const SizedBox(width: 12),
                           Text(
                             _selectedDate != null
@@ -185,84 +178,93 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                                 : 'Select Hearing Date *',
                             style: TextStyle(
                               fontSize: 14,
+                              fontWeight: _selectedDate != null ? FontWeight.w600 : FontWeight.w400,
                               color: _selectedDate != null
-                                  ? AppColors.textPrimary
-                                  : AppColors.textMuted,
+                                  ? IosNeuColors.textPrimary
+                                  : IosNeuColors.textSecondary,
                             ),
                           ),
                         ],
                       ),
-                      const Icon(TablerIcons.chevron_down, color: AppColors.textSecondary),
+                      const Icon(TablerIcons.chevron_down, color: IosNeuColors.textSecondary, size: 20),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
+                    child: NeuTextField(
                       controller: _startTimeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Start Time *',
-                        hintText: '10:00',
-                        prefixIcon: Icon(TablerIcons.clock),
-                      ),
+                      labelText: 'Start Time *',
+                      hintText: '10:00',
+                      prefixIcon: const Icon(TablerIcons.clock, color: IosNeuColors.textSecondary),
                       validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Expanded(
-                    child: TextFormField(
+                    child: NeuTextField(
                       controller: _endTimeController,
-                      decoration: const InputDecoration(
-                        labelText: 'End Time *',
-                        hintText: '11:00',
-                        prefixIcon: Icon(TablerIcons.clock),
-                      ),
+                      labelText: 'End Time *',
+                      hintText: '11:00',
+                      prefixIcon: const Icon(TablerIcons.clock, color: IosNeuColors.textSecondary),
                       validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
-              TextFormField(
+              NeuTextField(
                 controller: _roomController,
-                decoration: const InputDecoration(
-                  labelText: 'Room / Venue *',
-                  hintText: 'e.g. Auditorium Hall 204 or Lab 3',
-                  prefixIcon: Icon(TablerIcons.door_enter),
-                ),
+                labelText: 'Room / Venue *',
+                hintText: 'e.g. Auditorium Hall 204 or Lab 3',
+                prefixIcon: const Icon(TablerIcons.door_enter, color: IosNeuColors.textSecondary),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Room is required';
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 22),
 
               // Panel Selection
               const Text(
                 'Assign Examination Panel *',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: IosNeuColors.textPrimary,
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               facultyAsync.when(
                 loading: () => const LinearProgressIndicator(),
                 error: (e, _) => Text('Failed to load faculty: $e'),
                 data: (supervisors) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.border),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                  return IosNeuCard(
+                    isSunken: true,
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                     child: Column(
                       children: supervisors.map((s) {
                         final isSelected = _selectedPanelMemberIds.contains(s.id);
                         return CheckboxListTile(
-                          title: Text(s.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                          subtitle: Text(s.email, style: const TextStyle(fontSize: 12)),
+                          activeColor: IosNeuColors.activePill,
+                          checkColor: Colors.white,
+                          title: Text(
+                            s.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: IosNeuColors.textPrimary,
+                            ),
+                          ),
+                          subtitle: Text(
+                            s.email,
+                            style: const TextStyle(fontSize: 12, color: IosNeuColors.textSecondary),
+                          ),
                           value: isSelected,
                           onChanged: (checked) {
                             setState(() {
@@ -279,28 +281,21 @@ class _ScheduleDefenseScreenState extends ConsumerState<ScheduleDefenseScreen> {
                   );
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
-              TextFormField(
+              NeuTextField(
                 controller: _notesController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Session Notes (Optional)',
-                  hintText: 'Equipment requirements, defense format, or instructions for the panel...',
-                  alignLabelWithHint: true,
-                ),
+                labelText: 'Session Notes (Optional)',
+                hintText: 'Equipment requirements, defense format, or instructions for the panel...',
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 32),
 
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Confirm Defense Schedule'),
+              IosNeuButton(
+                text: 'Confirm Defense Schedule',
+                isLoading: _isLoading,
+                isPrimary: true,
+                onPressed: _submit,
               ),
             ],
           ),

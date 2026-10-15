@@ -9,6 +9,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../auth/auth_controller.dart';
 import '../teams/team_repository.dart';
 import 'proposal_repository.dart';
@@ -40,8 +41,8 @@ class ProposalsScreen extends ConsumerWidget {
     // Lookup current student team
     final myTeamAsync = ref.watch(myTeamFutureProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Thesis Proposal'),
+      appBar: const NeuAppBar(
+        title: 'Thesis Proposal',
       ),
       drawer: const AtlasDrawer(),
       body: myTeamAsync.when(
@@ -88,12 +89,16 @@ class _ProposalView extends ConsumerWidget {
     final proposalAsync = ref.watch(proposalFutureProvider(teamId));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Thesis Proposal Details'),
+      appBar: NeuAppBar(
+        title: 'Thesis Proposal Details',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(proposalFutureProvider(teamId)),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Proposal',
+              onPressed: () => ref.refresh(proposalFutureProvider(teamId)),
+            ),
           ),
         ],
       ),
@@ -216,14 +221,10 @@ class _ProposalView extends ConsumerWidget {
                         ),
                       ] else ...[
                         ...proposal.reviews.map((r) {
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.border),
-                            ),
+                          return IosNeuCard(
+                            isSunken: true,
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(14),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -233,8 +234,9 @@ class _ProposalView extends ConsumerWidget {
                                     Text(
                                       r.reviewerName,
                                       style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: IosNeuColors.textPrimary,
                                       ),
                                     ),
                                     StatusBadge(status: r.decision),
@@ -245,7 +247,7 @@ class _ProposalView extends ConsumerWidget {
                                   r.comments,
                                   style: const TextStyle(
                                     fontSize: 13,
-                                    color: AppColors.textPrimary,
+                                    color: IosNeuColors.textPrimary,
                                     height: 1.4,
                                   ),
                                 ),
@@ -338,21 +340,27 @@ class _ProposalView extends ConsumerWidget {
 
                 // Action Buttons
                 if (canSubmitRevision) ...[
-                  ElevatedButton.icon(
-                    icon: const Icon(TablerIcons.file_pencil),
-                    label: const Text('Submit Revised Proposal'),
+                  IosNeuButton(
+                    icon: TablerIcons.file_pencil,
+                    text: 'Submit Revised Proposal',
+                    isPrimary: true,
+                    height: 50,
+                    borderRadius: BorderRadius.circular(25),
                     onPressed: () {
                       context.push('/proposals/submit', extra: teamId).then((_) {
                         ref.invalidate(proposalFutureProvider(teamId));
                       });
                     },
                   ),
+                  const SizedBox(height: 12),
                 ],
                 if (canReview) ...[
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-                    icon: const Icon(TablerIcons.message_report),
-                    label: const Text('Submit Review Decision'),
+                  IosNeuButton(
+                    icon: TablerIcons.message_report,
+                    text: 'Submit Review Decision',
+                    isPrimary: true,
+                    height: 50,
+                    borderRadius: BorderRadius.circular(25),
                     onPressed: () {
                       context.push('/proposals/review/${proposal.id}').then((_) {
                         ref.invalidate(proposalFutureProvider(teamId));

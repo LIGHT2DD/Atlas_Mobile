@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/models/milestone_model.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/atlas_drawer.dart';
@@ -49,15 +50,19 @@ class MilestonesScreen extends ConsumerWidget {
     // Otherwise if student, look up own team
     final myTeamAsync = ref.watch(myTeamFutureProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Milestones & Deliverables'),
+      appBar: NeuAppBar(
+        title: 'Milestones & Deliverables',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () {
-              ref.invalidate(milestonesListProvider);
-              ref.invalidate(myTeamFutureProvider);
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Milestones',
+              onPressed: () {
+                ref.invalidate(milestonesListProvider);
+                ref.invalidate(myTeamFutureProvider);
+              },
+            ),
           ),
         ],
       ),
@@ -77,9 +82,8 @@ class MilestonesScreen extends ConsumerWidget {
         },
       ),
       floatingActionButton: isCoordinator
-          ? FloatingActionButton.extended(
-              icon: const Icon(TablerIcons.plus),
-              label: const Text('New Milestone'),
+          ? IosNeuFAB(
+              tooltip: 'Create New Milestone',
               onPressed: () {
                 context.push('/milestones/create').then((_) {
                   ref.invalidate(milestonesListProvider);
@@ -214,9 +218,12 @@ class _MilestoneContent extends ConsumerWidget {
                               ),
                             ),
                             if (targetTeamId != null && !isCoordinator && !isSupervisor) ...[
-                              ElevatedButton.icon(
-                                icon: const Icon(TablerIcons.upload, size: 16),
-                                label: const Text('Submit Deliverable'),
+                              NeuButton(
+                                icon: TablerIcons.upload,
+                                text: 'Submit Deliverable',
+                                isAccent: true,
+                                height: 42,
+                                borderRadius: BorderRadius.circular(21),
                                 onPressed: () {
                                   context
                                       .push('/milestones/submit', extra: {
@@ -233,14 +240,10 @@ class _MilestoneContent extends ConsumerWidget {
                         ),
                       ] else ...[
                         ...matchingSubmissions.map((sub) {
-                          return Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.border),
-                            ),
+                          return IosNeuCard(
+                            isSunken: true,
+                            margin: const EdgeInsets.only(top: 10),
+                            padding: const EdgeInsets.all(14),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -306,12 +309,15 @@ class _MilestoneContent extends ConsumerWidget {
                                     ),
                                 ],
                                 if ((isSupervisor || isCoordinator) && sub.score == null) ...[
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 12),
                                   Align(
                                     alignment: Alignment.centerRight,
-                                    child: ElevatedButton.icon(
-                                      icon: const Icon(TablerIcons.certificate, size: 16),
-                                      label: const Text('Grade Deliverable'),
+                                    child: NeuButton(
+                                      icon: TablerIcons.certificate,
+                                      text: 'Grade Deliverable',
+                                      isAccent: true,
+                                      height: 40,
+                                      borderRadius: BorderRadius.circular(20),
                                       onPressed: () {
                                         context
                                             .push('/milestones/grade', extra: {

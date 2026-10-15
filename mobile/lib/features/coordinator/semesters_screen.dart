@@ -7,6 +7,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'coordinator_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -23,12 +24,16 @@ class SemestersScreen extends ConsumerWidget {
     final semestersAsync = ref.watch(semestersListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Academic Semesters'),
+      appBar: NeuAppBar(
+        title: 'Academic Semesters',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(semestersListProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Semesters',
+              onPressed: () => ref.refresh(semestersListProvider),
+            ),
           ),
         ],
       ),
@@ -103,9 +108,12 @@ class SemestersScreen extends ConsumerWidget {
                           const Divider(height: 20),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: OutlinedButton.icon(
-                              icon: const Icon(TablerIcons.circle_check, size: 16),
-                              label: const Text('Set as Active Semester'),
+                            child: IosNeuButton(
+                              icon: TablerIcons.circle_check,
+                              text: 'Set as Active Semester',
+                              isPrimary: true,
+                              height: 38,
+                              padding: const EdgeInsets.symmetric(horizontal: 14),
                               onPressed: () async {
                                 try {
                                   final repo = ref.read(coordinatorRepositoryProvider);
@@ -136,9 +144,8 @@ class SemestersScreen extends ConsumerWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(TablerIcons.plus),
-        label: const Text('New Term'),
+      floatingActionButton: IosNeuFAB(
+        tooltip: 'Create Academic Term',
         onPressed: () => _createSemesterDialog(context, ref),
       ),
     );
@@ -152,63 +159,96 @@ class SemestersScreen extends ConsumerWidget {
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Create Academic Term'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Semester Name *', hintText: 'Fall 2026'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: codeController,
-                decoration: const InputDecoration(labelText: 'Code *', hintText: 'F2026'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: startController,
-                decoration: const InputDecoration(labelText: 'Start Date (YYYY-MM-DD)', hintText: '2026-09-01'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: endController,
-                decoration: const InputDecoration(labelText: 'End Date (YYYY-MM-DD)', hintText: '2026-12-20'),
-              ),
-            ],
+      barrierColor: Colors.black.withValues(alpha: 0.35),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: IosNeuCard(
+          isLarge: true,
+          padding: const EdgeInsets.all(24),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Create Academic Term',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    color: IosNeuColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                NeuTextField(
+                  controller: nameController,
+                  labelText: 'Semester Name *',
+                  hintText: 'Fall 2026',
+                ),
+                const SizedBox(height: 12),
+                NeuTextField(
+                  controller: codeController,
+                  labelText: 'Code *',
+                  hintText: 'F2026',
+                ),
+                const SizedBox(height: 12),
+                NeuTextField(
+                  controller: startController,
+                  labelText: 'Start Date (YYYY-MM-DD)',
+                  hintText: '2026-09-01',
+                ),
+                const SizedBox(height: 12),
+                NeuTextField(
+                  controller: endController,
+                  labelText: 'End Date (YYYY-MM-DD)',
+                  hintText: '2026-12-20',
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IosNeuButton(
+                      text: 'Cancel',
+                      isPrimary: false,
+                      height: 42,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    ),
+                    const SizedBox(width: 10),
+                    IosNeuButton(
+                      text: 'Create Term',
+                      isPrimary: true,
+                      height: 42,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      onPressed: () async {
+                        if (nameController.text.trim().isEmpty || codeController.text.trim().isEmpty) return;
+                        Navigator.of(ctx).pop();
+                        try {
+                          final repo = ref.read(coordinatorRepositoryProvider);
+                          await repo.createSemester(
+                            name: nameController.text.trim(),
+                            code: codeController.text.trim(),
+                            startDate: startController.text.trim().isEmpty ? null : startController.text.trim(),
+                            endDate: endController.text.trim().isEmpty ? null : endController.text.trim(),
+                          );
+                          ref.invalidate(semestersListProvider);
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          ElevatedButton(
-            child: const Text('Create Term'),
-            onPressed: () async {
-              if (nameController.text.trim().isEmpty || codeController.text.trim().isEmpty) return;
-              Navigator.of(ctx).pop();
-              try {
-                final repo = ref.read(coordinatorRepositoryProvider);
-                await repo.createSemester(
-                  name: nameController.text.trim(),
-                  code: codeController.text.trim(),
-                  startDate: startController.text.trim().isEmpty ? null : startController.text.trim(),
-                  endDate: endController.text.trim().isEmpty ? null : endController.text.trim(),
-                );
-                ref.invalidate(semestersListProvider);
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
-                  );
-                }
-              }
-            },
-          ),
-        ],
       ),
     );
   }

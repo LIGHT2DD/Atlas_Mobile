@@ -5,17 +5,19 @@ import '../storage/secure_storage.dart';
 /// Neumorphism Color Palette & Theme Tokens
 /// Background and surface colors are identical so elements appear
 /// physically extruded from or pressed into the same continuous material.
+export 'ios_neu_theme.dart';
+
 class NeuColors {
-  // Light Mode Tokens
-  static const Color lightBase = Color(0xFFE0E5EC);           // Soft cool grey surface
+  // Light Mode Tokens (Apple-Inspired Monochromatic Soft UI)
+  static const Color lightBase = Color(0xFFE3E3E3);           // Base warm stone gray
   static const Color lightHighlight = Color(0xFFFFFFFF);      // Pure white top-left highlight
-  static const Color lightShadow = Color(0xFFA3B1C6);         // Muted blue-grey bottom-right shadow
-  static const Color lightTextPrimary = Color(0xFF2D3748);    // Deep slate primary text
-  static const Color lightTextSecondary = Color(0xFF718096);  // Cool grey secondary text
-  static const Color lightAccent = Color(0xFF4A6CF7);         // Soft Indigo
-  static const Color lightDanger = Color(0xFFE53E3E);         // Soft Crimson
-  static const Color lightSuccess = Color(0xFF38A169);        // Soft Emerald
-  static const Color lightWarning = Color(0xFFD69E2E);        // Soft Amber
+  static const Color lightShadow = Color(0xFFBFBFBF);         // Muted stone gray bottom-right shadow
+  static const Color lightTextPrimary = Color(0xFF2D2D2D);    // Deep matte charcoal primary text
+  static const Color lightTextSecondary = Color(0xFF7E7E7E);  // SF Pro-styled muted gray text
+  static const Color lightAccent = Color(0xFF333333);         // High-contrast solid charcoal
+  static const Color lightDanger = Color(0xFF992222);         // Muted crimson
+  static const Color lightSuccess = Color(0xFF2E6F40);        // Muted forest green
+  static const Color lightWarning = Color(0xFF8A6510);        // Muted bronze amber
 
   // Dark Mode Tokens
   static const Color darkBase = Color(0xFF292D32);            // Deep matte charcoal surface
@@ -77,8 +79,8 @@ class NeumorphicThemeData {
     dangerColor: NeuColors.lightDanger,
     successColor: NeuColors.lightSuccess,
     warningColor: NeuColors.lightWarning,
-    highlightOffset: Offset(-6, -6),
-    darkOffset: Offset(6, 6),
+    highlightOffset: Offset(-5, -5),
+    darkOffset: Offset(5, 5),
     blurRadius: 12.0,
   );
 

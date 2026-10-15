@@ -6,6 +6,7 @@ import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'coordinator_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -22,12 +23,16 @@ class ReportsScreen extends ConsumerWidget {
     final reportAsync = ref.watch(reportSummaryFutureProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Departmental Reports'),
+      appBar: NeuAppBar(
+        title: 'Departmental Reports',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(reportSummaryFutureProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Metrics',
+              onPressed: () => ref.refresh(reportSummaryFutureProvider),
+            ),
           ),
         ],
       ),
@@ -179,19 +184,20 @@ class ReportsScreen extends ConsumerWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
+                  color: IosNeuColors.textSecondary,
                 ),
               ),
-              Icon(icon, size: 20, color: color),
+              Icon(icon, size: 20, color: IosNeuColors.activePill),
             ],
           ),
           const SizedBox(height: 10),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: color,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+              color: IosNeuColors.textPrimary,
             ),
           ),
         ],

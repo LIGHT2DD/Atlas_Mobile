@@ -64,45 +64,50 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final neuTheme = context.neuTheme;
-
     return Scaffold(
-      backgroundColor: neuTheme.baseColor,
+      backgroundColor: IosNeuColors.canvas,
       appBar: const NeuAppBar(title: 'Create Thesis Team'),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                NeuContainer(
-                  depthType: NeuDepth.convex,
-                  depth: 3.0,
-                  borderRadius: BorderRadius.circular(18),
+                IosNeuCard(
+                  borderRadius: BorderRadius.circular(24),
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(TablerIcons.circles_relation, color: neuTheme.accentColor, size: 24),
-                          const SizedBox(width: 10),
-                          Text(
-                            'New Team Registration',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: neuTheme.textPrimary,
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: IosNeuColors.activePill,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(TablerIcons.circles_relation, color: Colors.white, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'New Team Registration',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: IosNeuColors.textPrimary,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 12),
+                      const Text(
                         'As the founder of this team, you will be registered as the Team Leader. You can share your unique invite code with peers once created.',
-                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
+                        style: TextStyle(fontSize: 13, color: IosNeuColors.textSecondary, height: 1.4),
                       ),
                     ],
                   ),
@@ -113,7 +118,7 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
                   controller: _nameController,
                   labelText: 'Team Name *',
                   hintText: 'e.g. Quantum Innovators',
-                  prefixIcon: Icon(TablerIcons.circles_relation, color: neuTheme.textSecondary),
+                  prefixIcon: const Icon(TablerIcons.circles_relation, color: IosNeuColors.textSecondary),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Team name is required';
@@ -130,7 +135,7 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
                   controller: _titleController,
                   labelText: 'Thesis / Project Title *',
                   hintText: 'e.g. Distributed Consensus in Edge Networks',
-                  prefixIcon: Icon(TablerIcons.book, color: neuTheme.textSecondary),
+                  prefixIcon: const Icon(TablerIcons.book, color: IosNeuColors.textSecondary),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Project title is required';
@@ -148,10 +153,10 @@ class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                NeuButton(
+                IosNeuButton(
                   text: 'Establish Team',
                   icon: TablerIcons.plus,
-                  isAccent: true,
+                  isPrimary: true,
                   height: 52,
                   isLoading: _isLoading,
                   onPressed: _isLoading ? null : _submit,

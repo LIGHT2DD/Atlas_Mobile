@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'proposal_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -65,11 +66,11 @@ class _ProposalReviewScreenState extends ConsumerState<ProposalReviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Proposal Evaluation'),
+      appBar: const NeuAppBar(
+        title: 'Proposal Evaluation',
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -78,75 +79,74 @@ class _ProposalReviewScreenState extends ConsumerState<ProposalReviewScreen> {
               const Text(
                 'Supervisor Review Decision',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
+                  color: IosNeuColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
               const Text(
                 'Evaluate the academic rigor, clarity, and viability of the submitted proposal. Provide constructive criticism or guidance.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 24),
 
               if (_errorMessage != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.errorBg,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.error),
-                  ),
+                IosNeuCard(
+                  isSunken: true,
+                  padding: const EdgeInsets.all(14),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(color: AppColors.error, fontSize: 13),
+                    style: const TextStyle(color: IosNeuColors.statusDanger, fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
               ],
 
-              // Decision Selection
+              // Decision Selection with IosNeuSegmentPill
               const Text(
                 'Formal Verdict *',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: IosNeuColors.textPrimary),
               ),
-              const SizedBox(height: 10),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'approved',
-                    label: Text('Approve'),
-                    icon: Icon(TablerIcons.circle_check),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: IosNeuSegmentPill(
+                      label: 'Approve',
+                      icon: TablerIcons.circle_check,
+                      isSelected: _selectedDecision == 'approved',
+                      onTap: () => setState(() => _selectedDecision = 'approved'),
+                    ),
                   ),
-                  ButtonSegment(
-                    value: 'changes_requested',
-                    label: Text('Revisions'),
-                    icon: Icon(TablerIcons.pencil),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: IosNeuSegmentPill(
+                      label: 'Revisions',
+                      icon: TablerIcons.pencil,
+                      isSelected: _selectedDecision == 'changes_requested',
+                      onTap: () => setState(() => _selectedDecision = 'changes_requested'),
+                    ),
                   ),
-                  ButtonSegment(
-                    value: 'rejected',
-                    label: Text('Reject'),
-                    icon: Icon(TablerIcons.circle_x),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: IosNeuSegmentPill(
+                      label: 'Reject',
+                      icon: TablerIcons.circle_x,
+                      isSelected: _selectedDecision == 'rejected',
+                      onTap: () => setState(() => _selectedDecision = 'rejected'),
+                    ),
                   ),
                 ],
-                selected: {_selectedDecision},
-                onSelectionChanged: (newSelection) {
-                  setState(() {
-                    _selectedDecision = newSelection.first;
-                  });
-                },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              TextFormField(
+              NeuTextField(
                 controller: _commentsController,
                 maxLines: 6,
-                decoration: const InputDecoration(
-                  labelText: 'Faculty Review Comments *',
-                  hintText: 'State required changes, literature references, or approval comments...',
-                  alignLabelWithHint: true,
-                ),
+                labelText: 'Faculty Review Comments *',
+                hintText: 'State required changes, literature references, or approval comments...',
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return 'Review comments are required';
@@ -154,23 +154,17 @@ class _ProposalReviewScreenState extends ConsumerState<ProposalReviewScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 32),
 
-              ElevatedButton(
+              IosNeuButton(
+                text: 'Submit Formal Review',
+                isPrimary: true,
+                isLoading: _isLoading,
+                height: 52,
+                borderRadius: BorderRadius.circular(26),
                 onPressed: _isLoading ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _selectedDecision == 'approved'
-                      ? AppColors.success
-                      : (_selectedDecision == 'rejected' ? AppColors.error : AppColors.primary),
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Submit Formal Review'),
               ),
+              const SizedBox(height: 32),
             ],
           ),
         ),

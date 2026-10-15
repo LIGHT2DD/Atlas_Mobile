@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'milestone_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -87,11 +88,12 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Milestone Configuration'),
+      backgroundColor: IosNeuColors.canvas,
+      appBar: const NeuAppBar(
+        title: 'New Milestone Configuration',
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -100,26 +102,23 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
               const Text(
                 'Academic Deliverable Schedule',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: IosNeuColors.textPrimary,
+                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
               const Text(
                 'Define institutional deliverables, point weightages, and strict submission cutoff dates for the current semester.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+                style: TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 24),
 
               if (_errorMessage != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.errorBg,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.error),
-                  ),
+                IosNeuCard(
+                  isSunken: true,
+                  padding: const EdgeInsets.all(14),
                   child: Text(
                     _errorMessage!,
                     style: const TextStyle(color: AppColors.error, fontSize: 13),
@@ -128,13 +127,11 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                 const SizedBox(height: 16),
               ],
 
-              TextFormField(
+              NeuTextField(
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Milestone Title *',
-                  hintText: 'e.g. Midterm Progress & Architecture Evaluation',
-                  prefixIcon: Icon(TablerIcons.flag),
-                ),
+                labelText: 'Milestone Title *',
+                hintText: 'e.g. Midterm Progress & Architecture Evaluation',
+                prefixIcon: const Icon(TablerIcons.flag, color: IosNeuColors.textSecondary),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return 'Milestone title is required';
@@ -142,35 +139,28 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
-              TextFormField(
+              NeuTextField(
                 controller: _descController,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Deliverable Requirements & Guidelines',
-                  hintText: 'Specify instructions, report format, and rubric considerations...',
-                  alignLabelWithHint: true,
-                ),
+                labelText: 'Deliverable Requirements & Guidelines',
+                hintText: 'Specify instructions, report format, and rubric considerations...',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
               // Due Date Selector
-              InkWell(
+              GestureDetector(
                 onTap: _pickDate,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.border),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                child: IosNeuCard(
+                  isSunken: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          const Icon(TablerIcons.calendar_event, size: 20, color: AppColors.accent),
+                          const Icon(TablerIcons.calendar_event, size: 20, color: IosNeuColors.textPrimary),
                           const SizedBox(width: 12),
                           Text(
                             _selectedDueDate != null
@@ -178,30 +168,29 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                                 : 'Select Submission Deadline Date',
                             style: TextStyle(
                               fontSize: 14,
+                              fontWeight: _selectedDueDate != null ? FontWeight.w600 : FontWeight.w400,
                               color: _selectedDueDate != null
-                                  ? AppColors.textPrimary
-                                  : AppColors.textMuted,
+                                  ? IosNeuColors.textPrimary
+                                  : IosNeuColors.textSecondary,
                             ),
                           ),
                         ],
                       ),
-                      const Icon(TablerIcons.chevron_down, color: AppColors.textSecondary),
+                      const Icon(TablerIcons.chevron_down, color: IosNeuColors.textSecondary, size: 20),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
+                    child: NeuTextField(
                       controller: _scoreController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Max Score *',
-                        prefixIcon: Icon(TablerIcons.numbers),
-                      ),
+                      labelText: 'Max Score *',
+                      prefixIcon: const Icon(TablerIcons.numbers, color: IosNeuColors.textSecondary),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) return 'Required';
                         if (double.tryParse(val.trim()) == null) return 'Invalid';
@@ -209,15 +198,13 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Expanded(
-                    child: TextFormField(
+                    child: NeuTextField(
                       controller: _weightController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Weight (%) *',
-                        prefixIcon: Icon(TablerIcons.percentage),
-                      ),
+                      labelText: 'Weight (%) *',
+                      prefixIcon: const Icon(TablerIcons.percentage, color: IosNeuColors.textSecondary),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) return 'Required';
                         if (double.tryParse(val.trim()) == null) return 'Invalid';
@@ -227,17 +214,13 @@ class _CreateMilestoneScreenState extends ConsumerState<CreateMilestoneScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 32),
 
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Publish Milestone Schedule'),
+              IosNeuButton(
+                text: 'Publish Milestone Schedule',
+                isLoading: _isLoading,
+                isPrimary: true,
+                onPressed: _submit,
               ),
             ],
           ),

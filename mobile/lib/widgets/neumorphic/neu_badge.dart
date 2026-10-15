@@ -40,15 +40,15 @@ class NeuBadge extends StatelessWidget {
 
     final s = status.toUpperCase();
     if (s.contains('APPROV') || s.contains('COMPLET') || s.contains('ACTIVE')) {
-      return const Color(0xFF38A169); // Emerald
+      return const Color(0xFF2E6F40); // Soft Forest Emerald
     } else if (s.contains('REJECT') || s.contains('LATE') || s.contains('CANCEL')) {
-      return const Color(0xFFE53E3E); // Crimson
+      return const Color(0xFF992222); // Soft Crimson
     } else if (s.contains('CHANGE') || s.contains('PROGRESS') || s.contains('FORMING')) {
-      return const Color(0xFFD69E2E); // Amber
+      return const Color(0xFF8A6510); // Soft Bronze
     } else if (s.contains('SUBMIT') || s.contains('SCHEDULE')) {
-      return const Color(0xFF3182CE); // Blue
+      return const Color(0xFF334E68); // Soft Slate Navy
     }
-    return null;
+    return const Color(0xFF4A4A4A);
   }
 
   @override

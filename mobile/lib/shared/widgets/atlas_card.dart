@@ -27,7 +27,7 @@ class AtlasCard extends StatelessWidget {
     return NeuContainer(
       depthType: depthType,
       depth: depth,
-      borderRadius: borderRadius ?? BorderRadius.circular(16),
+      borderRadius: borderRadius ?? BorderRadius.circular(24),
       color: color,
       padding: padding ?? const EdgeInsets.all(20),
       onTap: onTap,

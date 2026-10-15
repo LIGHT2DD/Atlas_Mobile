@@ -56,45 +56,50 @@ class _JoinTeamScreenState extends ConsumerState<JoinTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final neuTheme = context.neuTheme;
-
     return Scaffold(
-      backgroundColor: neuTheme.baseColor,
+      backgroundColor: IosNeuColors.canvas,
       appBar: const NeuAppBar(title: 'Join Thesis Team'),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                NeuContainer(
-                  depthType: NeuDepth.convex,
-                  depth: 3.0,
-                  borderRadius: BorderRadius.circular(18),
+                IosNeuCard(
+                  borderRadius: BorderRadius.circular(24),
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(TablerIcons.link, color: neuTheme.accentColor, size: 24),
-                          const SizedBox(width: 10),
-                          Text(
-                            'Enter Invitation Code',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: neuTheme.textPrimary,
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: IosNeuColors.activePill,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(TablerIcons.link, color: Colors.white, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Enter Invitation Code',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: IosNeuColors.textPrimary,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 12),
+                      const Text(
                         'Enter the 6-character invitation code provided by your team leader to join their registered thesis group.',
-                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
+                        style: TextStyle(fontSize: 13, color: IosNeuColors.textSecondary, height: 1.4),
                       ),
                     ],
                   ),
@@ -105,7 +110,7 @@ class _JoinTeamScreenState extends ConsumerState<JoinTeamScreen> {
                   controller: _codeController,
                   labelText: 'Invitation Code',
                   hintText: 'e.g. ABC123',
-                  prefixIcon: Icon(TablerIcons.key, color: neuTheme.textSecondary),
+                  prefixIcon: const Icon(TablerIcons.key, color: IosNeuColors.textSecondary),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Please enter the invite code';
@@ -115,10 +120,10 @@ class _JoinTeamScreenState extends ConsumerState<JoinTeamScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                NeuButton(
+                IosNeuButton(
                   text: 'Join Team',
                   icon: TablerIcons.user_check,
-                  isAccent: true,
+                  isPrimary: true,
                   height: 52,
                   isLoading: _isLoading,
                   onPressed: _isLoading ? null : _submit,

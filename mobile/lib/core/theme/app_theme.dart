@@ -2,92 +2,104 @@ import 'package:flutter/material.dart';
 import 'neumorphic_theme.dart';
 
 class AppColors {
-  // Brand Primary & Secondary (Neumorphic Aligned)
-  static const Color primary = NeuColors.lightAccent;
-  static const Color primaryLight = Color(0xFF6B8AFF);
-  static const Color accent = NeuColors.lightAccent;
-  static const Color accentLight = Color(0xFF8DA4FF);
+  // Monochromatic Brand Tones
+  static const Color primary = IosNeuColors.activePill;       // #333333
+  static const Color primaryLight = Color(0xFF555555);
+  static const Color accent = IosNeuColors.activePill;        // #333333
+  static const Color accentLight = Color(0xFF7E7E7E);
 
-  // Semantic Status Colors
-  static const Color success = NeuColors.lightSuccess;
-  static const Color successBg = Color(0xFFD1FAE5);
-  static const Color warning = NeuColors.lightWarning;
-  static const Color warningBg = Color(0xFFFEF3C7);
-  static const Color error = NeuColors.lightDanger;
-  static const Color errorBg = Color(0xFFFEE2E2);
-  static const Color info = NeuColors.lightAccent;
-  static const Color infoBg = Color(0xFFE0F2FE);
+  // Subtle Semantic Status Colors
+  static const Color success = IosNeuColors.statusSuccess;
+  static const Color successBg = Color(0xFFD6E3D8);
+  static const Color warning = IosNeuColors.statusWarning;
+  static const Color warningBg = Color(0xFFEFE6D2);
+  static const Color error = IosNeuColors.statusDanger;
+  static const Color errorBg = Color(0xFFEEDCDA);
+  static const Color info = IosNeuColors.statusInfo;
+  static const Color infoBg = Color(0xFFDDE3EA);
 
-  // Background & Surface (Neumorphic Aligned)
-  static const Color background = NeuColors.lightBase;
-  static const Color surface = NeuColors.lightBase;
-  static const Color card = NeuColors.lightBase;
-  static const Color border = NeuColors.lightShadow;
-  static const Color divider = Color(0xFFCAD1DC);
+  // Background & Surface
+  static const Color background = IosNeuColors.canvas;        // #E3E3E3
+  static const Color surface = IosNeuColors.canvas;           // #E3E3E3
+  static const Color card = IosNeuColors.canvas;              // #E3E3E3
+  static const Color border = IosNeuColors.darkShadow;        // #BFBFBF
+  static const Color divider = Color(0xFFD0D0D0);
 
   // Typography
-  static const Color textPrimary = NeuColors.lightTextPrimary;
-  static const Color textSecondary = NeuColors.lightTextSecondary;
-  static const Color textMuted = Color(0xFF8896AB);
+  static const Color textPrimary = IosNeuColors.textPrimary;  // #2D2D2D
+  static const Color textSecondary = IosNeuColors.textSecondary; // #7E7E7E
+  static const Color textMuted = Color(0xFF999999);
 }
 
 class AppTheme {
   static ThemeData get lightTheme => neumorphicLightTheme;
   static ThemeData get darkTheme => neumorphicDarkTheme;
 
-  /// Pure Neumorphic Light Theme
+  /// Apple-inspired Monochromatic Neumorphic Light Theme
   static ThemeData get neumorphicLightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: NeuColors.lightBase,
-      canvasColor: NeuColors.lightBase,
-      cardColor: NeuColors.lightBase,
+      scaffoldBackgroundColor: IosNeuColors.canvas,
+      canvasColor: IosNeuColors.canvas,
+      cardColor: IosNeuColors.canvas,
       dialogTheme: const DialogThemeData(
-        backgroundColor: NeuColors.lightBase,
+        backgroundColor: IosNeuColors.canvas,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(32)),
+        ),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: IosNeuColors.canvas,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
       ),
       colorScheme: const ColorScheme.light(
-        primary: NeuColors.lightAccent,
+        primary: IosNeuColors.activePill,
         onPrimary: Colors.white,
-        secondary: NeuColors.lightAccent,
+        secondary: IosNeuColors.activePill,
         onSecondary: Colors.white,
-        surface: NeuColors.lightBase,
-        onSurface: NeuColors.lightTextPrimary,
-        error: NeuColors.lightDanger,
+        surface: IosNeuColors.canvas,
+        onSurface: IosNeuColors.textPrimary,
+        error: IosNeuColors.statusDanger,
         onError: Colors.white,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: NeuColors.lightBase,
-        foregroundColor: NeuColors.lightTextPrimary,
+        backgroundColor: IosNeuColors.canvas,
+        foregroundColor: IosNeuColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
+        systemOverlayStyle: IosNeuTheme.systemUiOverlayStyle,
         titleTextStyle: TextStyle(
-          color: NeuColors.lightTextPrimary,
-          fontSize: 18,
+          color: IosNeuColors.textPrimary,
+          fontSize: 20,
           fontWeight: FontWeight.w700,
-          letterSpacing: -0.2,
+          letterSpacing: -0.3,
         ),
       ),
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(color: NeuColors.lightTextPrimary, fontWeight: FontWeight.w800),
-        headlineMedium: TextStyle(color: NeuColors.lightTextPrimary, fontWeight: FontWeight.w700),
-        titleLarge: TextStyle(color: NeuColors.lightTextPrimary, fontWeight: FontWeight.w700),
-        titleMedium: TextStyle(color: NeuColors.lightTextPrimary, fontWeight: FontWeight.w600),
-        bodyLarge: TextStyle(color: NeuColors.lightTextPrimary),
-        bodyMedium: TextStyle(color: NeuColors.lightTextPrimary),
-        bodySmall: TextStyle(color: NeuColors.lightTextSecondary),
+        headlineLarge: IosNeuTheme.largeTitle,
+        headlineMedium: IosNeuTheme.title1,
+        titleLarge: IosNeuTheme.title2,
+        titleMedium: IosNeuTheme.headline,
+        bodyLarge: IosNeuTheme.body,
+        bodyMedium: TextStyle(color: IosNeuColors.textPrimary, fontSize: 15),
+        bodySmall: IosNeuTheme.caption,
       ),
       cardTheme: CardThemeData(
-        color: NeuColors.lightBase,
+        color: IosNeuColors.canvas,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
         ),
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
       ),
       dividerTheme: const DividerThemeData(
-        color: Color(0xFFD1D8E3),
+        color: Color(0xFFD4D4D4),
         thickness: 1,
         space: 24,
       ),

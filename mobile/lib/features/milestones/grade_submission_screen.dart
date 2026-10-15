@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'milestone_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -74,39 +75,44 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Grade Deliverable'),
+      backgroundColor: IosNeuColors.canvas,
+      appBar: const NeuAppBar(
+        title: 'Grade Deliverable',
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Submission: ${widget.submissionTitle}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+              IosNeuCard(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.submissionTitle,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: IosNeuColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Maximum points available: ${widget.maxScore.toInt()} pts',
+                      style: const TextStyle(fontSize: 13, color: IosNeuColors.textSecondary),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Maximum points available: ${widget.maxScore.toInt()} pts',
-                style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
               const SizedBox(height: 24),
 
               if (_errorMessage != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.errorBg,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.error),
-                  ),
+                IosNeuCard(
+                  isSunken: true,
+                  padding: const EdgeInsets.all(14),
                   child: Text(
                     _errorMessage!,
                     style: const TextStyle(color: AppColors.error, fontSize: 13),
@@ -115,14 +121,12 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
                 const SizedBox(height: 16),
               ],
 
-              TextFormField(
+              NeuTextField(
                 controller: _scoreController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  labelText: 'Points Awarded (0 - ${widget.maxScore.toInt()}) *',
-                  hintText: 'e.g. 88.5',
-                  prefixIcon: const Icon(TablerIcons.award),
-                ),
+                labelText: 'Points Awarded (0 - ${widget.maxScore.toInt()}) *',
+                hintText: 'e.g. 88.5',
+                prefixIcon: const Icon(TablerIcons.award, color: IosNeuColors.textSecondary),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return 'Score is required';
@@ -135,16 +139,13 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
-              TextFormField(
+              NeuTextField(
                 controller: _feedbackController,
                 maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Evaluator Feedback & Critique *',
-                  hintText: 'Detail strengths, areas for technical improvement, or compliance remarks...',
-                  alignLabelWithHint: true,
-                ),
+                labelText: 'Evaluator Feedback & Critique *',
+                hintText: 'Detail strengths, areas for technical improvement, or compliance remarks...',
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return 'Feedback is required';
@@ -152,17 +153,13 @@ class _GradeSubmissionScreenState extends ConsumerState<GradeSubmissionScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 32),
 
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Record Deliverable Grade'),
+              IosNeuButton(
+                text: 'Record Deliverable Grade',
+                isLoading: _isLoading,
+                isPrimary: true,
+                onPressed: _submit,
               ),
             ],
           ),

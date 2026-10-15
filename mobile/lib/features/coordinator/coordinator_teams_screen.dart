@@ -9,6 +9,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import '../evaluations/evaluation_repository.dart';
 import '../teams/team_repository.dart';
 import 'coordinator_repository.dart';
@@ -27,12 +28,16 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
     final teamsAsync = ref.watch(allTeamsFutureProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('All Thesis Teams'),
+      appBar: NeuAppBar(
+        title: 'All Thesis Teams',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(allTeamsFutureProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Teams',
+              onPressed: () => ref.refresh(allTeamsFutureProvider),
+            ),
           ),
         ],
       ),
@@ -132,28 +137,40 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                           runSpacing: 8,
                           alignment: WrapAlignment.end,
                           children: [
-                            OutlinedButton.icon(
-                              icon: const Icon(TablerIcons.user_plus, size: 16),
-                              label: const Text('Assign Supervisor'),
+                            IosNeuButton(
+                              icon: TablerIcons.user_plus,
+                              text: 'Assign',
+                              isPrimary: false,
+                              height: 38,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
                               onPressed: () => _assignSupervisorDialog(context, ref, team),
                             ),
-                            TextButton.icon(
-                              icon: const Icon(TablerIcons.article, size: 16),
-                              label: const Text('Proposal'),
+                            IosNeuButton(
+                              icon: TablerIcons.article,
+                              text: 'Proposal',
+                              isPrimary: false,
+                              height: 38,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
                               onPressed: () {
                                 context.push('/proposals', extra: team.id);
                               },
                             ),
-                            TextButton.icon(
-                              icon: const Icon(TablerIcons.flag, size: 16),
-                              label: const Text('Milestones'),
+                            IosNeuButton(
+                              icon: TablerIcons.flag,
+                              text: 'Milestones',
+                              isPrimary: false,
+                              height: 38,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
                               onPressed: () {
                                 context.push('/milestones', extra: team.id);
                               },
                             ),
-                            ElevatedButton.icon(
-                              icon: const Icon(TablerIcons.message_report, size: 16),
-                              label: const Text('Score'),
+                            IosNeuButton(
+                              icon: TablerIcons.message_report,
+                              text: 'Score',
+                              isPrimary: true,
+                              height: 38,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
                               onPressed: () {
                                 context.push('/evaluations/score', extra: {
                                   'team_id': team.id,
@@ -162,10 +179,12 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
                               },
                             ),
                             if (!team.gradePublished) ...[
-                              ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-                                icon: const Icon(TablerIcons.upload, size: 16),
-                                label: const Text('Publish Grade'),
+                              IosNeuButton(
+                                icon: TablerIcons.upload,
+                                text: 'Publish',
+                                isPrimary: true,
+                                height: 38,
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
                                 onPressed: () => _publishGrade(context, ref, team),
                               ),
                             ],
@@ -186,57 +205,108 @@ class CoordinatorTeamsScreen extends ConsumerWidget {
   void _assignSupervisorDialog(BuildContext context, WidgetRef ref, TeamModel team) {
     showDialog(
       context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.35),
       builder: (ctx) => Consumer(
         builder: (context, ref, _) {
           final supervisorsAsync = ref.watch(supervisorsFutureProvider);
-          return AlertDialog(
-            title: Text('Assign Supervisor: ${team.name}'),
-            content: supervisorsAsync.when(
-              loading: () => const SizedBox(height: 80, child: LoadingIndicator()),
-              error: (e, _) => Text('Error loading faculty: $e'),
-              data: (supervisors) {
-                return SizedBox(
-                  width: double.maxFinite,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: supervisors.length,
-                    itemBuilder: (context, i) {
-                      final s = supervisors[i];
-                      return ListTile(
-                        leading: const CircleAvatar(child: Icon(TablerIcons.user, size: 18)),
-                        title: Text(s.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                        subtitle: Text(s.email, style: const TextStyle(fontSize: 12)),
-                        onTap: () async {
-                          Navigator.of(ctx).pop();
-                          try {
-                            final repo = ref.read(coordinatorRepositoryProvider);
-                            final msg = await repo.assignSupervisor(team.id, s.id);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(msg), backgroundColor: AppColors.success),
-                              );
-                              ref.invalidate(allTeamsFutureProvider);
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
-                              );
-                            }
-                          }
-                        },
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: IosNeuCard(
+              isLarge: true,
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Assign Supervisor: ${team.name}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
+                      color: IosNeuColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  supervisorsAsync.when(
+                    loading: () => const SizedBox(height: 80, child: LoadingIndicator()),
+                    error: (e, _) => Text('Error loading faculty: $e'),
+                    data: (supervisors) {
+                      return SizedBox(
+                        width: double.maxFinite,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: supervisors.length,
+                          itemBuilder: (context, i) {
+                            final s = supervisors[i];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: IosNeuCard(
+                                isSunken: true,
+                                padding: const EdgeInsets.all(12),
+                                onTap: () async {
+                                  Navigator.of(ctx).pop();
+                                  try {
+                                    final repo = ref.read(coordinatorRepositoryProvider);
+                                    final msg = await repo.assignSupervisor(team.id, s.id);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(msg), backgroundColor: AppColors.success),
+                                      );
+                                      ref.invalidate(allTeamsFutureProvider);
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
+                                      );
+                                    }
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 36,
+                                      height: 36,
+                                      decoration: const BoxDecoration(
+                                        color: IosNeuColors.inactiveBadge,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(TablerIcons.user, size: 18, color: IosNeuColors.textPrimary),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(s.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                                          Text(s.email, style: const TextStyle(fontSize: 12, color: IosNeuColors.textSecondary)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       );
                     },
                   ),
-                );
-              },
-            ),
-            actions: [
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () => Navigator.of(ctx).pop(),
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IosNeuButton(
+                      text: 'Cancel',
+                      isPrimary: false,
+                      height: 40,
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           );
         },
       ),

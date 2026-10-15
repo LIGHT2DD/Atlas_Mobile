@@ -392,47 +392,66 @@ class MyTeamScreen extends ConsumerWidget {
   }
 
   void _confirmLeaveTeam(BuildContext context, WidgetRef ref, TeamModel team) {
-    final neuTheme = context.neuTheme;
-
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: neuTheme.baseColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Leave Team?',
-          style: TextStyle(color: neuTheme.textPrimary, fontWeight: FontWeight.w800),
-        ),
-        content: Text(
-          'Are you sure you want to depart from "${team.name}"? If you are the leader and sole member, this action will disassociate the team.',
-          style: TextStyle(color: neuTheme.textSecondary, height: 1.4),
-        ),
-        actions: [
-          TextButton(
-            child: Text('Cancel', style: TextStyle(color: neuTheme.textSecondary)),
-            onPressed: () => Navigator.of(ctx).pop(),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: IosNeuCard(
+          borderRadius: BorderRadius.circular(28),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Leave Team?',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: IosNeuColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Are you sure you want to depart from "${team.name}"? If you are the leader and sole member, this action will disassociate the team.',
+                style: const TextStyle(fontSize: 14, color: IosNeuColors.textSecondary, height: 1.4),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IosNeuButton(
+                    text: 'Cancel',
+                    isPrimary: false,
+                    onPressed: () => Navigator.of(ctx).pop(),
+                  ),
+                  const SizedBox(width: 12),
+                  IosNeuButton(
+                    text: 'Confirm Leave',
+                    isPrimary: true,
+                    onPressed: () async {
+                      Navigator.of(ctx).pop();
+                      try {
+                        final repo = ref.read(teamRepositoryProvider);
+                        final msg = await repo.leaveTeam(team.id);
+                        if (context.mounted) {
+                          NeuToast.show(context, message: msg, type: NeuToastType.info);
+                          ref.invalidate(myTeamFutureProvider);
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          NeuToast.show(context, message: e.toString(), type: NeuToastType.error);
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
-          NeuButton(
-            text: 'Confirm Leave',
-            isDanger: true,
-            height: 40,
-            onPressed: () async {
-              Navigator.of(ctx).pop();
-              try {
-                final repo = ref.read(teamRepositoryProvider);
-                final msg = await repo.leaveTeam(team.id);
-                if (context.mounted) {
-                  NeuToast.show(context, message: msg, type: NeuToastType.info);
-                  ref.invalidate(myTeamFutureProvider);
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  NeuToast.show(context, message: e.toString(), type: NeuToastType.error);
-                }
-              }
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

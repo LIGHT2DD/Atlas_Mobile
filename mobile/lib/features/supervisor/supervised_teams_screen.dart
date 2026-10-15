@@ -8,6 +8,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'supervisor_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -19,12 +20,16 @@ class SupervisedTeamsScreen extends ConsumerWidget {
     final teamsAsync = ref.watch(supervisedTeamsFutureProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Supervised Teams'),
+      appBar: NeuAppBar(
+        title: 'Supervised Teams',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(supervisedTeamsFutureProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Teams',
+              onPressed: () => ref.refresh(supervisedTeamsFutureProvider),
+            ),
           ),
         ],
       ),
@@ -121,17 +126,19 @@ class SupervisedTeamsScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            TextButton.icon(
-                              icon: const Icon(TablerIcons.article, size: 18),
-                              label: const Text('Proposal'),
+                            IosNeuButton(
+                              icon: TablerIcons.article,
+                              text: 'Proposal',
+                              isPrimary: false,
                               onPressed: () {
                                 context.push('/proposals', extra: team.id);
                               },
                             ),
-                            const SizedBox(width: 8),
-                            ElevatedButton.icon(
-                              icon: const Icon(TablerIcons.clipboard_check, size: 18),
-                              label: const Text('Milestones'),
+                            const SizedBox(width: 12),
+                            IosNeuButton(
+                              icon: TablerIcons.clipboard_check,
+                              text: 'Milestones',
+                              isPrimary: true,
                               onPressed: () {
                                 context.push('/milestones', extra: team.id);
                               },

@@ -7,6 +7,7 @@ import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../widgets/neumorphic/neumorphic.dart';
 import 'supervisor_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -18,12 +19,16 @@ class RequestsInboxScreen extends ConsumerWidget {
     final requestsAsync = ref.watch(supervisorRequestsFutureProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Supervision Requests'),
+      appBar: NeuAppBar(
+        title: 'Supervision Requests',
         actions: [
-          IconButton(
-            icon: const Icon(TablerIcons.rotate_clockwise),
-            onPressed: () => ref.refresh(supervisorRequestsFutureProvider),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NeuIconButton(
+              icon: TablerIcons.rotate_clockwise,
+              tooltip: 'Refresh Requests',
+              onPressed: () => ref.refresh(supervisorRequestsFutureProvider),
+            ),
           ),
         ],
       ),
@@ -98,14 +103,9 @@ class RequestsInboxScreen extends ConsumerWidget {
                           ],
                         ),
                         const Divider(height: 20),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.border),
-                          ),
+                        IosNeuCard(
+                          isSunken: true,
+                          padding: const EdgeInsets.all(14),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -114,13 +114,13 @@ class RequestsInboxScreen extends ConsumerWidget {
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textSecondary,
+                                  color: IosNeuColors.textSecondary,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 6),
                               Text(
                                 req.message,
-                                style: const TextStyle(fontSize: 13, color: AppColors.textPrimary, height: 1.4),
+                                style: const TextStyle(fontSize: 13, color: IosNeuColors.textPrimary, height: 1.4),
                               ),
                             ],
                           ),
@@ -130,23 +130,18 @@ class RequestsInboxScreen extends ConsumerWidget {
                           Row(
                             children: [
                               Expanded(
-                                child: OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.error,
-                                    side: const BorderSide(color: AppColors.error),
-                                  ),
+                                child: IosNeuButton(
+                                  text: 'Decline',
+                                  isPrimary: false,
                                   onPressed: () => _handleResponse(context, ref, req, 'reject'),
-                                  child: const Text('Decline'),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.success,
-                                  ),
+                                child: IosNeuButton(
+                                  text: 'Accept Guidance',
+                                  isPrimary: true,
                                   onPressed: () => _handleResponse(context, ref, req, 'accept'),
-                                  child: const Text('Accept Guidance'),
                                 ),
                               ),
                             ],
@@ -175,68 +170,84 @@ class RequestsInboxScreen extends ConsumerWidget {
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(isAccept ? 'Accept Supervision' : 'Decline Supervision'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              isAccept
-                  ? 'Confirm acceptance to become the official thesis supervisor for "${req.teamName}".'
-                  : 'Decline this supervision request. You may optionally provide constructive rationale.',
-              style: const TextStyle(fontSize: 13),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: notesController,
-              maxLines: 3,
-              decoration: const InputDecoration(
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: IosNeuCard(
+          borderRadius: BorderRadius.circular(28),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isAccept ? 'Accept Supervision' : 'Decline Supervision',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: IosNeuColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                isAccept
+                    ? 'Confirm acceptance to become the official thesis supervisor for "${req.teamName}".'
+                    : 'Decline this supervision request. You may optionally provide constructive rationale.',
+                style: const TextStyle(fontSize: 13, color: IosNeuColors.textSecondary),
+              ),
+              const SizedBox(height: 16),
+              NeuTextField(
+                controller: notesController,
+                maxLines: 3,
                 labelText: 'Notes / Feedback (Optional)',
                 hintText: 'Add an advisory note to the team...',
-                alignLabelWithHint: true,
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IosNeuButton(
+                    text: 'Cancel',
+                    isPrimary: false,
+                    onPressed: () => Navigator.of(ctx).pop(),
+                  ),
+                  const SizedBox(width: 12),
+                  IosNeuButton(
+                    text: isAccept ? 'Confirm Accept' : 'Confirm Decline',
+                    isPrimary: true,
+                    onPressed: () async {
+                      Navigator.of(ctx).pop();
+                      try {
+                        final repo = ref.read(supervisorRepositoryProvider);
+                        final msg = await repo.respondToRequest(
+                          requestId: req.id,
+                          action: action,
+                          notes: notesController.text.trim().isEmpty ? null : notesController.text.trim(),
+                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(msg),
+                              backgroundColor: isAccept ? AppColors.success : AppColors.info,
+                            ),
+                          );
+                          ref.invalidate(supervisorRequestsFutureProvider);
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isAccept ? AppColors.success : AppColors.error,
-            ),
-            child: Text(isAccept ? 'Confirm Accept' : 'Confirm Decline'),
-            onPressed: () async {
-              Navigator.of(ctx).pop();
-              try {
-                final repo = ref.read(supervisorRepositoryProvider);
-                final msg = await repo.respondToRequest(
-                  requestId: req.id,
-                  action: action,
-                  notes: notesController.text.trim().isEmpty ? null : notesController.text.trim(),
-                );
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(msg),
-                      backgroundColor: isAccept ? AppColors.success : AppColors.info,
-                    ),
-                  );
-                  ref.invalidate(supervisorRequestsFutureProvider);
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
-                  );
-                }
-              }
-            },
-          ),
-        ],
       ),
     );
   }

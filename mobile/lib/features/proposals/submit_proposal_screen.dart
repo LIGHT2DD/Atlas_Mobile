@@ -108,45 +108,50 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final neuTheme = context.neuTheme;
-
     return Scaffold(
-      backgroundColor: neuTheme.baseColor,
+      backgroundColor: IosNeuColors.canvas,
       appBar: const NeuAppBar(title: 'Submit Thesis Proposal'),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                NeuContainer(
-                  depthType: NeuDepth.convex,
-                  depth: 3.0,
-                  borderRadius: BorderRadius.circular(18),
+                IosNeuCard(
+                  borderRadius: BorderRadius.circular(24),
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(TablerIcons.file_description, color: neuTheme.accentColor, size: 24),
-                          const SizedBox(width: 10),
-                          Text(
-                            'Proposal Submission',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: neuTheme.textPrimary,
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: IosNeuColors.activePill,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(TablerIcons.file_description, color: Colors.white, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Proposal Submission',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: IosNeuColors.textPrimary,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 12),
+                      const Text(
                         'Submit your official research synopsis for supervisor approval. If revising, specify what changes were incorporated.',
-                        style: TextStyle(fontSize: 13, color: neuTheme.textSecondary, height: 1.4),
+                        style: TextStyle(fontSize: 13, color: IosNeuColors.textSecondary, height: 1.4),
                       ),
                     ],
                   ),
@@ -157,7 +162,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                   controller: _titleController,
                   labelText: 'Research Title *',
                   hintText: 'e.g. Adaptive Federated Learning Architecture',
-                  prefixIcon: Icon(TablerIcons.heading, color: neuTheme.textSecondary),
+                  prefixIcon: const Icon(TablerIcons.heading, color: IosNeuColors.textSecondary),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Title is required';
@@ -188,17 +193,17 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                   controller: _changeSummaryController,
                   labelText: 'Revision Summary (Optional)',
                   hintText: 'e.g. Addressed supervisor comments on Section 3 methodology',
-                  prefixIcon: Icon(TablerIcons.notes, color: neuTheme.textSecondary),
+                  prefixIcon: const Icon(TablerIcons.notes, color: IosNeuColors.textSecondary),
                 ),
                 const SizedBox(height: 24),
 
                 // Recessed Dropzone Container
-                Text(
+                const Text(
                   'DOCUMENT DELIVERABLE',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: neuTheme.textSecondary,
+                    color: IosNeuColors.textSecondary,
                     letterSpacing: 0.8,
                   ),
                 ),
@@ -216,10 +221,10 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                NeuButton(
+                IosNeuButton(
                   text: 'Submit Proposal for Review',
                   icon: TablerIcons.send,
-                  isAccent: true,
+                  isPrimary: true,
                   height: 52,
                   isLoading: _isLoading,
                   onPressed: _isLoading ? null : _submit,
