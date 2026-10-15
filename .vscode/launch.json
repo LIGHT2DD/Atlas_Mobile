@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Atlas Mobile (Local Server Auto-Start)",
+      "cwd": "mobile",
+      "request": "launch",
+      "type": "dart",
+      "preLaunchTask": "start-atlas-backend"
+    },
+    {
+      "name": "Atlas Mobile (Cloud / Deployed Backend)",
+      "cwd": "mobile",
+      "request": "launch",
+      "type": "dart",
+      "toolArgs": [
+        "--dart-define=API_BASE_URL=https://atlas-api.onrender.com"
+      ]
+    }
+  ]
+}

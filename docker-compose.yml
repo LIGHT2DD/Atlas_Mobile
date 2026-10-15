@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: atlas_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: atlas_db
+      POSTGRES_USER: atlas_user
+      POSTGRES_PASSWORD: atlas_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atlas_user -d atlas_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atlas_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - PYTHON_ENV=prod
+      - DB_TYPE=postgresql
+      - DB_URL=postgresql://atlas_user:atlas_password@postgres:5432/atlas_db
+      - SECRET_KEY=atlas_production_secret_key_change_in_real_deployment_9921
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - JWT_REFRESH_EXPIRY=30
+      - APP_URL=http://localhost:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./filestorage:/app/filestorage
+      - ./logs:/app/logs
+
+volumes:
+  postgres_data:

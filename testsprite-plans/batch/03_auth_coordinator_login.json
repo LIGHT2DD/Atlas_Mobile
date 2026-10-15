@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/TestSprite/testsprite-cli/v0.14.0/schemas/plan.schema.json",
+  "projectId": "4af7786b-16f0-45e3-83d4-43c5786a6bd5",
+  "type": "frontend",
+  "name": "Auth - Coordinator Login Flow",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to /auth?mode=login"
+    },
+    {
+      "type": "action",
+      "description": "Enter email 'coordinator@atlas.edu' and password 'Password123' and click Sign In"
+    },
+    {
+      "type": "assertion",
+      "description": "The user is logged in and redirected to the dashboard showing Coordinator navigation items such as Semesters or Rubrics"
+    }
+  ]
+}

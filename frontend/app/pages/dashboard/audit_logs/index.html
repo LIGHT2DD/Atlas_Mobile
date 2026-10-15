@@ -1,0 +1,85 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-secondary-900">System Audit Trail</h2>
+            <p class="text-sm text-secondary-500">Security and lifecycle audit logs tracking critical system operations and state changes.</p>
+        </div>
+        <span class="text-xs px-3 py-1.5 rounded-lg bg-secondary-100 text-secondary-700 font-medium">
+            {{ pagination_data.total }} Log Event{{ 's' if pagination_data.total != 1 else '' }}
+        </span>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card p-4">
+        <form method="get" action="/dashboard/audit-logs" class="flex items-center gap-3">
+            <div class="relative flex-1">
+                <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 text-sm"></i>
+                <input type="text" name="action" value="{{ action_filter or '' }}" placeholder="Filter by action (e.g. PROPOSAL, TEAM, GRADE, MILESTONE)..." class="w-full bg-white border border-secondary-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+            </div>
+            <button type="submit" class="btn btn-primary text-sm py-2">
+                <i class="fa-solid fa-filter mr-1"></i> Filter
+            </button>
+            {% if action_filter %}
+            <a href="/dashboard/audit-logs" class="btn btn-secondary text-sm py-2">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="card overflow-hidden p-0">
+        {% if logs %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-secondary-50 border-b border-secondary-200 text-xs font-semibold text-secondary-500 uppercase tracking-wider text-left">
+                        <th class="px-6 py-3">Timestamp</th>
+                        <th class="px-6 py-3">Action</th>
+                        <th class="px-6 py-3">Actor / User</th>
+                        <th class="px-6 py-3">Target Entity</th>
+                        <th class="px-6 py-3">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-secondary-100 font-mono text-xs">
+                    {% for l in logs %}
+                    <tr class="hover:bg-secondary-50/50 transition-colors">
+                        <td class="px-6 py-3.5 text-secondary-500 whitespace-nowrap">
+                            {{ l.created_at | date_format('%Y-%m-%d %H:%M:%S') }}
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold
+                                {% if 'APPROVED' in l.action or 'PUBLISHED' in l.action %}bg-emerald-100 text-emerald-800
+                                {% elif 'REJECTED' in l.action or 'DELETE' in l.action %}bg-red-100 text-red-800
+                                {% elif 'SUBMIT' in l.action %}bg-blue-100 text-blue-800
+                                {% else %}bg-secondary-100 text-secondary-800{% endif %}">
+                                {{ l.action }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3.5 font-sans text-secondary-800 font-medium">
+                            {{ l.user.first_name ~ ' ' ~ l.user.last_name if l.user else (l.user_id or 'System') }}
+                        </td>
+                        <td class="px-6 py-3.5 text-secondary-600">
+                            {{ l.entity_type or '-' }}{% if l.entity_id %}:{{ l.entity_id[:8] }}{% endif %}
+                        </td>
+                        <td class="px-6 py-3.5 font-sans text-secondary-600 max-w-md truncate">
+                            {{ l.details or '-' }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center text-secondary-400">
+            <i class="fa-solid fa-clipboard-list text-4xl mb-3 text-secondary-300"></i>
+            <p class="text-base font-semibold text-secondary-700">No Audit Logs Found</p>
+            <p class="text-xs text-secondary-500 mt-1">Actions performed by users and system jobs will be logged here.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,252 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+
+    <!-- Team Header Banner -->
+    <div class="card p-6 border-l-4 border-l-primary flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center text-2xl font-bold shadow-sm">
+                {{ team.name[0] }}
+            </div>
+            <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h2 class="text-xl font-bold text-secondary-900">{{ team.name }}</h2>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold
+                        {% if team.status == 'approved' %}bg-emerald-100 text-emerald-800
+                        {% elif team.status == 'in_progress' %}bg-blue-100 text-blue-800
+                        {% else %}bg-secondary-100 text-secondary-700{% endif %}">
+                        {{ team.status.replace('_', ' ').title() }}
+                    </span>
+                </div>
+                <p class="text-xs text-secondary-500 mt-1 flex items-center gap-3">
+                    <span><i class="fa-solid fa-building-columns mr-1"></i> {{ team.department.name if team.department else 'General Department' }}</span>
+                    <span><i class="fa-solid fa-calendar-check mr-1"></i> {{ team.semester.name if team.semester else 'Current Session' }}</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Invite Code Badge & Actions -->
+        <div class="flex items-center gap-3">
+            {% if can_invite and team.invite_code %}
+            <div class="flex items-center gap-2 bg-secondary-50 border border-secondary-200 rounded-lg px-3 py-1.5">
+                <span class="text-xs text-secondary-500">Invite Code:</span>
+                <code class="font-mono font-bold text-primary tracking-widest text-sm" id="invite-code-text">{{ team.invite_code }}</code>
+                <button onclick="navigator.clipboard.writeText('{{ team.invite_code }}'); alert('Invite code copied!');" class="text-secondary-400 hover:text-primary transition-colors text-xs" title="Copy Code">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
+            </div>
+            {% endif %}
+
+            {% if is_member and not is_leader %}
+            <form action="/dashboard/teams/{{ team.id }}/leave" method="post" onsubmit="return confirm('Are you sure you want to leave this team?');">
+                <button type="submit" class="btn btn-secondary text-xs text-accent-error hover:bg-red-50">
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i> Leave Team
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Main Grid: Left (Members), Right (Supervisor & Requests) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Team Members List (Col 2) -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="card p-0 overflow-hidden">
+                <div class="px-6 py-4 border-b border-secondary-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-secondary-900 text-base">Team Members</h3>
+                        <p class="text-xs text-secondary-500">{{ team.members | length }} of {{ team.max_members }} members enrolled</p>
+                    </div>
+                    {% if can_invite and (team.members | length) < team.max_members %}
+                    <button onclick="document.getElementById('add-member-modal').classList.remove('hidden')" class="btn btn-primary text-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-plus"></i> Add Member
+                    </button>
+                    {% endif %}
+                </div>
+
+                <div class="divide-y divide-secondary-100">
+                    {% for m in team.members %}
+                    <div class="p-4 px-6 flex items-center justify-between hover:bg-secondary-50/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-primary-100 text-primary flex items-center justify-center font-bold text-sm">
+                                {{ m.user.first_name[0] }}{{ m.user.last_name[0] }}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-semibold text-secondary-900 text-sm">{{ m.user.first_name }} {{ m.user.last_name }}</h4>
+                                    {% if m.role == 'leader' %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">
+                                        <i class="fa-solid fa-crown mr-1 text-[9px]"></i> Leader
+                                    </span>
+                                    {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-secondary-100 text-secondary-600">
+                                        Member
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-xs text-secondary-500">{{ m.user.email }}</p>
+                            </div>
+                        </div>
+
+                        {% if (is_leader or is_coordinator) and m.role != 'leader' %}
+                        <form action="/dashboard/teams/{{ team.id }}/members/{{ m.user_id }}/remove" method="post" onsubmit="return confirm('Remove this member from team?');">
+                            <button type="submit" class="text-secondary-400 hover:text-accent-error p-1.5 text-xs transition-colors" title="Remove Member">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Quick Navigation to Thesis Artifacts -->
+            <div class="grid grid-cols-2 gap-4">
+                <a href="/dashboard/proposals" class="card p-4 hover:border-primary transition-colors flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-secondary-900 text-sm">Thesis Proposal</p>
+                        <p class="text-[11px] text-secondary-500">Draft, submit, and review</p>
+                    </div>
+                </a>
+                <a href="/dashboard/submissions" class="card p-4 hover:border-primary transition-colors flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-secondary-900 text-sm">Milestone Submissions</p>
+                        <p class="text-[11px] text-secondary-500">SRS, Midterm, and Final Code</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Supervisor Card & Assignment (Col 1) -->
+        <div class="space-y-6">
+            <div class="card p-6">
+                <h3 class="font-bold text-secondary-900 text-base mb-3">Thesis Supervisor</h3>
+
+                {% if team.supervisor %}
+                <div class="flex items-center gap-3 p-3 bg-secondary-50 rounded-xl border border-secondary-200">
+                    <div class="w-12 h-12 rounded-full bg-gold text-white flex items-center justify-center font-bold text-base shadow-sm">
+                        {{ team.supervisor.first_name[0] }}{{ team.supervisor.last_name[0] }}
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-secondary-900 text-sm">{{ team.supervisor.first_name }} {{ team.supervisor.last_name }}</h4>
+                        <p class="text-xs text-secondary-500">{{ team.supervisor.email }}</p>
+                        <span class="inline-flex items-center text-[10px] text-emerald-700 font-semibold mt-1">
+                            <i class="fa-solid fa-circle-check mr-1"></i> Assigned & Supervising
+                        </span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-center">
+                    <i class="fa-solid fa-user-clock text-amber-600 text-2xl mb-2"></i>
+                    <p class="font-semibold text-xs text-amber-900">No Supervisor Assigned</p>
+                    <p class="text-[11px] text-amber-700 mt-0.5">
+                        {% if is_leader %}
+                        You can send a supervision request to faculty members below.
+                        {% else %}
+                        Your team leader can request a faculty supervisor.
+                        {% endif %}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- Supervisor Request Form (Leader Only if Unassigned) -->
+                {% if is_leader and not team.supervisor %}
+                <div class="mt-4 pt-4 border-t border-secondary-100">
+                    <h4 class="text-xs font-bold text-secondary-800 uppercase tracking-wider mb-2">Request Supervisor</h4>
+                    <form action="/dashboard/teams/{{ team.id }}/request-supervisor" method="post" class="space-y-3">
+                        <select name="supervisor_id" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-none">
+                            <option value="">-- Choose Faculty Member --</option>
+                            {% for sup in supervisors %}
+                            <option value="{{ sup.id }}">{{ sup.first_name }} {{ sup.last_name }} ({{ sup.email }})</option>
+                            {% endfor %}
+                        </select>
+                        <textarea name="notes" rows="2" placeholder="Brief note / topic summary for the faculty member..." class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
+                        <button type="submit" class="btn btn-primary w-full text-xs">
+                            Send Request
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+
+                <!-- Coordinator Administrative Assignment -->
+                {% if is_coordinator %}
+                <div class="mt-4 pt-4 border-t border-secondary-100">
+                    <h4 class="text-xs font-bold text-secondary-800 uppercase tracking-wider mb-2">Administrative Assignment</h4>
+                    <form action="/dashboard/teams/{{ team.id }}/assign-supervisor" method="post" class="space-y-3">
+                        <select name="supervisor_id" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-none">
+                            <option value="">-- Directly Assign Supervisor --</option>
+                            {% for sup in supervisors %}
+                            <option value="{{ sup.id }}" {{ 'selected' if team.supervisor_id == sup.id else '' }}>
+                                {{ sup.first_name }} {{ sup.last_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-secondary w-full text-xs">
+                            Update Supervisor
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Pending / Past Requests -->
+            {% if pending_requests %}
+            <div class="card p-6">
+                <h3 class="font-bold text-secondary-900 text-sm mb-3">Supervisor Requests</h3>
+                <div class="space-y-2">
+                    {% for req in pending_requests %}
+                    <div class="p-3 bg-secondary-50 rounded-lg border border-secondary-200 text-xs">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-semibold text-secondary-900">{{ req.supervisor.first_name }} {{ req.supervisor.last_name }}</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold 
+                                {% if req.status == 'pending' %}bg-amber-100 text-amber-800
+                                {% elif req.status in ['approved', 'accepted'] %}bg-emerald-100 text-emerald-800
+                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ req.status.upper() }}
+                            </span>
+                        </div>
+                        {% if req.notes %}
+                        <p class="text-secondary-500 italic mt-0.5">"{{ req.notes }}"</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Add Member Modal -->
+<div id="add-member-modal" class="fixed inset-0 z-50 bg-secondary-900/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 border border-secondary-200">
+        <div class="flex items-center justify-between pb-3 border-b border-secondary-100 mb-4">
+            <h3 class="text-base font-bold text-secondary-900">Add Team Member</h3>
+            <button onclick="document.getElementById('add-member-modal').classList.add('hidden')" class="text-secondary-400 hover:text-secondary-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form action="/dashboard/teams/{{ team.id }}/add-member" method="post" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Student University Email</label>
+                <input type="email" name="student_email" required placeholder="student@atlas.edu" class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+                <span class="text-[11px] text-secondary-400">Must be an existing registered student</span>
+            </div>
+            <div class="flex justify-end gap-2 pt-4 border-t border-secondary-100">
+                <button type="button" onclick="document.getElementById('add-member-modal').classList.add('hidden')" class="btn btn-secondary text-sm">Cancel</button>
+                <button type="submit" class="btn btn-primary text-sm">Add Member</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

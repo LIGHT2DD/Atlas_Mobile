@@ -1,0 +1,414 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+
+{% set user_role = request.state.current_user.role %}
+
+<div class="space-y-8">
+
+    {# ══════════════════════════════════════════════════════════════════ #}
+    {# ── STUDENT DASHBOARD ─────────────────────────────────────────── #}
+    {# ══════════════════════════════════════════════════════════════════ #}
+    {% if user_role == 'student' %}
+
+    <!-- Student Top Banner: Active Cycle & Team -->
+    <div class="card p-6 bg-gradient-to-r from-primary-50 via-white to-secondary-50 border-primary-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center text-2xl shadow-sm">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-primary">
+                    {{ stats.semester.name ~ ' (' ~ stats.semester.academic_year ~ ')' if stats.semester else 'Active Academic Cycle' }}
+                </span>
+                <h2 class="text-xl font-bold text-secondary-900 mt-0.5">
+                    {% if stats.team %}
+                    Team: {{ stats.team.name }}
+                    {% else %}
+                    No Thesis Team Formed Yet
+                    {% endif %}
+                </h2>
+                <p class="text-xs text-secondary-500">
+                    {% if stats.team and stats.team.supervisor %}
+                    Supervisor: <strong class="text-secondary-700">{{ stats.team.supervisor.first_name }} {{ stats.team.supervisor.last_name }}</strong>
+                    {% elif stats.team %}
+                    Supervisor: <span class="text-amber-600 font-medium">Pending Assignment</span>
+                    {% else %}
+                    Create or join a team to start your thesis workflow.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div>
+            {% if not stats.team %}
+            <a href="/dashboard/teams" class="btn btn-primary text-sm flex items-center gap-2">
+                <i class="fa-solid fa-users"></i> Form / Join Team
+            </a>
+            {% elif not stats.proposal %}
+            <a href="/dashboard/proposals" class="btn btn-primary text-sm flex items-center gap-2">
+                <i class="fa-solid fa-file-signature"></i> Draft Proposal
+            </a>
+            {% else %}
+            <a href="/dashboard/milestones" class="btn btn-primary text-sm flex items-center gap-2">
+                <i class="fa-solid fa-flag-checkered"></i> View Deliverables
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Student Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Team Status Card -->
+        <a href="/dashboard/teams" class="card group hover:border-primary-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Team</span>
+            </div>
+            <p class="text-xl font-bold text-secondary-900">
+                {{ stats.team.status.replace('_', ' ').title() if stats.team else 'Not Formed' }}
+            </p>
+            <p class="text-xs text-secondary-400 mt-1">
+                {{ stats.team.members | length if stats.team else 0 }} members enrolled
+            </p>
+        </a>
+
+        <!-- Proposal Status Card -->
+        <a href="/dashboard/proposals" class="card group hover:border-amber-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Proposal</span>
+            </div>
+            <p class="text-xl font-bold text-secondary-900">
+                {{ stats.proposal.status.replace('_', ' ').title() if stats.proposal else 'Not Created' }}
+            </p>
+            <p class="text-xs text-secondary-400 mt-1">
+                {{ 'v' ~ stats.proposal.current_version if stats.proposal else 'Draft required' }}
+            </p>
+        </a>
+
+        <!-- Progress Card -->
+        <a href="/dashboard/milestones" class="card group hover:border-emerald-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-bars-progress"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Progress</span>
+            </div>
+            <p class="text-xl font-bold text-secondary-900">{{ stats.progress_percentage }}%</p>
+            <div class="w-full bg-secondary-200 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ stats.progress_percentage }}%"></div>
+            </div>
+        </a>
+
+        <!-- Defense / Grade Card -->
+        <a href="/dashboard/grades" class="card group hover:border-purple-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Final Grade</span>
+            </div>
+            <p class="text-xl font-bold text-secondary-900">
+                {{ stats.team.final_grade if stats.team and stats.team.grade_published else 'Pending' }}
+            </p>
+            <p class="text-xs text-secondary-400 mt-1">
+                {{ stats.team.final_score | round(1) ~ '%' if stats.team and stats.team.grade_published else 'Assessment phase' }}
+            </p>
+        </a>
+    </div>
+
+    <!-- Student Deadlines & Notifications Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Upcoming Deadlines -->
+        <div class="card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-secondary-900 text-base">Upcoming Deliverables</h3>
+                <a href="/dashboard/deadlines" class="text-xs font-medium text-primary hover:underline">View All</a>
+            </div>
+            {% if stats.upcoming_deadlines %}
+            <div class="space-y-3">
+                {% for d in stats.upcoming_deadlines %}
+                <div class="p-3 bg-secondary-50 rounded-xl border border-secondary-200 flex items-center justify-between text-xs">
+                    <div>
+                        <p class="font-semibold text-secondary-900">{{ d.title }}</p>
+                        <p class="text-secondary-500 text-[11px] mt-0.5">Due: {{ d.due_date | date_format }}</p>
+                    </div>
+                    {% if d.is_submitted %}
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Submitted</span>
+                    {% else %}
+                    <a href="/dashboard/submissions" class="btn btn-secondary text-[11px] px-2 py-1">Submit</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-xs text-secondary-400 py-6 text-center">No upcoming deadlines recorded for this semester.</p>
+            {% endif %}
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-secondary-900 text-base">Recent Activity</h3>
+                <a href="/dashboard/notifications" class="text-xs font-medium text-primary hover:underline">All Notifications</a>
+            </div>
+            {% if stats.recent_notifications %}
+            <div class="space-y-3">
+                {% for n in stats.recent_notifications %}
+                <div class="p-3 rounded-xl border border-secondary-100 flex items-start gap-3 {{ 'bg-primary-50/40' if not n.is_read else 'bg-secondary-50/40' }}">
+                    <div class="w-7 h-7 rounded-lg bg-primary-100 text-primary flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-semibold text-secondary-900 text-xs truncate">{{ n.title }}</p>
+                        <p class="text-secondary-600 text-[11px] line-clamp-1">{{ n.content }}</p>
+                        <p class="text-secondary-400 text-[10px] mt-1">{{ n.created_at | date_format('%b %d, %I:%M %p') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-xs text-secondary-400 py-6 text-center">No notifications yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════ #}
+    {# ── SUPERVISOR DASHBOARD ──────────────────────────────────────── #}
+    {# ══════════════════════════════════════════════════════════════════ #}
+    {% elif user_role == 'supervisor' %}
+
+    <!-- Supervisor Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <a href="/dashboard/teams" class="card group hover:border-primary-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-users-rectangle"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Teams</span>
+            </div>
+            <p class="text-2xl font-bold text-secondary-900">{{ stats.total_teams }}</p>
+            <p class="text-xs text-secondary-400 mt-1">Supervised thesis teams</p>
+        </a>
+
+        <a href="/dashboard/requests" class="card group hover:border-amber-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-inbox"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Requests</span>
+            </div>
+            <p class="text-2xl font-bold text-secondary-900">{{ stats.pending_requests_count }}</p>
+            <p class="text-xs text-secondary-400 mt-1">Pending supervision requests</p>
+        </a>
+
+        <a href="/dashboard/proposals" class="card group hover:border-orange-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-file-signature"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Proposals</span>
+            </div>
+            <p class="text-2xl font-bold text-secondary-900">{{ stats.pending_proposals_count }}</p>
+            <p class="text-xs text-secondary-400 mt-1">Proposals awaiting review</p>
+        </a>
+
+        <a href="/dashboard/submissions" class="card group hover:border-purple-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Submissions</span>
+            </div>
+            <p class="text-2xl font-bold text-secondary-900">{{ stats.pending_submissions_count }}</p>
+            <p class="text-xs text-secondary-400 mt-1">Milestone reviews pending</p>
+        </a>
+    </div>
+
+    <!-- Supervisor Supervised Teams List -->
+    <div class="card overflow-hidden p-0">
+        <div class="px-6 py-4 border-b border-secondary-200 flex items-center justify-between">
+            <h3 class="font-bold text-secondary-900 text-base">Supervised Teams</h3>
+            <a href="/dashboard/teams" class="text-xs font-semibold text-primary hover:underline">Manage All</a>
+        </div>
+        {% if stats.teams %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-secondary-50 border-b border-secondary-200 text-xs font-semibold text-secondary-500 uppercase tracking-wider text-left">
+                        <th class="px-6 py-3">Team Name</th>
+                        <th class="px-6 py-3">Department</th>
+                        <th class="px-6 py-3">Members</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-secondary-100">
+                    {% for t in stats.teams %}
+                    <tr class="hover:bg-secondary-50/50 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-secondary-900">
+                            <a href="/dashboard/teams/{{ t.id }}" class="hover:text-primary">{{ t.name }}</a>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-secondary-600">{{ t.department.name if t.department else 'General' }}</td>
+                        <td class="px-6 py-4 text-xs text-secondary-600">{{ t.members | length }} members</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ t.status.replace('_', ' ').title() }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="/dashboard/teams/{{ t.id }}" class="btn btn-secondary text-xs px-2.5 py-1">View Team</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center text-secondary-400">
+            <i class="fa-solid fa-users-slash text-4xl mb-3 text-secondary-300"></i>
+            <p class="text-sm font-semibold text-secondary-700">No Assigned Teams Yet</p>
+            <p class="text-xs text-secondary-500 mt-1">Accept student supervision requests from the Requests tab to get started.</p>
+        </div>
+        {% endif %}
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════ #}
+    {# ── COORDINATOR DASHBOARD ─────────────────────────────────────── #}
+    {# ══════════════════════════════════════════════════════════════════ #}
+    {% else %}
+
+    <!-- Coordinator Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <a href="/dashboard/users" class="card group hover:border-primary-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Students</span>
+            </div>
+            <p class="text-2xl font-bold text-secondary-900">{{ stats.total_students }}</p>
+            <p class="text-xs text-secondary-400 mt-1">{{ stats.total_supervisors }} faculty supervisors</p>
+        </a>
+
+        <a href="/dashboard/teams" class="card group hover:border-purple-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Teams</span>
+            </div>
+            <p class="text-2xl font-bold text-secondary-900">{{ stats.total_teams }}</p>
+            <p class="text-xs text-secondary-400 mt-1">{{ stats.teams_active }} actively progressing</p>
+        </a>
+
+        <a href="/dashboard/proposals" class="card group hover:border-emerald-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-file-shield"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Proposals</span>
+            </div>
+            <p class="text-2xl font-bold text-secondary-900">{{ stats.proposal_approval_rate }}%</p>
+            <p class="text-xs text-secondary-400 mt-1">{{ stats.approved_proposals }} approved of {{ stats.total_proposals }}</p>
+        </a>
+
+        <a href="/dashboard/defense" class="card group hover:border-indigo-300 block no-underline transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <span class="text-xs font-semibold uppercase text-secondary-400">Defenses</span>
+            </div>
+            <p class="text-2xl font-bold text-secondary-900">{{ stats.upcoming_defenses | length }}</p>
+            <p class="text-xs text-secondary-400 mt-1">Scheduled sessions</p>
+        </a>
+    </div>
+
+    <!-- Coordinator Lifecycle Summary & Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Team Status Breakdown -->
+        <div class="card p-6 lg:col-span-2">
+            <h3 class="font-bold text-secondary-900 text-base mb-4">Thesis Lifecycle Breakdown</h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex items-center justify-between text-xs mb-1">
+                        <span class="font-medium text-secondary-700">Team Formation Phase</span>
+                        <span class="font-bold text-secondary-900">{{ stats.teams_forming }}</span>
+                    </div>
+                    <div class="w-full bg-secondary-100 rounded-full h-2">
+                        <div class="bg-secondary-400 h-2 rounded-full" style="width: {{ (stats.teams_forming / stats.total_teams * 100) if stats.total_teams else 0 }}%"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between text-xs mb-1">
+                        <span class="font-medium text-secondary-700">In Progress / Milestones</span>
+                        <span class="font-bold text-secondary-900">{{ stats.teams_active }}</span>
+                    </div>
+                    <div class="w-full bg-secondary-100 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: {{ (stats.teams_active / stats.total_teams * 100) if stats.total_teams else 0 }}%"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between text-xs mb-1">
+                        <span class="font-medium text-secondary-700">Defense Scheduled</span>
+                        <span class="font-bold text-secondary-900">{{ stats.teams_defense }}</span>
+                    </div>
+                    <div class="w-full bg-secondary-100 rounded-full h-2">
+                        <div class="bg-indigo-500 h-2 rounded-full" style="width: {{ (stats.teams_defense / stats.total_teams * 100) if stats.total_teams else 0 }}%"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between text-xs mb-1">
+                        <span class="font-medium text-secondary-700">Completed & Graded</span>
+                        <span class="font-bold text-secondary-900">{{ stats.teams_completed }}</span>
+                    </div>
+                    <div class="w-full bg-secondary-100 rounded-full h-2">
+                        <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ (stats.teams_completed / stats.total_teams * 100) if stats.total_teams else 0 }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coordinator Quick Shortcuts -->
+        <div class="card p-6 flex flex-col justify-between">
+            <div>
+                <h3 class="font-bold text-secondary-900 text-base mb-3">Academic Desk</h3>
+                <p class="text-xs text-secondary-500 mb-4">Fast administrative management shortcuts.</p>
+                <div class="space-y-2">
+                    <a href="/dashboard/semesters" class="flex items-center justify-between p-2.5 rounded-lg bg-secondary-50 hover:bg-secondary-100 text-xs font-semibold text-secondary-800 transition-colors">
+                        <span><i class="fa-solid fa-calendar-week mr-2 text-primary"></i> Manage Semesters</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-secondary-400"></i>
+                    </a>
+                    <a href="/dashboard/rubrics" class="flex items-center justify-between p-2.5 rounded-lg bg-secondary-50 hover:bg-secondary-100 text-xs font-semibold text-secondary-800 transition-colors">
+                        <span><i class="fa-solid fa-list-ol mr-2 text-primary"></i> Configure Rubrics</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-secondary-400"></i>
+                    </a>
+                    <a href="/dashboard/reports" class="flex items-center justify-between p-2.5 rounded-lg bg-secondary-50 hover:bg-secondary-100 text-xs font-semibold text-secondary-800 transition-colors">
+                        <span><i class="fa-solid fa-file-export mr-2 text-primary"></i> Export CSV Reports</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-secondary-400"></i>
+                    </a>
+                    <a href="/dashboard/audit-logs" class="flex items-center justify-between p-2.5 rounded-lg bg-secondary-50 hover:bg-secondary-100 text-xs font-semibold text-secondary-800 transition-colors">
+                        <span><i class="fa-solid fa-clipboard-list mr-2 text-primary"></i> Security Audit Logs</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-secondary-400"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

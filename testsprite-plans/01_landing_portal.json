@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/TestSprite/testsprite-cli/v0.14.0/schemas/plan.schema.json",
+  "projectId": "4af7786b-16f0-45e3-83d4-43c5786a6bd5",
+  "type": "frontend",
+  "name": "Landing Portal and Navigation",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to /"
+    },
+    {
+      "type": "assertion",
+      "description": "The page displays the ATLAS heading and portal links to Coordinator, Supervisor, and Student login options"
+    }
+  ]
+}

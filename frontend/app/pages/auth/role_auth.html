@@ -1,0 +1,250 @@
+{% extends "pages/layout.html" %}
+
+{% block content %}
+<div class="min-h-screen lg:h-screen lg:overflow-hidden bg-gradient-to-br from-primary-50 via-white to-gold-50 flex">
+
+    <!-- Left: Branding Panel (hidden on mobile) -->
+    <div class="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-primary-800 via-primary-700 to-primary-900 relative overflow-y-auto flex-col justify-between p-12">
+        <div class="absolute inset-0">
+            <div class="absolute top-20 left-10 w-64 h-64 bg-gold/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-20 right-10 w-80 h-80 bg-primary-400/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="relative z-10">
+            <a href="/" class="flex items-center gap-3 no-underline mb-16">
+                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                    <i class="fa-solid fa-graduation-cap text-xl text-gold-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black text-white tracking-tight leading-none">ATLAS</h1>
+                    <span class="text-[10px] uppercase tracking-wider text-primary-200 font-semibold">Academic Suite</span>
+                </div>
+            </a>
+
+            <h2 class="text-3xl font-bold text-white mb-4 leading-tight">
+                {% if active_mode == 'register' %}
+                Create Your Account
+                {% else %}
+                Welcome Back
+                {% endif %}
+            </h2>
+            <p class="text-primary-200 text-base leading-relaxed mb-8">
+                {% if active_mode == 'register' %}
+                Sign up once and get auto-routed to your personalised dashboard based on your assigned role.
+                {% else %}
+                Sign in with your email and password. You'll be automatically redirected to your role-specific dashboard.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="relative z-10 space-y-4">
+            <div class="flex items-center gap-3 text-primary-200">
+                <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-shield-halved text-sm text-gold-300"></i>
+                </div>
+                <span class="text-sm">Role-based route and feature access</span>
+            </div>
+            <div class="flex items-center gap-3 text-primary-200">
+                <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-cookie-bite text-sm text-gold-300"></i>
+                </div>
+                <span class="text-sm">Secure cookie session management</span>
+            </div>
+            <div class="flex items-center gap-3 text-primary-200">
+                <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-envelope text-sm text-gold-300"></i>
+                </div>
+                <span class="text-sm">Email-based account recovery support</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Auth Forms -->
+    <div class="flex-1 flex items-center justify-center p-6 md:p-10 overflow-y-auto">
+        <div class="w-full max-w-md py-6">
+            <div class="lg:hidden flex justify-center mb-8">
+                <a href="/" class="flex items-center gap-2.5 no-underline">
+                    <div class="w-9 h-9 bg-primary-800 rounded-lg flex items-center justify-center shadow-md border border-primary-600/30">
+                        <i class="fa-solid fa-graduation-cap text-base text-gold-300"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-xl font-black text-secondary-900 tracking-tight leading-none">ATLAS</h1>
+                        <span class="text-[10px] uppercase tracking-wider text-secondary-400 font-semibold">Academic Suite</span>
+                    </div>
+                </a>
+            </div>
+
+            
+            {% if active_mode == 'register' %}
+            <!-- <div class="flex items-center justify-center mb-6">
+                <div class="inline-flex items-center gap-2 bg-primary-50 border border-primary-200 rounded-full px-4 py-2">
+                    <i class="fa-solid {{ role_icon }} text-primary text-sm"></i>
+                    <span class="text-primary font-semibold text-sm">{{ role_label }} Portal</span>
+                </div>
+            </div> -->
+
+            <div class="flex flex-wrap justify-center gap-2 mb-6">
+                <a href="/auth?role=student&mode={{ active_mode }}" class="px-3 py-1.5 rounded-full text-xs font-semibold border {{ 'bg-primary text-white border-primary' if role == 'student' else 'bg-white text-secondary-600 border-secondary-200 hover:border-primary-300' }}">Student</a>
+                <a href="/auth?role=supervisor&mode={{ active_mode }}" class="px-3 py-1.5 rounded-full text-xs font-semibold border {{ 'bg-primary text-white border-primary' if role == 'supervisor' else 'bg-white text-secondary-600 border-secondary-200 hover:border-primary-300' }}">Supervisor</a>
+            </div>
+            <div id="form-register" class="auth-form">
+                <h2 class="text-2xl font-bold text-secondary-900 text-center mb-1">Create Account</h2>
+                <p class="text-secondary text-sm text-center mb-6">Fill in your details to get started</p>
+                <form method="post" action="/auth?role={{ role }}&mode=register" class="space-y-4">
+                    <input type="hidden" name="action" value="register">
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-secondary-700 text-sm font-medium" for="reg-first-name">First Name</label>
+                            <input type="text" id="reg-first-name" name="first_name" class="w-full bg-white border border-secondary-300 rounded-lg px-4 py-2.5 text-secondary-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-secondary-400 text-sm" required placeholder="John">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-secondary-700 text-sm font-medium" for="reg-last-name">Last Name</label>
+                            <input type="text" id="reg-last-name" name="last_name" class="w-full bg-white border border-secondary-300 rounded-lg px-4 py-2.5 text-secondary-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-secondary-400 text-sm" required placeholder="Doe">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-secondary-700 text-sm font-medium" for="reg-email">Email Address</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 text-sm"></i>
+                            <input type="email" id="reg-email" name="email" class="w-full bg-white border border-secondary-300 rounded-lg pl-10 pr-4 py-2.5 text-secondary-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-secondary-400 text-sm" required placeholder="email@university.edu" autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-secondary-700 text-sm font-medium" for="reg-password">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 text-sm"></i>
+                            <input type="password" id="reg-password" name="password" class="w-full bg-white border border-secondary-300 rounded-lg pl-10 pr-10 py-2.5 text-secondary-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-secondary-400 text-sm" required minlength="8" placeholder="Min. 8 characters" autocomplete="new-password">
+                            <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-secondary-500 hover:text-secondary-700" data-target="reg-password" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-secondary-700 text-sm font-medium" for="reg-confirm-password">Confirm Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 text-sm"></i>
+                            <input type="password" id="reg-confirm-password" name="confirm_password" class="w-full bg-white border border-secondary-300 rounded-lg pl-10 pr-10 py-2.5 text-secondary-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-secondary-400 text-sm" required minlength="8" placeholder="Repeat your password" autocomplete="new-password">
+                            <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-secondary-500 hover:text-secondary-700" data-target="reg-confirm-password" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full py-3 text-sm">
+                        Create Account <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+
+                    <p class="text-center text-secondary text-sm">
+                        Already have an account?
+                        <a href="/auth?mode=login" class="text-primary font-semibold hover:text-primary-700">Sign in</a>
+                    </p>
+                </form>
+            </div>
+            {% else %}
+            <div id="form-login" class="auth-form">
+                <h2 class="text-2xl font-bold text-secondary-900 text-center mb-1">Sign In to ATLAS</h2>
+                <p class="text-secondary-500 text-xs text-center mb-5">Single sign-in portal — you are auto-routed to your role dashboard</p>
+
+                <!-- Quick Test Credentials Pill -->
+                <div class="p-3.5 bg-secondary-50 border border-secondary-200 rounded-xl mb-5 text-xs">
+                    <div class="font-semibold text-secondary-700 flex items-center justify-between mb-2">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-key text-gold-500"></i> Demo Test Accounts</span>
+                        <span class="text-[10px] text-secondary-400 uppercase tracking-wider">Click to auto-fill</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="fillCreds('coordinator@atlas.edu', 'Password123')" class="px-2 py-1.5 bg-white border border-secondary-200 rounded-lg hover:border-primary-500 hover:text-primary transition font-medium text-[11px] shadow-sm flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-shield-halved text-primary"></i> Coordinator
+                        </button>
+                        <button type="button" onclick="fillCreds('supervisor1@atlas.edu', 'Password123')" class="px-2 py-1.5 bg-white border border-secondary-200 rounded-lg hover:border-gold-500 hover:text-gold-700 transition font-medium text-[11px] shadow-sm flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-chalkboard-user text-gold-600"></i> Supervisor
+                        </button>
+                        <button type="button" onclick="fillCreds('student1@atlas.edu', 'Password123')" class="px-2 py-1.5 bg-white border border-secondary-200 rounded-lg hover:border-emerald-500 hover:text-emerald-700 transition font-medium text-[11px] shadow-sm flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-graduation-cap text-emerald-600"></i> Student
+                        </button>
+                    </div>
+                </div>
+
+                <form method="post" action="/auth?mode=login" class="space-y-4">
+                    <input type="hidden" name="action" value="login">
+
+                    <div class="space-y-1.5">
+                        <label class="text-secondary-700 text-sm font-medium" for="login-email">Email Address</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 text-sm"></i>
+                            <input type="email" id="login-email" name="email" class="w-full bg-white border border-secondary-300 rounded-lg pl-10 pr-4 py-2.5 text-secondary-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-secondary-400 text-sm" required placeholder="email@university.edu" autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-secondary-700 text-sm font-medium" for="login-password">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 text-sm"></i>
+                            <input type="password" id="login-password" name="password" class="w-full bg-white border border-secondary-300 rounded-lg pl-10 pr-10 py-2.5 text-secondary-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-secondary-400 text-sm" required placeholder="Enter your password" autocomplete="current-password">
+                            <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-secondary-500 hover:text-secondary-700" data-target="login-password" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="remember_me" class="rounded border-secondary-300 text-primary focus:ring-primary">
+                            <span class="text-secondary-600">Remember me</span>
+                        </label>
+                        <a href="/auth/forgot-password" class="text-sm font-medium text-primary hover:text-primary-700">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full py-3 text-sm">
+                        Sign In <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+
+                    <p class="text-center text-secondary text-sm">
+                        Don't have an account?
+                        <a href="/auth?role=student&mode=register" class="text-primary font-semibold hover:text-primary-700">Create one</a>
+                    </p>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="mt-6 text-center">
+                <a href="/" class="text-secondary-400 hover:text-secondary-600 text-sm">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Back to home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Prevent back-button from cycling through stacked redirect entries
+if (window.history.replaceState) {
+    window.history.replaceState(null, document.title, window.location.href);
+}
+
+document.querySelectorAll('.password-toggle').forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+        const input = document.getElementById(toggle.dataset.target);
+        if (!input) return;
+        const icon = toggle.querySelector('i');
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        icon.classList.toggle('fa-eye', !isPassword);
+        icon.classList.toggle('fa-eye-slash', isPassword);
+    });
+});
+
+function fillCreds(email, password) {
+    const emailInput = document.getElementById('login-email');
+    const pwdInput = document.getElementById('login-password');
+    if (emailInput && pwdInput) {
+        emailInput.value = email;
+        pwdInput.value = password;
+        emailInput.focus();
+    }
+}
+</script>
+{% endblock %}

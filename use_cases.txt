@@ -1,0 +1,411 @@
+================================================================================
+ATLAS — Academic Thesis Lifecycle & Assessment Suite
+SYSTEM USE CASE & ROLE-BASED WORKFLOW SPECIFICATION
+================================================================================
+
+Document Purpose:
+This document provides a comprehensive rundown of how the three primary actors—
+STUDENT, SUPERVISOR, and COORDINATOR (Admin)—interact with the ATLAS web application
+throughout the full academic year thesis/capstone lifecycle.
+
+Default Credentials for Local Testing (see credentials.txt for full list):
+  Coordinator : coordinator@atlas.edu  / Password123
+  Supervisor  : supervisor1@atlas.edu  / Password123
+  Student     : student1@atlas.edu     / Password123
+
+Application Local URL: http://127.0.0.1:8000
+
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. Executive System Overview & Architecture
+2. Actor 1: Student (Thesis Candidate) Workflows
+3. Actor 2: Supervisor (Faculty Member) Workflows
+4. Actor 3: Coordinator / Admin (Department Lead) Workflows
+5. End-to-End Walkthrough Scenario ("Team Alpha")
+6. Dashboard Navigation & Feature Matrix by Role
+
+
+================================================================================
+1. EXECUTIVE SYSTEM OVERVIEW & ARCHITECTURE
+================================================================================
+ATLAS replaces manual paperwork, spreadsheets, and disconnected chat groups with
+a single, unified university platform. The academic journey proceeds across five
+formal phases:
+
+  PHASE 1: Enrollment, Team Formation & Supervisor Matching
+  PHASE 2: Proposal Drafting, Revision & Formal Departmental Approval
+  PHASE 3: Milestone Progress Tracking, Code/Document Submissions & Feedback
+  PHASE 4: Defense Committee Scheduling & Automated Conflict Prevention
+  PHASE 5: Multi-Criteria Rubric Scoring, Final Grade Computation & Publishing
+
+All users enter through the landing page (http://127.0.0.1:8000), log in via /login,
+and are routed directly to role-specific dashboard views at /dashboard.
+
+
+================================================================================
+2. ACTOR 1: STUDENT (THESIS CANDIDATE) WORKFLOWS
+================================================================================
+A student is an undergraduate or postgraduate candidate completing a capstone
+project or research thesis.
+
+USE CASE S-01: Registration & Account Setup
+--------------------------------------------
+- Goal: Create an active student profile in ATLAS.
+- Steps:
+  1. Navigate to http://127.0.0.1:8000/register
+  2. Fill in: Full Name, University Email (@atlas.edu or personal), Password.
+  3. Note: Public registration automatically provisions the user as a STUDENT.
+  4. Submit form. Upon success, redirect to /login.
+  5. Log in with credentials to land on the Student Dashboard.
+
+USE CASE S-02: Team Creation & Member Invites
+----------------------------------------------
+- Goal: Form a project team with peers within the active semester limits.
+- Navigation: Dashboard > Teams > Create Team (/dashboard/teams/new)
+- Steps:
+  1. Team Leader clicks "+ Create Team".
+  2. Enters:
+     - Team Name (e.g., "Team Alpha")
+     - Proposed Project / Thesis Title
+     - Description / Research Objective
+     - Selects the Active Academic Semester.
+  3. Clicks "Create Team".
+  4. System generates a unique 10-character Invite Code (e.g., "xK9_mQ2A").
+  5. Leader copies the Invite Code and shares it with teammates.
+
+USE CASE S-03: Teammate Joining a Team
+---------------------------------------
+- Goal: Join an existing team created by a peer.
+- Navigation: Dashboard > Teams > Join Team (/dashboard/teams/join)
+- Steps:
+  1. Teammate logs into their student account.
+  2. Enters the Team Invite Code.
+  3. System validates:
+     - User is not already in an active team for this semester.
+     - Team has not exceeded the semester maximum member capacity (e.g., 4 members).
+  4. Member is added to the team roster.
+
+USE CASE S-04: Supervisor Discovery & Request
+---------------------------------------------
+- Goal: Pair the team with an eligible faculty supervisor.
+- Navigation: Dashboard > Supervisors (/dashboard/supervisors)
+- Steps:
+  1. Browse faculty profiles, research areas, and current student capacity.
+  2. Click "Request Supervision" on the selected faculty member.
+  3. Fill in: Brief pitch, research motivation, proposed methodology.
+  4. Submit request.
+  5. Team status updates to "Supervisor Requested".
+  6. Real-time notification is sent to the faculty member.
+
+USE CASE S-05: Thesis Proposal Submission & Revision
+-----------------------------------------------------
+- Goal: Submit the formal thesis proposal for faculty approval.
+- Navigation: Dashboard > Proposals (/dashboard/proposals)
+- Steps:
+  1. Once a supervisor is assigned, navigate to Proposal Management.
+  2. Enter: Problem Statement, Research Objectives, Scope, Methodology.
+  3. Upload Proposal Document (PDF).
+  4. Click "Submit Proposal". Status becomes "Submitted / Under Review".
+  5. If the supervisor requests changes, review specific revision notes.
+  6. Edit and resubmit until status changes to "Approved".
+
+USE CASE S-06: Milestone Deliverables & Code Repository Submission
+-------------------------------------------------------------------
+- Goal: Submit deliverables for scheduled semester deadlines.
+- Navigation: Dashboard > Submissions (/dashboard/submissions/new)
+- Steps:
+  1. Check upcoming milestone due dates on Dashboard or /dashboard/milestones.
+  2. Click "New Submission" for the targeted milestone (e.g., "Midterm Prototype").
+  3. Enter Submission Title and Description of progress made.
+  4. Provide Deliverable Artifacts:
+     - GitHub / GitLab Repository URL (e.g., https://github.com/atlas/health-monitor)
+     - Uploaded Document / Report (PDF / DOCX)
+     - Deliverable file path / archive link
+  5. System validates deadline; if past due date, submission is flagged as "Late".
+  6. Click "Submit". Supervisor is automatically notified.
+
+USE CASE S-07: Reviewing Feedback & Scores
+-------------------------------------------
+- Goal: View supervisor comments, critique, and milestone evaluations.
+- Navigation: Dashboard > Submissions > [Submission Details]
+- Steps:
+  1. Open the submission item.
+  2. Read supervisor comments, revision directives, and milestone status.
+  3. Click "Code Repository" to verify linked source code.
+  4. If revision requested, click "Edit Submission", adjust deliverables, and resubmit.
+
+USE CASE S-08: Defense Schedule & Defense Preparation
+------------------------------------------------------
+- Goal: View assigned oral presentation session, venue, and panel members.
+- Navigation: Dashboard > Defense (/dashboard/defense)
+- Steps:
+  1. Check defense status: Scheduled date, time slot, and venue (or virtual room).
+  2. View assigned Defense Committee / Panel Members.
+  3. Download defense guidelines and prepare thesis presentation.
+
+USE CASE S-09: Final Academic Grade & Evaluation Transcript
+------------------------------------------------------------
+- Goal: View final published grades and rubric performance breakdown.
+- Navigation: Dashboard > Evaluations (/dashboard/evaluations)
+- Steps:
+  1. Once defense is completed and coordinator publishes final grades:
+  2. View overall grade (e.g., "A", score "92.5/100").
+  3. View rubric score breakdown across criteria (Implementation, Report, Presentation).
+  4. View supervisor final remarks and committee assessment.
+
+
+================================================================================
+3. ACTOR 2: SUPERVISOR (FACULTY MEMBER) WORKFLOWS
+================================================================================
+A supervisor is a faculty academic responsible for advising, mentoring, monitoring,
+and grading assigned student teams throughout their thesis duration.
+
+USE CASE V-01: Faculty Dashboard & Supervision Overview
+--------------------------------------------------------
+- Goal: Monitor all supervised teams, pending reviews, and upcoming deadlines.
+- Navigation: Dashboard (/dashboard)
+- Steps:
+  1. Log in as supervisor (e.g., supervisor1@atlas.edu).
+  2. View quick metrics:
+     - Number of supervised teams
+     - Pending supervision requests
+     - Submissions awaiting review
+     - Upcoming defense committee assignments
+  3. Access Quick Actions for grading and feedback.
+
+USE CASE V-02: Reviewing & Accepting Supervision Requests
+----------------------------------------------------------
+- Goal: Accept or decline student team mentorship requests.
+- Navigation: Dashboard > Supervision Requests (/dashboard/supervisors/requests)
+- Steps:
+  1. View pending student requests with team details, project title, and proposal pitch.
+  2. Check current student capacity (quota limit set by department).
+  3. Choose action:
+     - "Accept": Team status updates to "Supervisor Assigned", supervisor added to team.
+     - "Decline": Provide constructive decline reason; team can request another faculty.
+
+USE CASE V-03: Proposal Evaluation & Approval
+----------------------------------------------
+- Goal: Assess thesis proposal feasibility, scope, and technical depth.
+- Navigation: Dashboard > Proposals (/dashboard/proposals)
+- Steps:
+  1. Open a team's submitted proposal.
+  2. Read problem statement, objectives, and download proposal PDF.
+  3. Actions:
+     - "Request Revision": Add specific comments on methodology or scope.
+     - "Approve": Proposal is locked and approved. Team moves to active execution.
+     - "Reject": For unviable or duplicate proposals.
+
+USE CASE V-04: Milestone Submission Review & Grading
+-----------------------------------------------------
+- Goal: Review deliverables, inspect GitHub code, and provide rubric grades.
+- Navigation: Dashboard > Reviews / Submissions (/dashboard/submissions)
+- Steps:
+  1. View submissions submitted by supervised teams.
+  2. Open submission details (e.g., /dashboard/submissions/{id}).
+  3. Review student notes, download deliverable document, or click GitHub repository link.
+  4. Select status:
+     - "Under Review"
+     - "Approved"
+     - "Revision Required"
+     - "Rejected"
+  5. In the "Give Feedback" form:
+     - Type detailed qualitative feedback.
+     - Enter optional letter grade or mark (e.g., "A-", "88%").
+  6. Submit Feedback. Student team receives an instant notification.
+
+USE CASE V-05: Defense Committee Participation
+-----------------------------------------------
+- Goal: Attend scheduled student defenses and evaluate candidate presentations.
+- Navigation: Dashboard > Defense (/dashboard/defense)
+- Steps:
+  1. View defense hearings where the supervisor is listed as panel member or chair.
+  2. Inspect candidate team details, project title, and submitted final reports.
+  3. Attend oral defense in designated room or link.
+
+USE CASE V-06: Rubric-Based Final Evaluation
+---------------------------------------------
+- Goal: Score candidate teams against department-standard grading rubrics.
+- Navigation: Dashboard > Evaluations (/dashboard/evaluations/new)
+- Steps:
+  1. Select the team being evaluated.
+  2. Select the evaluation rubric (e.g., "Capstone Final Rubric 2026").
+  3. Enter scores for each weighted criterion:
+     - Technical Complexity & Rigor (e.g., 28 / 30)
+     - System Implementation & Code Quality (e.g., 27 / 30)
+     - Documentation & Thesis Report (e.g., 18 / 20)
+     - Oral Presentation & Q&A Defense (e.g., 19 / 20)
+  4. Total score is computed automatically.
+  5. Add final supervisor commentary.
+  6. Submit evaluation to department grade ledger.
+
+
+================================================================================
+4. ACTOR 3: COORDINATOR / ADMIN (DEPARTMENT LEAD) WORKFLOWS
+================================================================================
+The coordinator oversees departmental policies, semester setup, rubric matrices,
+defense committee logistics, and final grade certification.
+
+USE CASE C-01: Academic Semester Initialization & Governance
+-------------------------------------------------------------
+- Goal: Configure the active academic semester and lifecycle parameters.
+- Navigation: Dashboard > Semesters (/dashboard/semesters)
+- Steps:
+  1. Click "+ New Semester".
+  2. Enter:
+     - Code: e.g., "SP2026", "FALL2026"
+     - Name: e.g., "Spring 2026 Capstone Term"
+     - Start Date & End Date
+     - Max Team Size (e.g., 4) & Min Team Size (e.g., 2)
+  3. Mark as "Active Semester".
+  4. New student registrations and teams automatically bind to this active term.
+
+USE CASE C-02: Rubric & Assessment Matrix Configuration
+--------------------------------------------------------
+- Goal: Define standardized departmental rubrics with weighted criteria.
+- Navigation: Dashboard > Rubrics (/dashboard/rubrics)
+- Steps:
+  1. Click "+ New Rubric".
+  2. Name: e.g., "Final Capstone Evaluation Matrix".
+  3. Add criteria items:
+     - Criterion name, description, and maximum points (e.g., Problem Solving: 25).
+  4. Set target total points (e.g., 100).
+  5. Save and activate. Faculty members will grade using this standardized matrix.
+
+USE CASE C-03: Milestone Deadlines & Timeline Calendar
+-------------------------------------------------------
+- Goal: Establish deadlines across the semester for all teams.
+- Navigation: Dashboard > Milestones (/dashboard/milestones)
+- Steps:
+  1. Click "+ New Milestone".
+  2. Enter:
+     - Title: "Proposal Submission", "Midterm Prototype", "Final Thesis Draft"
+     - Description: Submission requirements, required code repo, report guidelines.
+     - Due Date & Due Time
+     - Associated Semester
+  3. Publish milestone. Appears on all student and faculty calendars.
+
+USE CASE C-04: Team Oversight & Faculty Workload Balancing
+-----------------------------------------------------------
+- Goal: Monitor team formation progress and balance supervisor loads.
+- Navigation: Dashboard > Teams (/dashboard/teams)
+- Steps:
+  1. Filter teams by status (Forming, Supervisor Assigned, Proposal Approved, In Progress).
+  2. Identify orphan teams that have not found a supervisor before deadline.
+  3. Use Admin Reassignment to manually assign an available faculty supervisor.
+  4. Ensure faculty supervision limits are balanced across the department.
+
+USE CASE C-05: Defense Committee Scheduling & Automated Conflict Prevention
+----------------------------------------------------------------------------
+- Goal: Schedule thesis defense hearings without room or faculty double-bookings.
+- Navigation: Dashboard > Defense (/dashboard/defense/new)
+- Steps:
+  1. Click "Schedule Defense".
+  2. Select:
+     - Target Candidate Team
+     - Date & Time Slot (Start Time, End Time)
+     - Venue / Room (e.g., "Lab 301", "Conference Hall B")
+     - Panel Members: Select 2 or 3 faculty examiners.
+  3. Click "Schedule Defense".
+  4. Conflict Engine Verification:
+     - If the room is already booked at that time -> Displays room collision warning.
+     - If an assigned panelist is scheduled for another defense at that time ->
+       Displays faculty double-booking collision error.
+  5. Once validated, defense is confirmed and added to all participants' schedules.
+
+USE CASE C-06: Grade Review, Calculation & Final Publishing
+------------------------------------------------------------
+- Goal: Compute aggregate weighted grades and publish final academic results.
+- Navigation: Dashboard > Evaluations (/dashboard/evaluations)
+- Steps:
+  1. Review submitted evaluations from supervisors and defense committees.
+  2. Verify scores against departmental grading distribution curve.
+  3. Calculate final letter grade (A+, A, B+, B, etc.).
+  4. Toggle "Publish Grades":
+     - Unlocks official grades on student transcripts.
+     - Marks teams as "Completed".
+
+USE CASE C-07: Audit Logging & Academic Compliance
+---------------------------------------------------
+- Goal: Maintain an immutable ledger of system actions for accreditation.
+- Navigation: Dashboard > Audit Logs (/dashboard/audit-logs)
+- Steps:
+  1. Inspect chronological activity log:
+     - User authentications, role modifications
+     - Proposal approvals, milestone uploads
+     - Grade modifications and defense scheduling events
+  2. Filter by user, date range, or action type for university compliance audits.
+
+
+================================================================================
+5. END-TO-END WALKTHROUGH SCENARIO ("TEAM ALPHA")
+================================================================================
+Here is how a real semester flows from start to finish in ATLAS:
+
+1. COORDINATOR SETS UP THE SEMESTER:
+   - Coordinator logs in (coordinator@atlas.edu).
+   - Creates "Spring 2026" with max team size = 4.
+   - Creates milestones: "Proposal" (Feb 15), "Midterm" (Mar 30), "Final" (May 10).
+   - Creates grading rubric with 4 criteria totaling 100 points.
+
+2. STUDENTS REGISTER & FORM TEAM:
+   - Student Tahmid registers or logs in (e.g., student1@atlas.edu).
+   - Tahmid creates "Team Alpha", titled "Smart Health Monitoring System".
+   - System generates invite code: "K9Q_mZ81".
+   - Teammates Samiul and Nahid register and use code "K9Q_mZ81" to join Team Alpha.
+
+3. SUPERVISOR MATCHING:
+   - Tahmid browses faculty at /dashboard/supervisors and selects Fatema Jannat Dihan.
+   - Team Alpha submits a supervision request.
+   - Supervisor Dihan logs in (supervisor1@atlas.edu), reviews the pitch, and accepts.
+
+4. PROPOSAL APPROVAL:
+   - Team Alpha writes their proposal and uploads "Proposal_v1.pdf" at /dashboard/proposals.
+   - Supervisor Dihan reviews it, adds comments: "Refine sensor sampling section", requests revision.
+   - Team Alpha updates text, re-uploads "Proposal_v2.pdf".
+   - Supervisor Dihan approves. Team Alpha enters Phase 3 (Active Progress).
+
+5. MILESTONE SUBMISSIONS & REVIEWS:
+   - On March 28, Team Alpha completes their Midterm Prototype.
+   - They submit at /dashboard/submissions:
+     * Code URL: https://github.com/atlas-demo/health-monitor
+     * File: Midterm_Deliverable.pdf
+   - Supervisor Dihan accesses /dashboard/submissions, tests the repo, reviews code,
+     and awards status "Approved" with grade "A" and feedback: "Clean architecture, good API docs."
+
+6. DEFENSE SCHEDULING WITH CONFLICT AVOIDANCE:
+   - Coordinator schedules Team Alpha defense for May 15 at 10:00 AM in Room 301.
+   - Coordinator assigns Supervisor Dihan and Dr. Grace Hopper to the panel.
+   - System checks room and panel availability; confirms zero scheduling conflicts.
+
+7. DEFENSE & FINAL GRADING:
+   - Team Alpha presents their oral defense in Room 301.
+   - Supervisor Dihan and panel submit rubric evaluation: 94/100 points.
+   - Coordinator reviews the final departmental ledger, assigns final grade "A".
+   - Coordinator clicks "Publish Grades".
+   - Tahmid, Samiul, and Nahid view their official completion transcript on their dashboard.
+
+
+================================================================================
+6. DASHBOARD NAVIGATION & FEATURE MATRIX BY ROLE
+================================================================================
+
+Feature / Page         | Student             | Supervisor          | Coordinator (Admin)
+-----------------------+---------------------+---------------------+-----------------------
+Overview (/dashboard)  | Team status, tasks  | Teams, pending work | System stats, alerts
+Teams                  | View / Join / Create| Supervised teams    | All teams, reassignment
+Supervisors            | Browse & Request    | Manage requests     | Manage faculty loads
+Proposals              | Draft & Submit      | Review & Approve    | Department approvals
+Milestones             | View deadlines      | View deadlines      | Create & Edit schedule
+Submissions            | Submit code & files | Review & Grade      | View all submissions
+Defense                | View defense time   | Panel schedule      | Conflict scheduler
+Evaluations / Rubrics  | View final transcript| Score with rubrics | Configure rubrics & publish
+Semesters              | Read-only           | Read-only           | Full management
+Audit Logs             | Inaccessible        | Inaccessible        | Full audit inspection
+Users / Roles          | Inaccessible        | Inaccessible        | User administration
+
+================================================================================
+END OF ATLAS USE CASE SPECIFICATION
+================================================================================

@@ -1,0 +1,160 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+
+    {% if is_student %}
+    {# ── Student Grade View ── #}
+    <div class="max-w-2xl mx-auto space-y-6">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold text-secondary-900">Thesis Assessment Result</h2>
+            <p class="text-sm text-secondary-500 mt-1">Official academic evaluation for your thesis team.</p>
+        </div>
+
+        {% if team and team.grade_published %}
+        <!-- Published Result Card -->
+        <div class="card p-8 text-center bg-gradient-to-b from-white to-secondary-50 border-2 border-primary-200 shadow-md">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 mb-4">
+                <i class="fa-solid fa-circle-check mr-1.5"></i> Officially Published Result
+            </span>
+            <h3 class="text-lg font-semibold text-secondary-700">{{ team.name }}</h3>
+
+            <div class="my-6">
+                <div class="text-6xl font-black text-primary font-mono tracking-tight">{{ team.final_grade }}</div>
+                <div class="text-xl font-bold text-secondary-900 mt-2">{{ team.final_score | round(2) }}% Overall Weighted Score</div>
+            </div>
+
+            {% if evaluations %}
+            <div class="mt-8 pt-6 border-t border-secondary-200 text-left">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-secondary-500 mb-3">Panel Feedback & Remarks</h4>
+                {% for e in evaluations %}
+                <div class="p-4 bg-white rounded-xl border border-secondary-200 mb-3 shadow-sm">
+                    <p class="text-xs text-secondary-700 italic">"{{ e.overall_comments }}"</p>
+                    <p class="text-[10px] text-secondary-400 mt-2 text-right">Evaluator: {{ e.evaluator.first_name }} {{ e.evaluator.last_name }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% elif team and team.final_score is not none %}
+        <!-- Evaluated but unpublished -->
+        <div class="card p-8 text-center bg-amber-50/50 border border-amber-200">
+            <i class="fa-solid fa-hourglass-half text-amber-500 text-4xl mb-3"></i>
+            <h3 class="text-base font-bold text-secondary-900">Evaluation Under Review</h3>
+            <p class="text-xs text-secondary-600 mt-1 max-w-md mx-auto">
+                Defense evaluation is complete. The Academic Coordinator has not yet published final grades for this semester cycle.
+            </p>
+        </div>
+        {% else %}
+        <!-- Pending Evaluation -->
+        <div class="card p-8 text-center">
+            <i class="fa-solid fa-graduation-cap text-secondary-300 text-4xl mb-3"></i>
+            <h3 class="text-base font-bold text-secondary-800">Grades Not Yet Available</h3>
+            <p class="text-xs text-secondary-500 mt-1">
+                Your thesis defense will be evaluated according to the rubric criteria upon completion of defense presentations.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% else %}
+    {# ── Coordinator / Faculty Grade Publication Desk ── #}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-secondary-900">Grade Publication Portal</h2>
+            <p class="text-sm text-secondary-500">Review calculated weighted scores and publish official letter grades to students.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="/dashboard/reports/export/grades" class="btn btn-secondary text-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-file-csv"></i> Export Grade Sheet
+            </a>
+        </div>
+    </div>
+
+    <!-- Grades Table -->
+    <div class="card overflow-hidden p-0">
+        {% if teams %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-secondary-50 border-b border-secondary-200 text-xs font-semibold text-secondary-500 uppercase tracking-wider text-left">
+                        <th class="px-6 py-3">Team Name</th>
+                        <th class="px-6 py-3">Supervisor</th>
+                        <th class="px-6 py-3">Weighted Score</th>
+                        <th class="px-6 py-3">Calculated Grade</th>
+                        <th class="px-6 py-3">Status</th>
+                        {% if is_coordinator %}
+                        <th class="px-6 py-3 text-right">Publication Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-secondary-100">
+                    {% for t in teams %}
+                    <tr class="hover:bg-secondary-50/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-secondary-900">
+                            <a href="/dashboard/teams/{{ t.id }}" class="hover:text-primary transition-colors">
+                                {{ t.name }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-secondary-600">
+                            {{ t.supervisor.first_name ~ ' ' ~ t.supervisor.last_name if t.supervisor else 'Unassigned' }}
+                        </td>
+                        <td class="px-6 py-4 font-mono font-bold text-sm">
+                            {% if t.final_score is not none %}
+                            <span class="text-primary">{{ t.final_score | round(2) }}%</span>
+                            {% else %}
+                            <span class="text-secondary-400 font-normal">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if t.final_grade %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800">
+                                {{ t.final_grade }}
+                            </span>
+                            {% else %}
+                            <span class="text-xs text-secondary-400">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if t.grade_published %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-purple-100 text-purple-800">
+                                <i class="fa-solid fa-circle-check mr-1"></i> Published
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
+                                Unpublished
+                            </span>
+                            {% endif %}
+                        </td>
+                        {% if is_coordinator %}
+                        <td class="px-6 py-4 text-right">
+                            {% if t.final_score is not none and not t.grade_published %}
+                            <form action="/dashboard/grades/{{ t.id }}/publish" method="post" class="inline" onsubmit="return confirm('Publish final grade for {{ t.name }}? Students will be notified immediately.');">
+                                <button type="submit" class="btn btn-primary text-xs px-3 py-1">
+                                    <i class="fa-solid fa-bullhorn mr-1"></i> Publish Grade
+                                </button>
+                            </form>
+                            {% elif t.grade_published %}
+                            <span class="text-xs text-secondary-400">Published to Team</span>
+                            {% else %}
+                            <span class="text-xs text-secondary-400 italic">Score required</span>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center text-secondary-400">
+            <i class="fa-solid fa-graduation-cap text-4xl mb-3 text-secondary-300"></i>
+            <p class="text-base font-semibold text-secondary-700">No Grades Recorded</p>
+            <p class="text-xs text-secondary-500 mt-1">Evaluated teams will appear here for final publication.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

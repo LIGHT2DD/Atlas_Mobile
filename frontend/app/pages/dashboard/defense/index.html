@@ -1,0 +1,161 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+
+    <!-- Header Banner -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-secondary-900">Thesis Defense Scheduling</h2>
+            <p class="text-sm text-secondary-500">Coordinate oral thesis defenses, viva examinations, and panel assignments.</p>
+        </div>
+
+        {% if is_coordinator %}
+        <button onclick="document.getElementById('schedule-defense-modal').classList.remove('hidden')" class="btn btn-primary text-sm flex items-center gap-2">
+            <i class="fa-solid fa-calendar-plus"></i> Schedule Defense
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Defenses List -->
+    <div class="card overflow-hidden p-0">
+        <div class="px-6 py-4 border-b border-secondary-200 flex items-center justify-between">
+            <h3 class="font-semibold text-secondary-900">Scheduled Oral Defenses</h3>
+            <span class="text-xs text-secondary-500">{{ defenses | length }} sessions</span>
+        </div>
+
+        {% if defenses %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-secondary-50 border-b border-secondary-200 text-xs font-semibold text-secondary-500 uppercase tracking-wider text-left">
+                        <th class="px-6 py-3">Team</th>
+                        <th class="px-6 py-3">Date & Time</th>
+                        <th class="px-6 py-3">Location / Room</th>
+                        <th class="px-6 py-3">Evaluation Panel</th>
+                        <th class="px-6 py-3">Status</th>
+                        {% if is_coordinator %}
+                        <th class="px-6 py-3 text-right">Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-secondary-100">
+                    {% for d in defenses %}
+                    <tr class="hover:bg-secondary-50/50 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-secondary-900">
+                            <a href="/dashboard/teams/{{ d.team_id }}" class="hover:text-primary transition-colors">
+                                {{ d.team.name if d.team else 'N/A' }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-xs">
+                            <div class="font-semibold text-secondary-900">{{ (d.defense_date or d.date) | date_format }}</div>
+                            <div class="text-secondary-500">{{ d.start_time }} &ndash; {{ d.end_time }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-xs font-medium text-secondary-700">
+                            <i class="fa-solid fa-location-dot mr-1 text-primary"></i> {{ d.location_room or d.room or 'TBD' }}
+                        </td>
+                        <td class="px-6 py-4 text-xs">
+                            <div class="flex flex-wrap gap-1">
+                                {% for p in d.panel_members %}
+                                {% set fac = p.faculty or p.user %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] bg-secondary-100 text-secondary-800">
+                                    {{ fac.first_name if fac else 'Panelist' }} {{ fac.last_name if fac else '' }}
+                                </span>
+                                {% else %}
+                                <span class="text-secondary-400 italic">No panel assigned</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold
+                                {% if d.status == 'completed' %}bg-emerald-100 text-emerald-800
+                                {% elif d.status == 'in_progress' %}bg-blue-100 text-blue-800
+                                {% elif d.status == 'cancelled' %}bg-red-100 text-red-800
+                                {% else %}bg-amber-100 text-amber-800{% endif %}">
+                                {{ d.status.replace('_', ' ').title() }}
+                            </span>
+                        </td>
+                        {% if is_coordinator %}
+                        <td class="px-6 py-4 text-right">
+                            <form action="/dashboard/defense/{{ d.id }}/delete" method="post" class="inline" onsubmit="return confirm('Cancel and delete this defense session?');">
+                                <button type="submit" class="text-secondary-400 hover:text-accent-error p-1" title="Cancel Defense">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center text-secondary-400">
+            <i class="fa-solid fa-calendar-xmark text-4xl mb-3 text-secondary-300"></i>
+            <p class="text-base font-semibold text-secondary-700">No Defenses Scheduled</p>
+            <p class="text-xs text-secondary-500 mt-1">Scheduled thesis defenses with panel assignments will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Schedule Defense Modal (Coordinator) -->
+{% if is_coordinator %}
+<div id="schedule-defense-modal" class="fixed inset-0 z-50 bg-secondary-900/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 border border-secondary-200">
+        <div class="flex items-center justify-between pb-3 border-b border-secondary-100 mb-4">
+            <h3 class="text-base font-bold text-secondary-900">Schedule Thesis Defense</h3>
+            <button onclick="document.getElementById('schedule-defense-modal').classList.add('hidden')" class="text-secondary-400 hover:text-secondary-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form action="/dashboard/defense/new" method="post" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Thesis Team <span class="text-accent-error">*</span></label>
+                <select name="team_id" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+                    <option value="">-- Choose Team --</option>
+                    {% for t in teams %}
+                    <option value="{{ t.id }}">{{ t.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Defense Date <span class="text-accent-error">*</span></label>
+                <input type="date" name="defense_date" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-secondary-700 mb-1">Start Time (HH:MM)</label>
+                    <input type="time" name="start_time" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-secondary-700 mb-1">End Time (HH:MM)</label>
+                    <input type="time" name="end_time" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Venue / Room <span class="text-accent-error">*</span></label>
+                <input type="text" name="location_room" required placeholder="e.g. Lab 402, Auditorium B, Room 301" class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Select Panel Members</label>
+                <div class="max-h-36 overflow-y-auto border border-secondary-300 rounded-lg p-2 space-y-1.5">
+                    {% for f in faculty_members %}
+                    <label class="flex items-center gap-2 text-xs text-secondary-800 hover:bg-secondary-50 p-1 rounded cursor-pointer">
+                        <input type="checkbox" name="panel_member_ids" value="{{ f.id }}" class="rounded text-primary focus:ring-primary">
+                        <span>{{ f.first_name }} {{ f.last_name }} ({{ f.email }})</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                <span class="text-[11px] text-secondary-400">ATLAS automatically checks room and faculty conflict overlap.</span>
+            </div>
+            <div class="flex justify-end gap-2 pt-4 border-t border-secondary-100">
+                <button type="button" onclick="document.getElementById('schedule-defense-modal').classList.add('hidden')" class="btn btn-secondary text-sm">Cancel</button>
+                <button type="submit" class="btn btn-primary text-sm">Schedule Defense</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

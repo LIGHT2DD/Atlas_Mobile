@@ -1,0 +1,81 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-secondary-900">Academic Deadlines & Schedule</h2>
+            <p class="text-sm text-secondary-500">Timeline tracking for all thesis deliverables and milestone submissions.</p>
+        </div>
+        <a href="/dashboard/milestones" class="btn btn-secondary text-xs">
+            <i class="fa-solid fa-flag-checkered mr-1"></i> View Milestones
+        </a>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card p-5 border-l-4 border-l-primary flex items-center justify-between">
+            <div>
+                <p class="text-xs text-secondary-500 uppercase tracking-wider font-semibold">Total Milestones</p>
+                <p class="text-2xl font-bold text-secondary-900 mt-1">{{ all_milestones | length }}</p>
+            </div>
+            <div class="w-10 h-10 rounded-lg bg-primary-100 text-primary flex items-center justify-center text-lg">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+        </div>
+
+        <div class="card p-5 border-l-4 border-l-emerald-500 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-secondary-500 uppercase tracking-wider font-semibold">Upcoming Deadlines</p>
+                <p class="text-2xl font-bold text-emerald-600 mt-1">{{ upcoming_deadlines | length }}</p>
+            </div>
+            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-hourglass-start"></i>
+            </div>
+        </div>
+
+        <div class="card p-5 border-l-4 border-l-accent-error flex items-center justify-between">
+            <div>
+                <p class="text-xs text-secondary-500 uppercase tracking-wider font-semibold">Past / Overdue</p>
+                <p class="text-2xl font-bold text-accent-error mt-1">{{ overdue_deadlines | length }}</p>
+            </div>
+            <div class="w-10 h-10 rounded-lg bg-red-100 text-accent-error flex items-center justify-center text-lg">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Timeline -->
+    <div class="card p-6">
+        <h3 class="font-bold text-secondary-900 text-base mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-calendar-check text-primary"></i> Upcoming Academic Deadlines
+        </h3>
+        {% if upcoming_deadlines %}
+        <div class="relative border-l-2 border-primary-200 ml-4 space-y-6">
+            {% for m in upcoming_deadlines %}
+            <div class="ml-6 relative">
+                <span class="absolute -left-9 top-1 w-5 h-5 rounded-full border-4 border-white bg-primary shadow-sm"></span>
+                <div class="p-4 bg-secondary-50 rounded-xl border border-secondary-200">
+                    <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+                        <h4 class="font-bold text-secondary-900 text-sm">{{ m.title }}</h4>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded bg-primary-100 text-primary">
+                            {{ m.weight_percentage }}% of Final Grade
+                        </span>
+                    </div>
+                    <p class="text-xs text-secondary-600 mb-2">{{ m.description if m.description else 'Milestone deliverable' }}</p>
+                    <div class="text-xs font-semibold text-secondary-800 flex items-center gap-2">
+                        <i class="fa-regular fa-clock text-primary"></i>
+                        Due: {{ m.due_date[:10] }} at {{ m.due_date[11:16] }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-xs text-secondary-400 text-center py-4">No upcoming deadlines remaining this semester.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,302 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+
+    <!-- Header Banner -->
+    <div class="card p-6 border-l-4 
+        {% if proposal.status == 'approved' %}border-l-emerald-500
+        {% elif proposal.status == 'submitted' %}border-l-amber-500
+        {% elif proposal.status == 'changes_requested' %}border-l-orange-500
+        {% elif proposal.status == 'rejected' %}border-l-red-500
+        {% else %}border-l-secondary-400{% endif %} flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        
+        <div>
+            <div class="flex items-center gap-2 flex-wrap mb-1">
+                <span class="text-xs font-semibold uppercase tracking-wider text-secondary-500">
+                    Team: <a href="/dashboard/teams/{{ proposal.team_id }}" class="text-primary hover:underline">{{ proposal.team.name }}</a>
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold
+                    {% if proposal.status == 'approved' %}bg-emerald-100 text-emerald-800
+                    {% elif proposal.status == 'submitted' %}bg-amber-100 text-amber-800
+                    {% elif proposal.status == 'changes_requested' %}bg-orange-100 text-orange-800
+                    {% elif proposal.status == 'rejected' %}bg-red-100 text-red-800
+                    {% else %}bg-secondary-100 text-secondary-700{% endif %}">
+                    {{ proposal.status.replace('_', ' ').upper() }}
+                </span>
+                <span class="px-2 py-0.5 rounded bg-secondary-100 text-secondary-700 font-mono text-xs font-bold">
+                    Version {{ proposal.current_version }}
+                </span>
+            </div>
+            <h2 class="text-xl font-bold text-secondary-900">{{ proposal.title }}</h2>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 flex-wrap">
+            {% if can_submit and proposal.status == 'draft' %}
+            <button onclick="document.getElementById('draft-submit-modal').classList.remove('hidden')" class="btn btn-primary text-xs flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-paper-plane"></i> Submit to Supervisor
+            </button>
+            {% elif can_submit %}
+            <form action="/dashboard/proposals/{{ proposal.id }}/submit" method="post">
+                <button type="submit" class="btn btn-primary text-xs flex items-center gap-1.5 shadow-sm" onclick="return confirm('Submit this proposal version for supervisor review?');">
+                    <i class="fa-solid fa-paper-plane"></i> Submit to Supervisor
+                </button>
+            </form>
+            {% endif %}
+
+            {% if can_create_version %}
+            <button onclick="document.getElementById('resubmit-modal').classList.remove('hidden')" class="btn btn-primary text-xs flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-arrow-rotate-right"></i> Resubmit New Version
+            </button>
+            {% endif %}
+
+            {% if can_review %}
+            <button onclick="document.getElementById('review-modal').classList.remove('hidden')" class="btn btn-primary text-xs flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-stamp"></i> Evaluate & Review
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Supervisor Requirement Notice for Draft Proposals -->
+    {% if is_member and proposal.status == 'draft' and not team.supervisor_id %}
+    <div class="card p-4 bg-amber-50 border border-amber-200 flex items-center justify-between gap-4 text-xs">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-sm flex-shrink-0">
+                <i class="fa-solid fa-user-clock"></i>
+            </div>
+            <div>
+                <p class="font-bold text-amber-900">Assigned Supervisor Required</p>
+                <p class="text-amber-700 mt-0.5">Your team needs an assigned supervisor before formal proposal submission. Send a supervision request from your team dashboard.</p>
+            </div>
+        </div>
+        <a href="/dashboard/teams/{{ team.id }}" class="btn btn-primary text-xs whitespace-nowrap">
+            View Team &amp; Request
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Lifecycle Status Timeline Bar -->
+    <div class="card p-4 bg-secondary-50 border border-secondary-200">
+        <div class="flex items-center justify-between text-xs font-semibold text-secondary-500 max-w-xl mx-auto">
+            <div class="flex items-center gap-2 {{ 'text-primary font-bold' if proposal.status != 'draft' else 'text-secondary-400' }}">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs {{ 'bg-primary text-white' if proposal.status != 'draft' else 'bg-secondary-200 text-secondary-600' }}">1</span>
+                <span>Draft</span>
+            </div>
+            <div class="h-0.5 flex-1 mx-3 {{ 'bg-primary' if proposal.status in ['submitted', 'changes_requested', 'approved'] else 'bg-secondary-200' }}"></div>
+            <div class="flex items-center gap-2 {{ 'text-primary font-bold' if proposal.status in ['submitted', 'changes_requested', 'approved'] else 'text-secondary-400' }}">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs {{ 'bg-primary text-white' if proposal.status in ['submitted', 'changes_requested', 'approved'] else 'bg-secondary-200 text-secondary-600' }}">2</span>
+                <span>Submitted</span>
+            </div>
+            <div class="h-0.5 flex-1 mx-3 {{ 'bg-primary' if proposal.status == 'approved' else 'bg-secondary-200' }}"></div>
+            <div class="flex items-center gap-2 {{ 'text-emerald-600 font-bold' if proposal.status == 'approved' else 'text-secondary-400' }}">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs {{ 'bg-emerald-600 text-white' if proposal.status == 'approved' else 'bg-secondary-200 text-secondary-600' }}">3</span>
+                <span>Approved</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid: Left (Current Version Details), Right (Version History & Reviews) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Left: Current Proposal Content (Col 2) -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="card p-6">
+                <h3 class="font-bold text-secondary-900 text-base mb-3">Abstract & Scope</h3>
+                <div class="p-4 bg-secondary-50 rounded-xl border border-secondary-200 text-sm text-secondary-700 whitespace-pre-line leading-relaxed">
+                    {{ latest_version.abstract if latest_version else proposal.abstract }}
+                </div>
+
+                {% if latest_version and latest_version.change_summary %}
+                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
+                    <p class="font-bold text-blue-900 mb-0.5"><i class="fa-solid fa-code-compare mr-1"></i> Revision Notes (v{{ latest_version.version_number }}):</p>
+                    <p class="text-blue-800">{{ latest_version.change_summary }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Document Download Card -->
+                {% if latest_version and latest_version.document %}
+                <div class="mt-6 pt-4 border-t border-secondary-100 flex items-center justify-between p-3 bg-secondary-50 rounded-xl border border-secondary-200">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-secondary-900 text-xs">{{ latest_version.document.filename }}</p>
+                            <p class="text-[10px] text-secondary-400">{{ (latest_version.document.file_size / 1024) | round(1) }} KB &bull; Uploaded {{ latest_version.created_at | date_format }}</p>
+                        </div>
+                    </div>
+                    <a href="/dashboard/documents/{{ latest_version.document_id }}/download" class="btn btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Download
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Historical Reviews Section -->
+            <div class="card p-6">
+                <h3 class="font-bold text-secondary-900 text-base mb-4">Academic Review Log</h3>
+                {% if reviews %}
+                <div class="space-y-4">
+                    {% for rev in reviews %}
+                    <div class="p-4 rounded-xl border border-secondary-200 
+                        {% if rev.decision == 'approved' %}bg-emerald-50/50 border-emerald-200
+                        {% elif rev.decision == 'changes_requested' %}bg-orange-50/50 border-orange-200
+                        {% else %}bg-secondary-50{% endif %}">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-secondary-300 text-secondary-800 flex items-center justify-center text-xs font-bold">
+                                    {{ rev.reviewer.first_name[0] }}{{ rev.reviewer.last_name[0] }}
+                                </div>
+                                <span class="font-semibold text-secondary-900 text-xs">{{ rev.reviewer.first_name }} {{ rev.reviewer.last_name }}</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase
+                                {% if rev.decision == 'approved' %}bg-emerald-200 text-emerald-900
+                                {% elif rev.decision == 'changes_requested' %}bg-orange-200 text-orange-900
+                                {% else %}bg-red-200 text-red-900{% endif %}">
+                                {{ rev.decision.replace('_', ' ') }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-secondary-700 whitespace-pre-line">{{ rev.comments }}</p>
+                        <p class="text-[10px] text-secondary-400 mt-2 text-right">{{ rev.created_at | date_format('%b %d, %Y %I:%M %p') }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-xs text-secondary-400 text-center py-4">No reviews recorded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right: Version History Timeline (Col 1) -->
+        <div class="space-y-6">
+            <div class="card p-6">
+                <h3 class="font-bold text-secondary-900 text-base mb-4">Version History</h3>
+                <div class="relative border-l-2 border-secondary-200 ml-3 space-y-6">
+                    {% for v in versions %}
+                    <div class="ml-4 relative">
+                        <span class="absolute -left-6 top-1 w-4 h-4 rounded-full border-2 border-white 
+                            {% if v.version_number == proposal.current_version %}bg-primary ring-2 ring-primary-200{% else %}bg-secondary-300{% endif %}"></span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold font-mono text-secondary-900">v{{ v.version_number }}</span>
+                                {% if v.version_number == proposal.current_version %}
+                                <span class="text-[10px] bg-primary-100 text-primary font-semibold px-1.5 py-0.2 rounded">Latest</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-xs text-secondary-600 font-medium truncate mt-0.5">{{ v.title }}</p>
+                            <p class="text-[10px] text-secondary-400 mt-0.5">{{ v.created_at | date_format }}</p>
+                            {% if v.document %}
+                            <a href="/dashboard/documents/{{ v.document_id }}/download" class="inline-flex items-center text-[10px] text-primary hover:underline mt-1">
+                                <i class="fa-solid fa-paperclip mr-1"></i> {{ v.document.filename }}
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Review Modal (Supervisor / Coordinator) -->
+<div id="review-modal" class="fixed inset-0 z-50 bg-secondary-900/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-secondary-200">
+        <div class="flex items-center justify-between pb-3 border-b border-secondary-100 mb-4">
+            <h3 class="text-base font-bold text-secondary-900">Proposal Academic Review</h3>
+            <button onclick="document.getElementById('review-modal').classList.add('hidden')" class="text-secondary-400 hover:text-secondary-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form action="/dashboard/proposals/{{ proposal.id }}/review" method="post" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Decision <span class="text-accent-error">*</span></label>
+                <select name="decision" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+                    <option value="approved">Approve Proposal</option>
+                    <option value="changes_requested">Request Changes / Resubmission</option>
+                    <option value="rejected">Reject Proposal</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Reviewer Feedback & Comments <span class="text-accent-error">*</span></label>
+                <textarea name="comments" required rows="4" placeholder="Detail required changes or reasons for approval..." class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
+            </div>
+            <div class="flex justify-end gap-2 pt-4 border-t border-secondary-100">
+                <button type="button" onclick="document.getElementById('review-modal').classList.add('hidden')" class="btn btn-secondary text-sm">Cancel</button>
+                <button type="submit" class="btn btn-primary text-sm">Submit Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Resubmit Modal (Student Revision) -->
+<div id="resubmit-modal" class="fixed inset-0 z-50 bg-secondary-900/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 border border-secondary-200">
+        <div class="flex items-center justify-between pb-3 border-b border-secondary-100 mb-4">
+            <h3 class="text-base font-bold text-secondary-900">Resubmit Revised Proposal (v{{ proposal.current_version + 1 }})</h3>
+            <button onclick="document.getElementById('resubmit-modal').classList.add('hidden')" class="text-secondary-400 hover:text-secondary-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form action="/dashboard/proposals/{{ proposal.id }}/resubmit" method="post" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Thesis Title</label>
+                <input type="text" name="title" value="{{ proposal.title }}" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Updated Abstract</label>
+                <textarea name="abstract" required rows="4" class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">{{ latest_version.abstract if latest_version else proposal.abstract }}</textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Summary of Changes Made <span class="text-accent-error">*</span></label>
+                <textarea name="change_summary" required rows="2" placeholder="Explain what was updated following supervisor feedback..." class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Revised Document (PDF/DOCX)</label>
+                <input type="file" name="document" accept=".pdf,.docx,.doc" class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-none bg-secondary-50">
+            </div>
+            <div class="flex justify-end gap-2 pt-4 border-t border-secondary-100">
+                <button type="button" onclick="document.getElementById('resubmit-modal').classList.add('hidden')" class="btn btn-secondary text-sm">Cancel</button>
+                <button type="submit" class="btn btn-primary text-sm">Submit Revision</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Draft Submit Modal (Initial Submission) -->
+<div id="draft-submit-modal" class="fixed inset-0 z-50 bg-secondary-900/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 border border-secondary-200">
+        <div class="flex items-center justify-between pb-3 border-b border-secondary-100 mb-4">
+            <h3 class="text-base font-bold text-secondary-900">Submit Proposal for Academic Review</h3>
+            <button onclick="document.getElementById('draft-submit-modal').classList.add('hidden')" class="text-secondary-400 hover:text-secondary-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form action="/dashboard/proposals/{{ proposal.id }}/submit" method="post" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Thesis Title <span class="text-accent-error">*</span></label>
+                <input type="text" name="title" value="{{ proposal.title }}" required class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Abstract / Executive Summary <span class="text-accent-error">*</span></label>
+                <textarea name="abstract" required rows="4" class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">{{ latest_version.abstract if latest_version else proposal.abstract }}</textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Proposal Document (PDF / DOCX)</label>
+                <input type="file" name="document" accept=".pdf,.docx,.doc" class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-none bg-secondary-50">
+                <span class="text-[11px] text-secondary-400">Attach or update proposal document (max 25MB)</span>
+            </div>
+            <div class="flex justify-end gap-2 pt-4 border-t border-secondary-100">
+                <button type="button" onclick="document.getElementById('draft-submit-modal').classList.add('hidden')" class="btn btn-secondary text-sm">Cancel</button>
+                <button type="submit" class="btn btn-primary text-sm flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-paper-plane"></i> Submit to Supervisor
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

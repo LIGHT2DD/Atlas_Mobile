@@ -1,0 +1,373 @@
+{% extends "pages/layout.html" %}
+
+{% block content %}
+
+{% include "components/navbar.html" %}
+
+<!-- ─── Hero Section ──────────────────────────────────────────── -->
+<section class="relative min-h-screen flex items-center bg-gradient-to-br from-secondary-950 via-primary-950 to-secondary-900 overflow-hidden text-white pt-20">
+    <!-- Background grid decoration -->
+    <div class="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] opacity-15"></div>
+    <div class="absolute top-20 left-10 w-80 h-80 bg-primary-600/15 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 md:px-[80px] py-24 md:py-32 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <!-- Left: Hero Content -->
+            <div class="lg:col-span-7">
+                <div class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 mb-6 border border-white/15">
+                    <span class="w-2.5 h-2.5 bg-gold-400 rounded-full animate-ping"></span>
+                    <span class="text-white/90 text-xs md:text-sm font-semibold tracking-wide uppercase">Academic Thesis Lifecycle & Assessment Suite</span>
+                </div>
+                
+                <h1 class="text-4xl md:text-6xl font-black text-white leading-tight mb-6 tracking-tight">
+                    Manage University
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-gold-400 to-amber-200"> Theses & Capstones</span>
+                    From Proposal to Defense
+                </h1>
+                
+                <p class="text-lg text-secondary-300 mb-8 max-w-2xl leading-relaxed">
+                    A centralized, role-based platform unifying <strong class="text-white">Students</strong>, <strong class="text-white">Supervisors</strong>, and <strong class="text-white">Coordinators</strong>. Govern team formation, formal supervisor requests, multi-version proposal reviews, milestone deliveries, defense scheduling, and weighted rubric evaluations.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 mb-10">
+                    <a href="/auth?role=student&mode=register" class="btn bg-gold-400 text-secondary-950 hover:bg-gold-300 px-8 py-3.5 text-base font-bold shadow-lg shadow-gold-500/20 hover:scale-[1.02] transition-transform">
+                        <i class="fa-solid fa-graduation-cap mr-2"></i> Student Registration
+                    </a>
+                    <a href="/auth?mode=login" class="btn bg-white/10 text-white border border-white/20 hover:bg-white/20 px-8 py-3.5 text-base font-semibold backdrop-blur-sm">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i> Portal Sign In
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-white/10 max-w-lg text-center">
+                    <div>
+                        <div class="text-2xl font-black text-gold-300">3 Roles</div>
+                        <div class="text-xs text-secondary-400">Strict RBAC & Workspaces</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-black text-primary-300">12 Stages</div>
+                        <div class="text-xs text-secondary-400">End-to-End Lifecycle</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-black text-emerald-400">100%</div>
+                        <div class="text-xs text-secondary-400">Audited & Rubric Scored</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Interactive Lifecycle Card -->
+            <div class="lg:col-span-5">
+                <div class="bg-secondary-900/80 backdrop-blur-xl rounded-2xl border border-white/15 p-6 shadow-2xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gold-400/20 flex items-center justify-center text-gold-300 font-bold">
+                                <i class="fa-solid fa-compass-drafting text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">Thesis Lifecycle State</h3>
+                                <p class="text-xs text-secondary-400">Spring 2026 Academic Session</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 text-xs rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">Active</span>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <!-- Step 1 -->
+                        <div class="flex items-center gap-3 p-2.5 rounded-lg bg-white/5 border border-white/5">
+                            <span class="w-6 h-6 rounded-full bg-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-[11px]"><i class="fa-solid fa-check"></i></span>
+                            <div class="flex-1">
+                                <div class="font-semibold text-white">Team Formation & Leader</div>
+                                <div class="text-secondary-400">Max size enforced (1-4 students)</div>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="flex items-center gap-3 p-2.5 rounded-lg bg-white/5 border border-white/5">
+                            <span class="w-6 h-6 rounded-full bg-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-[11px]"><i class="fa-solid fa-check"></i></span>
+                            <div class="flex-1">
+                                <div class="font-semibold text-white">Supervisor Request Accepted</div>
+                                <div class="text-secondary-400">Fatema Jannat Dihan assigned</div>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="flex items-center gap-3 p-2.5 rounded-lg bg-gold-500/10 border border-gold-500/30">
+                            <span class="w-6 h-6 rounded-full bg-gold-500 text-secondary-950 flex items-center justify-center font-bold text-[11px] animate-pulse">3</span>
+                            <div class="flex-1">
+                                <div class="font-semibold text-gold-300">Proposal Versioning (v2)</div>
+                                <div class="text-secondary-300">Under Review with Structured Feedback</div>
+                            </div>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="flex items-center gap-3 p-2.5 rounded-lg bg-white/5 border border-white/5 opacity-70">
+                            <span class="w-6 h-6 rounded-full bg-secondary-700 text-secondary-300 flex items-center justify-center font-bold text-[11px]">4</span>
+                            <div class="flex-1">
+                                <div class="font-semibold text-white">Milestone Deliverables & Code</div>
+                                <div class="text-secondary-400">SRS, Midterm, Final Implementation</div>
+                            </div>
+                        </div>
+                        <!-- Step 5 -->
+                        <div class="flex items-center gap-3 p-2.5 rounded-lg bg-white/5 border border-white/5 opacity-70">
+                            <span class="w-6 h-6 rounded-full bg-secondary-700 text-secondary-300 flex items-center justify-center font-bold text-[11px]">5</span>
+                            <div class="flex-1">
+                                <div class="font-semibold text-white">Defense Session & Rubric Scoring</div>
+                                <div class="text-secondary-400">Conflict-free room & panel scheduling</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Complete Academic Lifecycle Pipeline ─────────────────── -->
+<section id="how-it-works" class="py-20 md:py-28 bg-white border-b border-secondary-200 scroll-mt-16">
+    <div class="max-w-7xl mx-auto px-6 md:px-[80px]">
+        <div class="text-center mb-16">
+            <span class="inline-block bg-primary-50 text-primary-700 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-full mb-3">Academic Workflow</span>
+            <h2 class="text-3xl md:text-4xl font-black text-secondary-900 tracking-tight mb-4">How ATLAS Works: The 12-Stage Lifecycle</h2>
+            <p class="text-secondary-600 max-w-2xl mx-auto text-sm md:text-base">
+                ATLAS organizes every step of university thesis and capstone projects from semester kickoff to published graduation grades.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Stage 1 -->
+            <div class="p-6 rounded-xl border border-secondary-200 bg-secondary-50/50 hover:border-primary-400 hover:shadow-md transition-all">
+                <div class="w-10 h-10 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold mb-4 shadow">01</div>
+                <h3 class="font-bold text-base text-secondary-900 mb-2">Semester & Setup</h3>
+                <p class="text-xs text-secondary-600 leading-relaxed">Coordinators initialize academic sessions, configure team-size bounds, and publish milestone deadlines.</p>
+            </div>
+            <!-- Stage 2 -->
+            <div class="p-6 rounded-xl border border-secondary-200 bg-secondary-50/50 hover:border-primary-400 hover:shadow-md transition-all">
+                <div class="w-10 h-10 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold mb-4 shadow">02</div>
+                <h3 class="font-bold text-base text-secondary-900 mb-2">Team Formation</h3>
+                <p class="text-xs text-secondary-600 leading-relaxed">Students create teams, invite peers with secure codes, assign a team leader, and ensure single-team constraints.</p>
+            </div>
+            <!-- Stage 3 -->
+            <div class="p-6 rounded-xl border border-secondary-200 bg-secondary-50/50 hover:border-primary-400 hover:shadow-md transition-all">
+                <div class="w-10 h-10 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold mb-4 shadow">03</div>
+                <h3 class="font-bold text-base text-secondary-900 mb-2">Supervisor Request</h3>
+                <p class="text-xs text-secondary-600 leading-relaxed">Teams send formal supervisor requests. Faculty evaluate proposals and accept or reject with coordinator reassignment fail-safe.</p>
+            </div>
+            <!-- Stage 4 -->
+            <div class="p-6 rounded-xl border border-secondary-200 bg-secondary-50/50 hover:border-primary-400 hover:shadow-md transition-all">
+                <div class="w-10 h-10 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold mb-4 shadow">04</div>
+                <h3 class="font-bold text-base text-secondary-900 mb-2">Proposal State Machine</h3>
+                <p class="text-xs text-secondary-600 leading-relaxed">Draft → Submitted → Changes Requested → Resubmitted → Approved. Version snapshots preserve history.</p>
+            </div>
+            <!-- Stage 5 -->
+            <div class="p-6 rounded-xl border border-secondary-200 bg-secondary-50/50 hover:border-primary-400 hover:shadow-md transition-all">
+                <div class="w-10 h-10 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold mb-4 shadow">05</div>
+                <h3 class="font-bold text-base text-secondary-900 mb-2">Milestone Deliverables</h3>
+                <p class="text-xs text-secondary-600 leading-relaxed">SRS, Midterm Reports, Final Code repositories, and documentation submitted against strict server-validated deadlines.</p>
+            </div>
+            <!-- Stage 6 -->
+            <div class="p-6 rounded-xl border border-secondary-200 bg-secondary-50/50 hover:border-primary-400 hover:shadow-md transition-all">
+                <div class="w-10 h-10 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold mb-4 shadow">06</div>
+                <h3 class="font-bold text-base text-secondary-900 mb-2">Defense Scheduling</h3>
+                <p class="text-xs text-secondary-600 leading-relaxed">Conflict-free defense sessions scheduled with automatic detection of overlapping teams, panel members, or rooms.</p>
+            </div>
+            <!-- Stage 7 -->
+            <div class="p-6 rounded-xl border border-secondary-200 bg-secondary-50/50 hover:border-primary-400 hover:shadow-md transition-all">
+                <div class="w-10 h-10 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold mb-4 shadow">07</div>
+                <h3 class="font-bold text-base text-secondary-900 mb-2">Rubrics & Evaluation</h3>
+                <p class="text-xs text-secondary-600 leading-relaxed">Coordinator-configured weighted criteria (Methodology, Implementation, Defense) calculated authoritatively on the backend.</p>
+            </div>
+            <!-- Stage 8 -->
+            <div class="p-6 rounded-xl border border-secondary-200 bg-secondary-50/50 hover:border-primary-400 hover:shadow-md transition-all">
+                <div class="w-10 h-10 rounded-lg bg-primary-600 text-white flex items-center justify-center font-bold mb-4 shadow">08</div>
+                <h3 class="font-bold text-base text-secondary-900 mb-2">Grade Publication & Reports</h3>
+                <p class="text-xs text-secondary-600 leading-relaxed">Final grades verified and published by Coordinator; comprehensive CSV export of audits, teams, and academic performance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Core Platform Features ───────────────────────────────── -->
+<section id="features" class="py-20 md:py-28 bg-secondary-900 text-white relative overflow-hidden scroll-mt-16 border-b border-secondary-800">
+    <div class="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
+    <div class="relative max-w-7xl mx-auto px-6 md:px-[80px]">
+        <div class="text-center mb-16">
+            <span class="inline-block bg-primary-500/20 text-primary-300 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-full mb-3 border border-primary-500/30">
+                Key Features
+            </span>
+            <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">
+                Engineered For Academic Governance
+            </h2>
+            <p class="text-secondary-400 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+                Beyond simple project tracking — ATLAS provides strict server-side state machines, conflict detection algorithms, and automated rubric calculations.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1: Proposal State Machine -->
+            <div class="p-8 rounded-2xl bg-secondary-800/80 border border-white/10 hover:border-gold-400/50 transition-all hover:-translate-y-1 shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-gold-400/20 text-gold-300 flex items-center justify-center text-xl mb-6">
+                    <i class="fa-solid fa-code-branch"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Multi-Version Proposal Engine</h3>
+                <p class="text-xs text-secondary-400 leading-relaxed">
+                    Formal state transitions (Draft → Submitted → Changes Requested → Resubmitted → Approved). Every submission records an immutable version snapshot (v1, v2, v3) preserving feedback history.
+                </p>
+            </div>
+
+            <!-- Feature 2: Conflict-Free Defense Scheduling -->
+            <div class="p-8 rounded-2xl bg-secondary-800/80 border border-white/10 hover:border-primary-400/50 transition-all hover:-translate-y-1 shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-primary-500/20 text-primary-300 flex items-center justify-center text-xl mb-6">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Automated Conflict Detection</h3>
+                <p class="text-xs text-secondary-400 leading-relaxed">
+                    Server-enforced oral defense scheduling that prevents room collisions, student team schedule clashes, and panel member double-booking across overlapping time slots.
+                </p>
+            </div>
+
+            <!-- Feature 3: Server-Side Deadline Enforcement -->
+            <div class="p-8 rounded-2xl bg-secondary-800/80 border border-white/10 hover:border-emerald-400/50 transition-all hover:-translate-y-1 shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xl mb-6">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Authoritative Deadline Verification</h3>
+                <p class="text-xs text-secondary-400 leading-relaxed">
+                    Late deliverable determination is verified strictly against UTC server timestamps. Eliminates client-side timestamp spoofing for SRS, Midterm, and Final submissions.
+                </p>
+            </div>
+
+            <!-- Feature 4: Weighted Evaluation Rubrics -->
+            <div class="p-8 rounded-2xl bg-secondary-800/80 border border-white/10 hover:border-amber-400/50 transition-all hover:-translate-y-1 shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-xl mb-6">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Configurable Rubrics & Grading</h3>
+                <p class="text-xs text-secondary-400 leading-relaxed">
+                    Custom semester-wide criteria with percentage weights. Evaluators enter raw scores; ATLAS calculates weighted totals and maps directly to institutional letter grades (A+, A, A-).
+                </p>
+            </div>
+
+            <!-- Feature 5: Strict 3-Role RBAC -->
+            <div class="p-8 rounded-2xl bg-secondary-800/80 border border-white/10 hover:border-indigo-400/50 transition-all hover:-translate-y-1 shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xl mb-6">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Non-Bypassable Backend RBAC</h3>
+                <p class="text-xs text-secondary-400 leading-relaxed">
+                    Dedicated, isolated workspaces for Students, Supervisors, and Coordinators. URL tampering and direct API calls without proper role tokens are blocked with 403 Forbidden.
+                </p>
+            </div>
+
+            <!-- Feature 6: Institutional CSV Reports & Auditing -->
+            <div class="p-8 rounded-2xl bg-secondary-800/80 border border-white/10 hover:border-cyan-400/50 transition-all hover:-translate-y-1 shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xl mb-6">
+                    <i class="fa-solid fa-file-csv"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">One-Click Reports & Audit Logs</h3>
+                <p class="text-xs text-secondary-400 leading-relaxed">
+                    Export student rosters, proposal progression, submission records, defense timetables, and final grades directly into CSV format alongside a searchable event audit log.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Three Core User Roles ─────────────────────────────────── -->
+<section id="roles" class="py-20 md:py-28 bg-secondary-50 scroll-mt-16">
+    <div class="max-w-7xl mx-auto px-6 md:px-[80px]">
+        <div class="text-center mb-16">
+            <span class="inline-block bg-gold-100 text-gold-800 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-full mb-3">Strict RBAC</span>
+            <h2 class="text-3xl md:text-4xl font-black text-secondary-900 tracking-tight mb-4">Dedicated Portals For Every Stakeholder</h2>
+            <p class="text-secondary-600 max-w-2xl mx-auto text-sm md:text-base">
+                Three specialized role workspaces enforced at the API layer, guarding privacy and academic governance.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Student Portal -->
+            <div class="bg-white rounded-2xl border border-secondary-200 p-8 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center text-2xl mb-6">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-secondary-900 mb-2">Student Portal</h3>
+                    <p class="text-xs text-secondary-500 mb-6 font-medium">Team Member & Thesis Author</p>
+                    <ul class="space-y-2.5 text-xs text-secondary-700 mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-primary-500"></i> Form and join thesis teams</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-primary-500"></i> Send supervisor supervision requests</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-primary-500"></i> Draft, submit, and version proposals</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-primary-500"></i> Submit milestones & GitHub code URLs</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-primary-500"></i> View defense schedules & final grades</li>
+                    </ul>
+                </div>
+                <a href="/auth?role=student" class="btn bg-primary-50 text-primary-700 hover:bg-primary-600 hover:text-white text-xs font-bold w-full text-center py-2.5">
+                    Access Student Portal <i class="fa-solid fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <!-- Supervisor Portal -->
+            <div class="bg-white rounded-2xl border border-secondary-200 p-8 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-gold-50 text-gold-700 flex items-center justify-center text-2xl mb-6">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-secondary-900 mb-2">Supervisor Portal</h3>
+                    <p class="text-xs text-secondary-500 mb-6 font-medium">Faculty Advisor & Reviewer</p>
+                    <ul class="space-y-2.5 text-xs text-secondary-700 mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-gold-600"></i> Review incoming supervisor requests</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-gold-600"></i> Approve, request changes, or reject proposals</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-gold-600"></i> Leave structured feedback and inline notes</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-gold-600"></i> Grade deliverables against milestones</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-gold-600"></i> Participate on assigned defense panels</li>
+                    </ul>
+                </div>
+                <a href="/auth?role=supervisor" class="btn bg-gold-50 text-gold-800 hover:bg-gold-500 hover:text-white text-xs font-bold w-full text-center py-2.5">
+                    Access Supervisor Portal <i class="fa-solid fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <!-- Coordinator Portal -->
+            <div class="bg-white rounded-2xl border border-secondary-200 p-8 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-secondary-100 text-secondary-800 flex items-center justify-center text-2xl mb-6">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-secondary-900 mb-2">Coordinator Portal</h3>
+                    <p class="text-xs text-secondary-500 mb-6 font-medium">Academic Program Administrator</p>
+                    <ul class="space-y-2.5 text-xs text-secondary-700 mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-secondary-700"></i> Manage academic semesters & deadlines</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-secondary-700"></i> Configure weighted evaluation rubrics</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-secondary-700"></i> Schedule conflict-free defense panels</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-secondary-700"></i> Verify, calculate, and publish final grades</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-secondary-700"></i> Export CSV reports & inspect audit logs</li>
+                    </ul>
+                </div>
+                <a href="/auth?role=coordinator" class="btn bg-secondary-900 text-white hover:bg-secondary-800 text-xs font-bold w-full text-center py-2.5">
+                    Access Coordinator Portal <i class="fa-solid fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CTA Banner ────────────────────────────────────────────── -->
+<section class="py-20 bg-secondary-950 text-white">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs text-gold-300 font-semibold mb-6">
+            <i class="fa-solid fa-university"></i> University Capstone & Thesis Platform
+        </div>
+        <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-tight">Structured Academic Excellence</h2>
+        <p class="text-secondary-400 text-base mb-8 max-w-xl mx-auto leading-relaxed">
+            Eliminate missed deadlines, disorganized email threads, and scheduling conflicts with the unified ATLAS suite.
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center">
+            <a href="/auth?role=student&mode=register" class="btn bg-gold-400 text-secondary-950 hover:bg-gold-300 px-8 py-3.5 text-sm font-bold shadow-lg">
+                <i class="fa-solid fa-user-plus mr-2"></i> Register as Student
+            </a>
+            <a href="/auth?mode=login" class="btn bg-white/10 text-white border border-white/20 hover:bg-white/20 px-8 py-3.5 text-sm font-semibold">
+                <i class="fa-solid fa-right-to-bracket mr-2"></i> Sign In to Account
+            </a>
+        </div>
+    </div>
+</section>
+
+{% include "components/footer.html" %}
+
+{% endblock %}

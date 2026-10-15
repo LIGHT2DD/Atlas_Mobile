@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: atlas-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_ENV
+        value: production
+      - key: DB_TYPE
+        value: sqlite
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 1440
+      - key: JWT_REFRESH_EXPIRY
+        value: 30
+      - key: FILESTORAGE
+        value: filestorage
+      - key: APP_NAME
+        value: ATLAS
+      - key: CORS_ORIGINS
+        value: "*"

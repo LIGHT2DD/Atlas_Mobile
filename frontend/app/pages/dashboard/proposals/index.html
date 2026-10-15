@@ -1,0 +1,137 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+
+    {% if is_student and not proposal %}
+    {# ── Student: No Proposal Draft Yet ── #}
+    {% if student_team %}
+    <div class="max-w-2xl mx-auto card p-8 border-t-4 border-t-primary">
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 rounded-xl bg-primary-100 text-primary mx-auto flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-file-signature"></i>
+            </div>
+            <h2 class="text-xl font-bold text-secondary-900">Create Thesis Proposal Draft</h2>
+            <p class="text-xs text-secondary-500 mt-1">
+                Submitting for team <strong class="text-secondary-800">{{ student_team.name }}</strong>. You can save your proposal as a draft or submit it directly for supervisor review.
+            </p>
+        </div>
+
+        <form action="/dashboard/proposals/new" method="post" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Thesis Title <span class="text-accent-error">*</span></label>
+                <input type="text" name="title" required placeholder="e.g. Distributed Consensus Engine Using Raft in Rust" class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Abstract / Executive Summary <span class="text-accent-error">*</span></label>
+                <textarea name="abstract" required rows="5" placeholder="Problem statement, proposed methodology, expected outcomes..." class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-secondary-700 mb-1">Proposal Document (PDF / DOCX)</label>
+                <input type="file" name="document" accept=".pdf,.docx,.doc" class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-none bg-secondary-50">
+                <span class="text-[11px] text-secondary-400">Max size 25MB. PDF format recommended.</span>
+            </div>
+
+            <div class="pt-4 border-t border-secondary-100 flex items-center justify-between">
+                <a href="/dashboard/" class="btn text-xs text-secondary-500 hover:bg-secondary-100">Cancel</a>
+                <div class="flex items-center gap-3">
+                    <button type="submit" name="submit_now" value="false" class="btn btn-secondary text-xs px-4 flex items-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i> Save as Draft
+                    </button>
+                    <button type="submit" name="submit_now" value="true" class="btn btn-primary text-xs px-5 flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Proposal
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="card p-12 text-center text-secondary-400 max-w-lg mx-auto">
+        <i class="fa-solid fa-users text-4xl mb-3 text-secondary-300"></i>
+        <h3 class="text-base font-bold text-secondary-700">Team Required</h3>
+        <p class="text-xs text-secondary-500 mt-1 mb-4">You must create or join a thesis team before drafting a thesis proposal.</p>
+        <a href="/dashboard/teams" class="btn btn-primary text-xs">Go to My Team</a>
+    </div>
+    {% endif %}
+
+    {% else %}
+    {# ── Supervisor / Coordinator Proposals List ── #}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-secondary-900">{{ page_title }}</h2>
+            <p class="text-sm text-secondary-500">Track proposal reviews, state transitions, and revision histories across teams.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <!-- Filter Pills -->
+            <a href="/dashboard/proposals" class="px-3 py-1.5 rounded-lg text-xs font-medium {{ 'bg-primary text-white' if not current_status else 'bg-secondary-100 text-secondary-600 hover:bg-secondary-200' }}">All</a>
+            <a href="/dashboard/proposals?status=submitted" class="px-3 py-1.5 rounded-lg text-xs font-medium {{ 'bg-amber-600 text-white' if current_status == 'submitted' else 'bg-secondary-100 text-secondary-600 hover:bg-secondary-200' }}">Pending Review</a>
+            <a href="/dashboard/proposals?status=approved" class="px-3 py-1.5 rounded-lg text-xs font-medium {{ 'bg-emerald-600 text-white' if current_status == 'approved' else 'bg-secondary-100 text-secondary-600 hover:bg-secondary-200' }}">Approved</a>
+        </div>
+    </div>
+
+    <!-- Proposals Table -->
+    <div class="card overflow-hidden p-0">
+        {% if proposals %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-secondary-50 border-b border-secondary-200 text-xs font-semibold text-secondary-500 uppercase tracking-wider text-left">
+                        <th class="px-6 py-3">Proposal Title</th>
+                        <th class="px-6 py-3">Team</th>
+                        <th class="px-6 py-3">Version</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Last Updated</th>
+                        <th class="px-6 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-secondary-100">
+                    {% for p in proposals %}
+                    <tr class="hover:bg-secondary-50/50 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-secondary-900 max-w-xs truncate">
+                            <a href="/dashboard/proposals/{{ p.id }}" class="hover:text-primary transition-colors">
+                                {{ p.title }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-secondary-700">
+                            {{ p.team.name if p.team else 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4 text-xs font-mono font-bold text-secondary-600">
+                            v{{ p.current_version }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold
+                                {% if p.status == 'approved' %}bg-emerald-100 text-emerald-800
+                                {% elif p.status == 'submitted' %}bg-amber-100 text-amber-800
+                                {% elif p.status == 'changes_requested' %}bg-orange-100 text-orange-800
+                                {% elif p.status == 'rejected' %}bg-red-100 text-red-800
+                                {% else %}bg-secondary-100 text-secondary-600{% endif %}">
+                                {{ p.status.replace('_', ' ').title() }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-secondary-500">
+                            {{ p.updated_at | date_format }}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="/dashboard/proposals/{{ p.id }}" class="btn btn-secondary text-xs px-2.5 py-1">
+                                Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center text-secondary-400">
+            <i class="fa-solid fa-file-circle-xmark text-4xl mb-3 text-secondary-300"></i>
+            <p class="text-base font-semibold text-secondary-700">No Proposals Found</p>
+            <p class="text-xs text-secondary-500 mt-1">Submitted student proposals will appear here for academic review.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

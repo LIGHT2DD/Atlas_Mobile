@@ -1,0 +1,113 @@
+{% extends "pages/dashboard/layout.html" %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+
+    <div>
+        <h2 class="text-xl font-bold text-secondary-900">Academic Reports & Exports</h2>
+        <p class="text-sm text-secondary-500">Generate and export institutional CSV reports for accreditation, committee review, and grade audits.</p>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Final Grades Report -->
+        <div class="card p-6 flex flex-col justify-between border-t-4 border-t-emerald-500 hover:shadow-md transition-shadow">
+            <div>
+                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-3">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h3 class="font-bold text-secondary-900 text-base">Final Grades & Assessment</h3>
+                <p class="text-xs text-secondary-500 mt-1 mb-4">
+                    Full grade sheet including team names, supervisors, weighted defense scores, and published letter grades.
+                </p>
+            </div>
+            <a href="/dashboard/reports/export/grades" class="btn btn-primary text-xs flex items-center justify-center gap-1.5 w-full">
+                <i class="fa-solid fa-download"></i> Export Grades CSV
+            </a>
+        </div>
+
+        <!-- Proposals Lifecycle Report -->
+        <div class="card p-6 flex flex-col justify-between border-t-4 border-t-primary hover:shadow-md transition-shadow">
+            <div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg mb-3">
+                    <i class="fa-solid fa-file-shield"></i>
+                </div>
+                <h3 class="font-bold text-secondary-900 text-base">Proposals & Approvals</h3>
+                <p class="text-xs text-secondary-500 mt-1 mb-4">
+                    Complete proposal registry with titles, current versions, submission timestamps, and supervisor review decisions.
+                </p>
+            </div>
+            <a href="/dashboard/reports/export/proposals" class="btn btn-secondary text-xs flex items-center justify-center gap-1.5 w-full">
+                <i class="fa-solid fa-download"></i> Export Proposals CSV
+            </a>
+        </div>
+
+        <!-- Teams Roster Report -->
+        <div class="card p-6 flex flex-col justify-between border-t-4 border-t-purple-500 hover:shadow-md transition-shadow">
+            <div>
+                <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg mb-3">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <h3 class="font-bold text-secondary-900 text-base">Thesis Teams Roster</h3>
+                <p class="text-xs text-secondary-500 mt-1 mb-4">
+                    Registered thesis teams, enrolled student members, leaders, allocated supervisors, and departments.
+                </p>
+            </div>
+            <a href="/dashboard/reports/export/teams" class="btn btn-secondary text-xs flex items-center justify-center gap-1.5 w-full">
+                <i class="fa-solid fa-download"></i> Export Teams CSV
+            </a>
+        </div>
+
+        <!-- Submissions & Deliverables Report -->
+        <div class="card p-6 flex flex-col justify-between border-t-4 border-t-amber-500 hover:shadow-md transition-shadow">
+            <div>
+                <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg mb-3">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3 class="font-bold text-secondary-900 text-base">Deliverables & Submissions</h3>
+                <p class="text-xs text-secondary-500 mt-1 mb-4">
+                    Student submissions across all milestones with on-time vs. late indicators, scores, and reviewer feedback.
+                </p>
+            </div>
+            <a href="/dashboard/reports/export/submissions" class="btn btn-secondary text-xs flex items-center justify-center gap-1.5 w-full">
+                <i class="fa-solid fa-download"></i> Export Submissions CSV
+            </a>
+        </div>
+
+        <!-- Defense Schedule Report -->
+        <div class="card p-6 flex flex-col justify-between border-t-4 border-t-indigo-500 hover:shadow-md transition-shadow">
+            <div>
+                <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg mb-3">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3 class="font-bold text-secondary-900 text-base">Oral Defense Schedule</h3>
+                <p class="text-xs text-secondary-500 mt-1 mb-4">
+                    Timetable of scheduled oral defenses, venue room allocations, and faculty panel assignments.
+                </p>
+            </div>
+            <a href="/dashboard/reports/export/defenses" class="btn btn-secondary text-xs flex items-center justify-center gap-1.5 w-full">
+                <i class="fa-solid fa-download"></i> Export Schedule CSV
+            </a>
+        </div>
+
+        <!-- Users Roster Report -->
+        <div class="card p-6 flex flex-col justify-between border-t-4 border-t-secondary-400 hover:shadow-md transition-shadow">
+            <div>
+                <div class="w-10 h-10 rounded-lg bg-secondary-100 text-secondary-700 flex items-center justify-center text-lg mb-3">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <h3 class="font-bold text-secondary-900 text-base">User Accounts Directory</h3>
+                <p class="text-xs text-secondary-500 mt-1 mb-4">
+                    All registered student, supervisor, and coordinator accounts with emails, roles, and activity status.
+                </p>
+            </div>
+            <a href="/dashboard/reports/export/users" class="btn btn-secondary text-xs flex items-center justify-center gap-1.5 w-full">
+                <i class="fa-solid fa-download"></i> Export Users CSV
+            </a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

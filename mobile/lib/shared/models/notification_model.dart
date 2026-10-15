@@ -1,0 +1,31 @@
+class NotificationModel {
+  final String id;
+  final String? title;
+  final String content;
+  final String type;
+  final bool isRead;
+  final String? link;
+  final String? createdAt;
+
+  NotificationModel({
+    required this.id,
+    this.title,
+    required this.content,
+    required this.type,
+    required this.isRead,
+    this.link,
+    this.createdAt,
+  });
+
+  factory NotificationModel.fromJson(Map<String, dynamic> json) {
+    return NotificationModel(
+      id: json['id'] as String? ?? '',
+      title: json['title'] as String?,
+      content: json['content'] as String? ?? '',
+      type: json['type'] as String? ?? 'system',
+      isRead: json['is_read'] as bool? ?? false,
+      link: json['link'] as String?,
+      createdAt: json['created_at'] as String?,
+    );
+  }
+}

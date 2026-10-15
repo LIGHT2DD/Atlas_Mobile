@@ -1,0 +1,208 @@
+{% set current_path = request.url.path %}
+{% set user_role = request.state.current_user.role if request.state.current_user else 'student' %}
+
+{# ── ATLAS Role-Based Navigation Items ── #}
+{% set student_nav = [
+    {'href': '/dashboard', 'icon': 'fa-gauge-high', 'label': 'Dashboard', 'match': '/dashboard'},
+    {'href': '/dashboard/teams', 'icon': 'fa-users', 'label': 'My Team', 'match': '/dashboard/teams'},
+    {'href': '/dashboard/proposals', 'icon': 'fa-file-lines', 'label': 'Proposal', 'match': '/dashboard/proposals'},
+    {'href': '/dashboard/milestones', 'icon': 'fa-flag-checkered', 'label': 'Milestones', 'match': '/dashboard/milestones'},
+    {'href': '/dashboard/submissions', 'icon': 'fa-cloud-arrow-up', 'label': 'Submissions', 'match': '/dashboard/submissions'},
+    {'href': '/dashboard/defense', 'icon': 'fa-calendar-check', 'label': 'Defense', 'match': '/dashboard/defense'},
+    {'href': '/dashboard/grades', 'icon': 'fa-award', 'label': 'Grades', 'match': '/dashboard/grades'},
+    {'href': '/dashboard/notifications', 'icon': 'fa-bell', 'label': 'Notifications', 'match': '/dashboard/notifications'},
+    {'href': '/dashboard/settings', 'icon': 'fa-gear', 'label': 'Settings', 'match': '/dashboard/settings'},
+] %}
+
+{% set supervisor_nav = [
+    {'href': '/dashboard', 'icon': 'fa-gauge-high', 'label': 'Dashboard', 'match': '/dashboard'},
+    {'href': '/dashboard/requests', 'icon': 'fa-inbox', 'label': 'Requests', 'match': '/dashboard/requests'},
+    {'href': '/dashboard/teams', 'icon': 'fa-users-rectangle', 'label': 'My Teams', 'match': '/dashboard/teams'},
+    {'href': '/dashboard/proposals', 'icon': 'fa-file-signature', 'label': 'Proposals', 'match': '/dashboard/proposals'},
+    {'href': '/dashboard/submissions', 'icon': 'fa-list-check', 'label': 'Submissions', 'match': '/dashboard/submissions'},
+    {'href': '/dashboard/evaluations', 'icon': 'fa-square-poll-vertical', 'label': 'Evaluations', 'match': '/dashboard/evaluations'},
+    {'href': '/dashboard/defense', 'icon': 'fa-calendar-days', 'label': 'Defense', 'match': '/dashboard/defense'},
+    {'href': '/dashboard/notifications', 'icon': 'fa-bell', 'label': 'Notifications', 'match': '/dashboard/notifications'},
+    {'href': '/dashboard/settings', 'icon': 'fa-gear', 'label': 'Settings', 'match': '/dashboard/settings'},
+] %}
+
+{% set coordinator_nav = [
+    {'href': '/dashboard', 'icon': 'fa-gauge-high', 'label': 'Dashboard', 'match': '/dashboard'},
+    {'href': '/dashboard/users', 'icon': 'fa-users-gear', 'label': 'Users', 'match': '/dashboard/users'},
+    {'href': '/dashboard/departments', 'icon': 'fa-building-columns', 'label': 'Departments', 'match': '/dashboard/departments'},
+    {'href': '/dashboard/semesters', 'icon': 'fa-calendar-week', 'label': 'Semesters', 'match': '/dashboard/semesters'},
+    {'href': '/dashboard/teams', 'icon': 'fa-network-wired', 'label': 'Teams', 'match': '/dashboard/teams'},
+    {'href': '/dashboard/proposals', 'icon': 'fa-file-shield', 'label': 'Proposals', 'match': '/dashboard/proposals'},
+    {'href': '/dashboard/milestones', 'icon': 'fa-flag-checkered', 'label': 'Milestones', 'match': '/dashboard/milestones'},
+    {'href': '/dashboard/deadlines', 'icon': 'fa-hourglass-half', 'label': 'Deadlines', 'match': '/dashboard/deadlines'},
+    {'href': '/dashboard/defense', 'icon': 'fa-calendar-check', 'label': 'Defenses', 'match': '/dashboard/defense'},
+    {'href': '/dashboard/rubrics', 'icon': 'fa-list-ol', 'label': 'Rubrics', 'match': '/dashboard/rubrics'},
+    {'href': '/dashboard/grades', 'icon': 'fa-graduation-cap', 'label': 'Grades', 'match': '/dashboard/grades'},
+    {'href': '/dashboard/reports', 'icon': 'fa-file-export', 'label': 'Reports', 'match': '/dashboard/reports'},
+    {'href': '/dashboard/audit-logs', 'icon': 'fa-clipboard-list', 'label': 'Audit Logs', 'match': '/dashboard/audit-logs'},
+    {'href': '/dashboard/settings', 'icon': 'fa-gear', 'label': 'Settings', 'match': '/dashboard/settings'},
+] %}
+
+{% if user_role in ['admin', 'coordinator'] %}
+    {% set nav_items = coordinator_nav %}
+{% elif user_role == 'supervisor' %}
+    {% set nav_items = supervisor_nav %}
+{% else %}
+    {% set nav_items = student_nav %}
+{% endif %}
+
+
+<!-- Mobile overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-secondary-900/40 backdrop-blur-sm z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-secondary-200 flex flex-col shadow-sm transition-all duration-300 -translate-x-full lg:translate-x-0 lg:static lg:z-auto">
+    
+    <!-- Header -->
+    <div class="h-16 px-3 flex items-center border-b border-secondary-200 flex-shrink-0">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+            {% include "components/logo.html" %}
+        </div>
+        <!-- Desktop collapse toggle -->
+        <button id="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" class="hidden lg:flex w-8 h-8 rounded-md items-center justify-center text-secondary-400 hover:text-secondary-700 hover:bg-secondary-100 cursor-pointer transition-colors flex-shrink-0" title="Collapse sidebar">
+            <i class="fa-solid fa-chevron-left text-sm transition-transform duration-300" id="collapse-chevron"></i>
+        </button>
+        <!-- Mobile close button -->
+        <button onclick="toggleSidebar()" class="w-8 h-8 rounded-lg flex items-center justify-center text-secondary-400 hover:text-secondary-700 hover:bg-secondary-100 cursor-pointer lg:hidden flex-shrink-0">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="flex flex-col justify-between flex-1 overflow-y-auto p-4">
+        <div class="flex flex-col gap-1">
+            {% for item in nav_items %}
+            {% set is_active = (current_path == item.match) or (item.match != '/dashboard' and current_path.startswith(item.match)) %}
+            <a href="{{ item.href }}" 
+               class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+                      {% if is_active %}
+                          bg-primary-50 text-primary border-l-3 border-primary
+                      {% else %}
+                          text-secondary-600 hover:bg-secondary-50 hover:text-secondary-900
+                      {% endif %}"
+               title="{{ item.label }}">
+                <i class="fa-solid {{ item.icon }} w-5 text-center flex-shrink-0 {% if is_active %}text-primary{% else %}text-secondary-400{% endif %}"></i>
+                <span class="sidebar-label">{{ item.label }}</span>
+                {% if is_active %}
+                <div class="ml-auto w-1.5 h-1.5 rounded-full bg-primary sidebar-label"></div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- User card & logout -->
+        <div class="border-t border-secondary-200 pt-4 mt-4">
+            {% if request.state.current_user %}
+            <div class="flex items-center gap-3 px-4 py-2.5 mb-2 rounded-lg bg-secondary-50">
+                <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    {{ request.state.current_user.first_name[0] }}{{ request.state.current_user.last_name[0] }}
+                </div>
+                <div class="flex flex-col min-w-0 sidebar-label">
+                    <span class="text-sm font-semibold text-secondary-900 truncate">{{ request.state.current_user.first_name }} {{ request.state.current_user.last_name }}</span>
+                    <span class="text-xs text-secondary-400 capitalize">{{ request.state.current_user.role }}</span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <form action="{{ url_for('logout') }}" method="post">
+                <button type="submit" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-accent-error hover:bg-red-50 w-full cursor-pointer transition-colors" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center flex-shrink-0"></i>
+                    <span class="sidebar-label">Logout</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</aside>
+
+<script>
+// Mobile sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    
+    if (isOpen) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    } else {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    }
+}
+
+// Desktop sidebar collapse toggle
+function toggleSidebarCollapse() {
+    const sidebar = document.getElementById('sidebar');
+    const chevron = document.getElementById('collapse-chevron');
+    const collapseBtn = document.getElementById('sidebar-collapse-btn');
+    const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+
+    if (isCollapsed) {
+        sidebar.classList.remove('sidebar-collapsed');
+        sidebar.style.width = '';
+        chevron.style.transform = '';
+    } else {
+        sidebar.classList.add('sidebar-collapsed');
+        sidebar.style.width = '88px';
+        chevron.style.transform = 'rotate(180deg)';
+    }
+
+    // Toggle visibility of text elements but never hide the collapse button
+    sidebar.querySelectorAll('.sidebar-label, .logo-text').forEach(el => {
+        if (isCollapsed) {
+            el.style.opacity = '';
+            el.style.width = '';
+            el.style.overflow = '';
+        } else {
+            el.style.opacity = '0';
+            el.style.width = '0';
+            el.style.overflow = 'hidden';
+        }
+    });
+
+    // Save state
+    localStorage.setItem('sidebar-collapsed', isCollapsed ? '' : '1');
+}
+
+// Restore collapsed state on load
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth >= 1024 && localStorage.getItem('sidebar-collapsed') === '1') {
+        toggleSidebarCollapse();
+    }
+});
+</script>
+
+<style>
+@media (min-width: 1024px) {
+    #sidebar.sidebar-collapsed {
+        width: 5rem;
+    }
+
+    #sidebar.sidebar-collapsed .sidebar-label {
+        display: none;
+    }
+
+    #sidebar.sidebar-collapsed .sidebar-link {
+        justify-content: center;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    #sidebar.sidebar-collapsed .sidebar-link i {
+        width: auto;
+    }
+
+    #sidebar.sidebar-collapsed .sidebar-link .ml-auto {
+        display: none;
+    }
+
+    #sidebar.sidebar-collapsed .border-t .flex.items-center.gap-3 {
+        justify-content: center;
+    }
+}
+</style>
