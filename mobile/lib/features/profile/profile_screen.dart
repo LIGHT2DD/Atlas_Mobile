@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../shared/widgets/about_atlas_card.dart';
 import '../auth/auth_controller.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -79,52 +80,7 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 // About ATLAS Section
-                IosNeuCard(
-                  borderRadius: BorderRadius.circular(24),
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            TablerIcons.info_circle,
-                            size: 18,
-                            color: neuTheme.accentColor,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'ABOUT ATLAS',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: neuTheme.accentColor,
-                              letterSpacing: 0.8,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Academic Thesis Lifecycle & Assessment Suite',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: neuTheme.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'A centralized academic platform coordinating thesis proposals, milestone deliverables, oral defense hearings, and rubric assessments for students, supervisors, and coordinators.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: neuTheme.textSecondary,
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                const AboutAtlasCard(),
                 const SizedBox(height: 20),
 
                 // Account Information

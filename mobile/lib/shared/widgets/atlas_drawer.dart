@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
 import '../models/user_model.dart';
 import '../../features/auth/auth_controller.dart';
+import 'about_atlas_card.dart';
 
 class AtlasDrawer extends ConsumerWidget {
   const AtlasDrawer({super.key});
@@ -96,64 +97,8 @@ class AtlasDrawer extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  // Compact "About ATLAS" Card
-                  NeuContainer(
-                    depthType: NeuDepth.convex,
-                    depth: 2.0,
-                    borderRadius: BorderRadius.circular(16),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            NeuContainer(
-                              shape: BoxShape.circle,
-                              width: 24,
-                              height: 24,
-                              depthType: NeuDepth.convex,
-                              depth: 1.5,
-                              alignment: Alignment.center,
-                              child: Icon(
-                                TablerIcons.info_circle,
-                                size: 14,
-                                color: neuTheme.accentColor,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'ABOUT ATLAS',
-                              style: TextStyle(
-                                color: neuTheme.accentColor,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.8,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Academic Thesis Lifecycle & Assessment Suite',
-                          style: TextStyle(
-                            color: neuTheme.textPrimary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            height: 1.25,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'A centralized academic platform coordinating thesis proposals, milestone progress, oral defense hearings, and rubric evaluations for students, supervisors, and coordinators.',
-                          style: TextStyle(
-                            color: neuTheme.textSecondary,
-                            fontSize: 11,
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Compact "About ATLAS" Card below User Profile
+                  const AboutAtlasCard(isCompact: true),
                   const SizedBox(height: 14),
                   _drawerItem(
                     context,
