@@ -6,6 +6,9 @@
 -keep class io.flutter.view.** { *; }
 -keep class io.flutter.** { *; }
 
+# Suppress Play Core warnings (optional deferred components not used in standalone APK)
+-dontwarn com.google.android.play.core.**
+
 # Preserve JSON serialized data models
 -keepclassmembers class * {
     @com.google.gson.annotations.SerializedName <fields>;
