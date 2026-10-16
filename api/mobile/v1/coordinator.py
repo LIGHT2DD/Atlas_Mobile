@@ -10,10 +10,13 @@ from api.v1.models.proposal import Proposal, ProposalStatus
 from api.v1.models.submission import Submission
 from api.v1.models.defense import DefenseSchedule
 from api.v1.models.audit_log import AuditLog
+from api.v1.models.notification import NotificationType
 from api.v1.services.team import TeamService
 from api.v1.services.semester import SemesterService
+from api.v1.services.auth import AuthService
+from api.v1.services.notification import NotificationService
 from api.mobile.v1.schemas import (
-    AssignSupervisorPayload, SemesterCreatePayload
+    AssignSupervisorPayload, SemesterCreatePayload, CoordinatorCreateUserPayload
 )
 from api.mobile.v1.dependencies import (
     mobile_response, require_roles_mobile
@@ -227,4 +230,147 @@ def get_reports_summary(
             "total_submissions": total_submissions,
         },
         message="Departmental summary report retrieved."
+    )
+
+
+@coordinator_mobile_router.get("/users")
+def list_faculty_and_coordinators(
+    role: Optional[str] = Query(None),
+    current_user: User = Depends(require_roles_mobile(UserRole.COORDINATOR.value)),
+    db: Session = Depends(get_db)
+):
+    """List faculty supervisors and department coordinators."""
+    query = db.query(User).filter(
+        User.role.in_([UserRole.SUPERVISOR.value, UserRole.COORDINATOR.value, UserRole.ADMIN.value]),
+        User.is_deleted == False
+    )
+    if role:
+        norm_role = role.strip().lower()
+        if norm_role == "coordinator":
+            query = query.filter(User.role.in_([UserRole.COORDINATOR.value, UserRole.ADMIN.value]))
+        elif norm_role == "supervisor":
+            query = query.filter(User.role == UserRole.SUPERVISOR.value)
+
+    users = query.order_by(User.role.asc(), User.first_name.asc()).all()
+    items = [
+        {
+            "id": u.id,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "full_name": u.full_name,
+            "email": u.email,
+            "role": "coordinator" if u.role in ("coordinator", "admin") else u.role,
+            "department_id": u.department_id,
+            "department_name": u.department.name if getattr(u, "department", None) else None,
+            "is_active": u.is_active,
+            "created_at": str(u.created_at) if u.created_at else None,
+        }
+        for u in users
+    ]
+    return mobile_response(data=items, message="Faculty and coordinator roster retrieved.")
+
+
+@coordinator_mobile_router.post("/users")
+def create_faculty_or_coordinator(
+    payload: CoordinatorCreateUserPayload,
+    bg_tasks: BackgroundTasks,
+    current_user: User = Depends(require_roles_mobile(UserRole.COORDINATOR.value)),
+    db: Session = Depends(get_db)
+):
+    """
+    Coordinator administrative user creation with elevated security controls:
+    1. Sudo Elevated Password verification required if creating a Coordinator.
+    2. Institutional domain check (@atlas.edu) for Coordinator accounts.
+    3. Immutable AuditLog recording.
+    4. Broadcast alert notifications to all active peer coordinators.
+    """
+    target_role = payload.role.strip().lower()
+    if target_role not in (UserRole.SUPERVISOR.value, UserRole.COORDINATOR.value):
+        raise HTTPException(status_code=400, detail="Invalid role. Must be 'supervisor' or 'coordinator'.")
+
+    # Guardrails for Coordinator creation
+    if target_role == UserRole.COORDINATOR.value:
+        if not payload.current_password or not payload.current_password.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="Current coordinator password is required to authorize creating another coordinator account."
+            )
+        if not AuthService.verify_hash(payload.current_password.strip(), current_user.password):
+            raise HTTPException(
+                status_code=403,
+                detail="Elevated authorization failed: Invalid current coordinator password."
+            )
+        if not payload.email.lower().endswith("@atlas.edu"):
+            raise HTTPException(
+                status_code=400,
+                detail="Coordinator accounts must use an institutional email ending with @atlas.edu."
+            )
+
+    # Check for existing user with this email
+    existing = User.fetch_one_by_field(db, throw_error=False, email=payload.email.lower().strip())
+    if existing:
+        raise HTTPException(status_code=400, detail="An account with this email already exists.")
+
+    new_user = User.create(
+        db=db,
+        first_name=payload.first_name.strip(),
+        last_name=payload.last_name.strip(),
+        email=payload.email.lower().strip(),
+        password=AuthService.hash_secret(payload.password),
+        role=target_role,
+        department_id=payload.department_id,
+        is_active=True,
+    )
+
+    action_name = "COORDINATOR_CREATED" if target_role == UserRole.COORDINATOR.value else "SUPERVISOR_CREATED"
+    AuditLog.log(
+        db=db,
+        action=action_name,
+        user_id=current_user.id,
+        entity_type="user",
+        entity_id=new_user.id,
+        details=f"Coordinator {current_user.full_name} created {target_role.capitalize()} account for {new_user.full_name} ({new_user.email}).",
+    )
+
+    # Broadcast notification to peer coordinators if coordinator created
+    if target_role == UserRole.COORDINATOR.value:
+        other_coords = db.query(User).filter(
+            User.role.in_([UserRole.COORDINATOR.value, UserRole.ADMIN.value]),
+            User.id != new_user.id,
+            User.is_deleted == False
+        ).all()
+        for coord in other_coords:
+            NotificationService.notify(
+                db=db,
+                bg_tasks=bg_tasks,
+                user_id=coord.id,
+                title="New Academic Coordinator Registered",
+                content=f"Coordinator account for {new_user.full_name} ({new_user.email}) was created by {current_user.full_name}.",
+                notification_type=NotificationType.SYSTEM.value,
+                link="/coordinator/users",
+            )
+    else:
+        NotificationService.notify(
+            db=db,
+            bg_tasks=bg_tasks,
+            user_id=new_user.id,
+            title="Welcome to ATLAS Faculty Portal",
+            content=f"Welcome {new_user.full_name}! Your supervisor account has been activated by Coordinator {current_user.full_name}.",
+            notification_type=NotificationType.SYSTEM.value,
+            link="/dashboard",
+        )
+
+    return mobile_response(
+        data={
+            "id": new_user.id,
+            "first_name": new_user.first_name,
+            "last_name": new_user.last_name,
+            "full_name": new_user.full_name,
+            "email": new_user.email,
+            "role": new_user.role,
+            "department_id": new_user.department_id,
+            "is_active": new_user.is_active,
+        },
+        message=f"{target_role.capitalize()} account created successfully.",
+        status_code=201
     )

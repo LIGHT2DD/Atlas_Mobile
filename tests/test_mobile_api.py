@@ -541,3 +541,105 @@ def test_unauthenticated_request_rejected(client):
     res = client.get("/api/mobile/v1/auth/me")
     assert res.status_code == 401
     assert res.json()["success"] is False
+
+
+def test_coordinator_user_management_option_a(client, seeded_users, db_session):
+    """
+    Verify Option A:
+    1. Student is forbidden from user management.
+    2. Coordinator can list faculty & coordinators.
+    3. Coordinator can create supervisor.
+    4. Coordinator cannot create coordinator without sudo password.
+    5. Coordinator cannot create coordinator with invalid password.
+    6. Coordinator cannot create coordinator with non-atlas domain.
+    7. Coordinator creates coordinator with valid sudo password and @atlas.edu email.
+    """
+    coord = seeded_users["coordinator"]
+    stu = seeded_users["student1"]
+    headers_coord = _get_auth_headers(db_session, coord)
+    headers_stu = _get_auth_headers(db_session, stu)
+
+    # 1. Student blocked
+    res_stu = client.get("/api/mobile/v1/coordinator/users", headers=headers_stu)
+    assert res_stu.status_code == 403
+
+    # 2. Coordinator list users
+    res_list = client.get("/api/mobile/v1/coordinator/users", headers=headers_coord)
+    assert res_list.status_code == 200
+    assert isinstance(res_list.json()["data"], list)
+
+    # 3. Create supervisor
+    res_sup = client.post(
+        "/api/mobile/v1/coordinator/users",
+        headers=headers_coord,
+        json={
+            "first_name": "Dr. Nadia",
+            "last_name": "Sultana",
+            "email": "nadia.sultana@atlas.edu",
+            "password": "Password123",
+            "role": "supervisor",
+        }
+    )
+    assert res_sup.status_code == 201
+    assert res_sup.json()["data"]["role"] == "supervisor"
+
+    # 4. Coordinator creation without password -> 400
+    res_no_pw = client.post(
+        "/api/mobile/v1/coordinator/users",
+        headers=headers_coord,
+        json={
+            "first_name": "Prof. Hasan",
+            "last_name": "Mahmud",
+            "email": "hasan.mahmud@atlas.edu",
+            "password": "Password123",
+            "role": "coordinator",
+        }
+    )
+    assert res_no_pw.status_code == 400
+
+    # 5. Coordinator creation with invalid password -> 403
+    res_wrong_pw = client.post(
+        "/api/mobile/v1/coordinator/users",
+        headers=headers_coord,
+        json={
+            "first_name": "Prof. Hasan",
+            "last_name": "Mahmud",
+            "email": "hasan.mahmud@atlas.edu",
+            "password": "Password123",
+            "role": "coordinator",
+            "current_password": "WrongPassword999",
+        }
+    )
+    assert res_wrong_pw.status_code == 403
+
+    # 6. Coordinator creation with non-atlas domain -> 400
+    res_wrong_domain = client.post(
+        "/api/mobile/v1/coordinator/users",
+        headers=headers_coord,
+        json={
+            "first_name": "Prof. Hasan",
+            "last_name": "Mahmud",
+            "email": "hasan.mahmud@gmail.com",
+            "password": "Password123",
+            "role": "coordinator",
+            "current_password": "Password123",
+        }
+    )
+    assert res_wrong_domain.status_code == 400
+
+    # 7. Coordinator creation successful with valid password and @atlas.edu -> 201
+    res_valid_coord = client.post(
+        "/api/mobile/v1/coordinator/users",
+        headers=headers_coord,
+        json={
+            "first_name": "Prof. Hasan",
+            "last_name": "Mahmud",
+            "email": "hasan.mahmud@atlas.edu",
+            "password": "Password123",
+            "role": "coordinator",
+            "current_password": "Password123",
+        }
+    )
+    assert res_valid_coord.status_code == 201
+    assert res_valid_coord.json()["data"]["role"] == "coordinator"
+

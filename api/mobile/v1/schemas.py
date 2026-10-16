@@ -153,3 +153,16 @@ class SemesterCreatePayload(BaseModel):
     max_team_size: Optional[int] = 4
     min_team_size: Optional[int] = 2
     is_active: Optional[bool] = False
+
+
+# ─── Coordinator Faculty & User Management ───────────────────
+
+class CoordinatorCreateUserPayload(BaseModel):
+    first_name: str = Field(..., min_length=1, max_length=100)
+    last_name: str = Field(..., min_length=1, max_length=100)
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+    role: str = Field(..., pattern=r"^(supervisor|coordinator)$")
+    department_id: Optional[str] = None
+    current_password: Optional[str] = None  # Elevated sudo verification required if role == 'coordinator'
+

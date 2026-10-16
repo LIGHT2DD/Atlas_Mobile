@@ -95,9 +95,55 @@ class ReportSummaryModel {
   }
 }
 
+class CoordinatorUserItem {
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String fullName;
+  final String email;
+  final String role;
+  final String? departmentId;
+  final String? departmentName;
+  final bool isActive;
+  final String? createdAt;
+
+  CoordinatorUserItem({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.fullName,
+    required this.email,
+    required this.role,
+    this.departmentId,
+    this.departmentName,
+    required this.isActive,
+    this.createdAt,
+  });
+
+  factory CoordinatorUserItem.fromJson(Map<String, dynamic> json) {
+    return CoordinatorUserItem(
+      id: json['id'] as String? ?? '',
+      firstName: json['first_name'] as String? ?? '',
+      lastName: json['last_name'] as String? ?? '',
+      fullName: json['full_name'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      role: json['role'] as String? ?? 'supervisor',
+      departmentId: json['department_id'] as String?,
+      departmentName: json['department_name'] as String?,
+      isActive: json['is_active'] as bool? ?? true,
+      createdAt: json['created_at'] as String?,
+    );
+  }
+}
+
 final coordinatorRepositoryProvider = Provider<CoordinatorRepository>((ref) {
   final client = ref.watch(apiClientProvider);
   return CoordinatorRepository(client);
+});
+
+final coordinatorUsersProvider = FutureProvider.family<List<CoordinatorUserItem>, String?>((ref, role) async {
+  final repo = ref.watch(coordinatorRepositoryProvider);
+  return repo.getUsers(role: role);
 });
 
 final reportsSummaryProvider = FutureProvider.autoDispose<ReportSummaryModel>((ref) async {
@@ -369,4 +415,55 @@ class CoordinatorRepository {
       return _demoReportSummary;
     }
   }
+
+  /// Fetch faculty supervisors and coordinators
+  Future<List<CoordinatorUserItem>> getUsers({String? role}) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (role != null) queryParams['role'] = role;
+      final res = await _client.dio.get(
+        '${ApiConfig.apiMobileV1}/coordinator/users',
+        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      );
+      final raw = res.data['data'];
+      final list = raw is List ? raw : [];
+      return list.map((e) => CoordinatorUserItem.fromJson(e as Map<String, dynamic>)).toList();
+    } on DioException catch (e) {
+      throw _client.handleDioError(e);
+    }
+  }
+
+  /// Create a new supervisor or coordinator (Option A with security checks)
+  Future<CoordinatorUserItem> createUser({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String role,
+    String? departmentId,
+    String? currentPassword,
+  }) async {
+    try {
+      final payload = {
+        'first_name': firstName.trim(),
+        'last_name': lastName.trim(),
+        'email': email.trim().toLowerCase(),
+        'password': password,
+        'role': role,
+        if (departmentId != null && departmentId.isNotEmpty) 'department_id': departmentId,
+        if (currentPassword != null && currentPassword.isNotEmpty) 'current_password': currentPassword,
+      };
+
+      final res = await _client.dio.post(
+        '${ApiConfig.apiMobileV1}/coordinator/users',
+        data: payload,
+      );
+
+      final data = res.data['data'] as Map<String, dynamic>;
+      return CoordinatorUserItem.fromJson(data);
+    } on DioException catch (e) {
+      throw _client.handleDioError(e);
+    }
+  }
 }
+

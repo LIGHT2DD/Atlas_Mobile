@@ -160,6 +160,15 @@ class CoordinatorDashboardScreen extends ConsumerWidget {
 
               _adminNavTile(
                 context,
+                title: 'User Management',
+                description: 'Add faculty supervisors and coordinators with security controls',
+                icon: TablerIcons.users_group,
+                route: '/coordinator/users',
+              ),
+              const SizedBox(height: 14),
+
+              _adminNavTile(
+                context,
                 title: 'Academic Semesters',
                 description: 'Activate academic terms, configure team size limits',
                 icon: TablerIcons.calendar,

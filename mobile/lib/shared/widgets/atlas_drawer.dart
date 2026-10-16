@@ -230,6 +230,12 @@ class AtlasDrawer extends ConsumerWidget {
                     ),
                     _drawerItem(
                       context,
+                      icon: TablerIcons.users_group,
+                      title: 'User Management',
+                      route: '/coordinator/users',
+                    ),
+                    _drawerItem(
+                      context,
                       icon: TablerIcons.calendar,
                       title: 'Academic Semesters',
                       route: '/coordinator/semesters',

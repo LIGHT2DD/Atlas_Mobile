@@ -8,6 +8,7 @@ import '../../features/auth/login_screen.dart';
 import '../../features/auth/register_screen.dart';
 import '../../features/coordinator/audit_logs_screen.dart';
 import '../../features/coordinator/coordinator_teams_screen.dart';
+import '../../features/coordinator/coordinator_users_screen.dart';
 import '../../features/coordinator/reports_screen.dart';
 import '../../features/coordinator/semesters_screen.dart';
 import '../../features/dashboard/coordinator_dashboard_screen.dart';
@@ -253,6 +254,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/coordinator/teams',
         builder: (context, state) => const CoordinatorTeamsScreen(),
+      ),
+      GoRoute(
+        path: '/coordinator/users',
+        builder: (context, state) => const CoordinatorUsersScreen(),
       ),
       GoRoute(
         path: '/coordinator/semesters',
