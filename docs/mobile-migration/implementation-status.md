@@ -65,6 +65,7 @@
 
 - [x] **Phase 6: Coordinator Workflows (Flutter)**
   - [x] `CoordinatorDashboardScreen`: Department-wide metrics (Teams, Approved Proposals, Defenses, Students, Faculty, Graded) and administrative action shortcuts.
+  - [x] `CoordinatorUsersScreen`: User Roster Management, faculty supervisor registration, and coordinator creation with elevated sudo password verification, institutional email check (`@atlas.edu`), rate-limiting, and peer broadcast alerts.
   - [x] `CoordinatorTeamsScreen`: University-wide team oversight, manual faculty supervisor assignment/reassignment dialog, and grade publication lock.
   - [x] `SemestersScreen`: Academic semester term management, term creation form, and active term switching.
   - [x] `CreateMilestoneScreen`: Institutional milestone scheduling form with date picker, weight %, and max score.
@@ -75,14 +76,15 @@
   - [x] `ReportsScreen`: Analytical synthesis of cohort performance, student distribution, and lifecycle status breakdown.
 
 - [x] **Phase 7: Profile, Notifications & Device Registration**
-  - [x] `ProfileScreen`: Role badge, user ID, email, department, student ID, and secure sign-out.
+  - [x] `ProfileScreen`: Role badge, user ID, email, department, student ID, About ATLAS navigation link, and secure sign-out.
+  - [x] `AboutAtlasScreen`: Dedicated informative overview screen detailing ATLAS architecture, team lifecycle, and institutional mission (`/about`).
   - [x] `NotificationsScreen`: Real-time notification feed, category icons, read badges, and "Mark All as Read" action.
   - [x] `NotificationsRepository`: Device token registration endpoint (`POST /api/mobile/v1/notifications/device-token`) ready for Firebase Cloud Messaging (FCM).
 
 - [x] **Phase 8: Verification & Quality Assurance**
-  - [x] `flutter analyze`: **0 issues found** (clean code analysis).
-  - [x] `flutter test`: **11/11 tests passing** (100% pass rate) covering data models, JSON serialization, status badges, empty states, and cards.
-  - [x] `pytest tests/`: **31/31 tests passing** (100% pass rate) covering both web and mobile endpoints, role transitions, authorization boundaries, and conflict detection.
+  - [x] `dart analyze mobile/`: **0 issues found** (clean static analysis).
+  - [x] `flutter test`: **40/40 tests passing** (100% pass rate) covering data models, JSON serialization, status badges, empty states, Neumorphic widgets, and secure storage.
+  - [x] `pytest tests/`: **33/33 tests passing** (100% pass rate) covering both web and mobile endpoints, role transitions, authorization boundaries, defense conflicts, and coordinator user management.
 
 - [x] **Phase 9: Android Configuration & Release Readiness**
   - [x] Updated `mobile/android/app/src/main/AndroidManifest.xml`:
@@ -90,6 +92,8 @@
     - Added `android.permission.INTERNET`.
     - Added `android.permission.ACCESS_NETWORK_STATE`.
     - Added `android:usesCleartextTraffic="true"` for local development compatibility (`10.0.2.2:8000`).
+  - [x] Standalone Release Binary: Compiled native ARM64 release APK ([`app-arm64.apk`](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/app-arm64.apk), ~21.05 MB) with R8 code optimization.
+  - [x] 1-Click Viva Demo Reset: Created [`scripts/viva_reset.bat`](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/scripts/viva_reset.bat) and [`scripts/viva_reset.sh`](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/scripts/viva_reset.sh).
 
 ---
 
@@ -97,9 +101,9 @@
 
 | Test Suite | Tests Executed | Passed | Failed | Status |
 |:---|:---:|:---:|:---:|:---:|
-| Backend Pytest (`tests/`) | 31 | 31 | 0 | **PASSED (100%)** |
-| Mobile Flutter Tests (`mobile/test/`) | 11 | 11 | 0 | **PASSED (100%)** |
-| Static Code Analysis (`flutter analyze`) | All files in `mobile/lib/` & `mobile/test/` | 0 errors, 0 warnings | 0 | **PASSED (Clean)** |
+| Backend Pytest (`tests/`) | 33 | 33 | 0 | **PASSED (100%)** |
+| Mobile Flutter Tests (`mobile/test/`) | 40 | 40 | 0 | **PASSED (100%)** |
+| Static Code Analysis (`dart analyze`) | All files in `mobile/lib/` & `mobile/test/` | 0 errors, 0 warnings | 0 | **PASSED (Clean)** |
 
 ---
 

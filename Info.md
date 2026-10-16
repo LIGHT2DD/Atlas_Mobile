@@ -123,8 +123,11 @@ The decision to adopt a **Hybrid Model (FastAPI Core + Firebase Companion Servic
 * **Grade Registry & Publication**:
   - Review panel evaluation summaries.
   - Authoritatively publish final grades to student transcripts with one click.
+* **Faculty & Coordinator User Management (Elevated Sudo Authorization)**:
+  - Register new faculty mentors directly from the mobile app with department assignments.
+  - Register peer academic coordinators with mandatory elevated sudo password verification, institutional email validation (`@atlas.edu`), brute-force attempt rate-limiting, and automatic peer broadcast notifications.
 * **Institutional Audit Trail**:
-  - View real-time system logs and action histories tracking all approvals, uploads, and edits.
+  - View real-time system logs and action histories tracking all approvals, uploads, user creation events, and edits.
 
 ### 👨‍🏫 2. Supervisor (Faculty Mentor & Examiner) Features
 * **Supervision Request Management**:
