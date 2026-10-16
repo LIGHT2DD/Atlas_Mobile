@@ -541,8 +541,8 @@ sequenceDiagram
 121. **What is a unit test?** A test that verifies a single isolated unit of code (function or class) in isolation.
 122. **What is an integration test?** A test verifying that multiple components (e.g. API endpoint, service, database) work correctly together.
 123. **What is a widget test in Flutter?** A test that renders a widget in an isolated test environment to verify its UI behavior and layout.
-124. **How many automated tests exist in ATLAS?** 72 tests total (32 backend Pytest tests + 40 Flutter tests).
-125. **What is the pass rate of the ATLAS test suite?** 100% (all 72 tests pass cleanly).
+124. **How many automated tests exist in ATLAS?** 73 tests total (33 backend Pytest tests + 40 Flutter tests).
+125. **What is the pass rate of the ATLAS test suite?** 100% (all 73 tests pass cleanly).
 126. **What is a test fixture in Pytest?** A reusable setup function (in `conftest.py`) that provisions test databases and seeded test users.
 127. **How is test database isolation achieved?** Pytest fixtures create an isolated SQLite database for each test run.
 128. **What command executes the backend tests?** `.venv\Scripts\python -m pytest`.
@@ -630,6 +630,15 @@ sequenceDiagram
 **Strong Defense:**
 > *"Our network layer is built for resilience. In `ApiClient` (Dio), timeouts are capped at 5s connect and 8s receive. If a drop occurs, the client catches the error and returns a clean `NetworkException`. On the server, transactions are strictly atomic: if a file stream fails mid-upload, SQLAlchemy executes an immediate rollback. The database never contains orphaned proposal records pointing to non-existent files."*
 
+### Question 4: *"How does ATLAS prevent privilege escalation when coordinators add new faculty or administrative staff?"*
+**Strong Defense:**
+> *"We implement a zero-trust elevated authorization model inspired by Linux sudo:
+> 1. **Role Invariant:** Students can only self-register with role `student`. Faculty and coordinator creation endpoints are strictly guarded by `require_roles_mobile('coordinator')`.
+> 2. **Elevated Sudo Verification:** Creating a peer coordinator requires the actor to confirm their current coordinator password, verified via bcrypt.
+> 3. **Brute-Force Lockout:** Failed elevated password attempts are throttled (5 attempts max, followed by a 60-second cooldown).
+> 4. **Institutional Domain Enforcement:** All coordinator accounts must end with `@atlas.edu`.
+> 5. **Peer Accountability:** Whenever a coordinator is created, a broadcast alert is immediately pushed to all existing active coordinators, and an immutable audit trail entry is logged in the `audit_logs` table."*
+
 ---
 
 ## Section 11: Source-Code Navigation Index
@@ -654,8 +663,8 @@ When demonstrating the code to examiners, open files in this logical sequence:
 ## Section 12: Live Demonstration Script & Backup Runbook
 
 ### 12.1 Preparation Checklist
+- [ ] 1-Click Viva Demo Reset (Seeds DB & Runs Tests): `scripts\viva_reset.bat` (or `bash scripts/viva_reset.sh`)
 - [ ] Backend running: `.venv\Scripts\python -m uvicorn main:app --host 0.0.0.0 --port 8000`
-- [ ] Database seeded: `python scripts/seeders/seed_atlas.py`
 - [ ] Android device or emulator running with [app-arm64-release.apk](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/app-arm64-release.apk) installed.
 
 ### 12.2 Step-by-Step Demonstration Steps

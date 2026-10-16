@@ -29,71 +29,74 @@ class _CoordinatorUsersScreenState extends ConsumerState<CoordinatorUsersScreen>
       backgroundColor: neuTheme.baseColor,
       appBar: const NeuAppBar(title: 'User Management'),
       drawer: const AtlasDrawer(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top Controls & Segment Tabs
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: IosNeuSegmentPill(
-                          label: 'Supervisors',
-                          isSelected: _selectedTabIndex == 0,
-                          onTap: () => setState(() => _selectedTabIndex = 0),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: IosNeuSegmentPill(
-                          label: 'Coordinators',
-                          isSelected: _selectedTabIndex == 1,
-                          onTap: () => setState(() => _selectedTabIndex = 1),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Search Bar
-                  IosNeuSearchBar(
-                    hintText: _selectedTabIndex == 0
-                        ? 'Search supervisors by name or email...'
-                        : 'Search coordinators by name or email...',
-                    onChanged: (val) => setState(() => _searchQuery = val.trim().toLowerCase()),
-                  ),
-                ],
-              ),
-            ),
-
-            // User List Body
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  ref.invalidate(coordinatorUsersProvider);
-                },
-                child: usersAsync.when(
-                  loading: () => const LoadingIndicator(message: 'Loading user roster...'),
-                  error: (e, _) => Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(TablerIcons.alert_circle, color: neuTheme.dangerColor, size: 40),
-                          const SizedBox(height: 12),
-                          Text('Failed to load roster: $e', textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          NeuButton(
-                            text: 'Retry',
-                            onPressed: () => ref.invalidate(coordinatorUsersProvider),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Top Controls & Segment Tabs
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: IosNeuSegmentPill(
+                            label: 'Supervisors',
+                            isSelected: _selectedTabIndex == 0,
+                            onTap: () => setState(() => _selectedTabIndex = 0),
                           ),
-                        ],
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: IosNeuSegmentPill(
+                            label: 'Coordinators',
+                            isSelected: _selectedTabIndex == 1,
+                            onTap: () => setState(() => _selectedTabIndex = 1),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Search Bar
+                    IosNeuSearchBar(
+                      hintText: _selectedTabIndex == 0
+                          ? 'Search supervisors by name or email...'
+                          : 'Search coordinators by name or email...',
+                      onChanged: (val) => setState(() => _searchQuery = val.trim().toLowerCase()),
+                    ),
+                  ],
+                ),
+              ),
+
+              // User List Body
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(coordinatorUsersProvider(selectedRole));
+                  },
+                  child: usersAsync.when(
+                    loading: () => const LoadingIndicator(message: 'Loading user roster...'),
+                    error: (e, _) => Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(TablerIcons.alert_circle, color: neuTheme.dangerColor, size: 40),
+                            const SizedBox(height: 12),
+                            Text('Failed to load roster: $e', textAlign: TextAlign.center),
+                            const SizedBox(height: 16),
+                            NeuButton(
+                              text: 'Retry',
+                              onPressed: () => ref.invalidate(coordinatorUsersProvider(selectedRole)),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   data: (users) {
                     final filtered = users.where((u) {
                       if (_searchQuery.isEmpty) return true;
@@ -217,6 +220,7 @@ class _CoordinatorUsersScreenState extends ConsumerState<CoordinatorUsersScreen>
           ],
         ),
       ),
+      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 12.0),
         child: IosNeuFAB(
@@ -332,12 +336,15 @@ class _AddUserModalSheetState extends ConsumerState<_AddUserModalSheet> {
         color: neuTheme.baseColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Handle Drag bar
               Center(
@@ -543,8 +550,9 @@ class _AddUserModalSheetState extends ConsumerState<_AddUserModalSheet> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 extension on String {

@@ -61,6 +61,7 @@ def get_db():
         yield db
     finally:
         db.close()
+        db_session.remove()
 
 @contextmanager
 def get_db_with_ctx_manager():
@@ -69,3 +70,4 @@ def get_db_with_ctx_manager():
         yield db
     finally:
         db.close()
+        db_session.remove()

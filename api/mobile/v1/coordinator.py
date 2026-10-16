@@ -270,6 +270,12 @@ def list_faculty_and_coordinators(
     return mobile_response(data=items, message="Faculty and coordinator roster retrieved.")
 
 
+import time
+
+_sudo_failed_attempts: dict[str, list[float]] = {}
+_SUDO_MAX_ATTEMPTS = 5
+_SUDO_LOCKOUT_SECONDS = 60.0
+
 @coordinator_mobile_router.post("/users")
 def create_faculty_or_coordinator(
     payload: CoordinatorCreateUserPayload,
@@ -280,9 +286,10 @@ def create_faculty_or_coordinator(
     """
     Coordinator administrative user creation with elevated security controls:
     1. Sudo Elevated Password verification required if creating a Coordinator.
-    2. Institutional domain check (@atlas.edu) for Coordinator accounts.
-    3. Immutable AuditLog recording.
-    4. Broadcast alert notifications to all active peer coordinators.
+    2. Rate limiting & audit logging on failed sudo elevated attempts.
+    3. Institutional domain check (@atlas.edu) for Coordinator accounts.
+    4. Immutable AuditLog recording.
+    5. Broadcast alert notifications to all active peer coordinators.
     """
     target_role = payload.role.strip().lower()
     if target_role not in (UserRole.SUPERVISOR.value, UserRole.COORDINATOR.value):
@@ -290,16 +297,46 @@ def create_faculty_or_coordinator(
 
     # Guardrails for Coordinator creation
     if target_role == UserRole.COORDINATOR.value:
+        now_ts = time.time()
+        user_attempts = [t for t in _sudo_failed_attempts.get(current_user.id, []) if now_ts - t < _SUDO_LOCKOUT_SECONDS]
+        _sudo_failed_attempts[current_user.id] = user_attempts
+
+        if len(user_attempts) >= _SUDO_MAX_ATTEMPTS:
+            AuditLog.log(
+                db=db,
+                action="SECURITY_SUDO_LOCKOUT",
+                user_id=current_user.id,
+                entity_type="user",
+                details=f"Elevated authorization temporarily locked out for coordinator {current_user.full_name} due to excessive failures."
+            )
+            raise HTTPException(
+                status_code=429,
+                detail="Too many failed elevated password attempts. Authorization locked for 60 seconds."
+            )
+
         if not payload.current_password or not payload.current_password.strip():
             raise HTTPException(
                 status_code=400,
                 detail="Current coordinator password is required to authorize creating another coordinator account."
             )
         if not AuthService.verify_hash(payload.current_password.strip(), current_user.password):
+            _sudo_failed_attempts[current_user.id].append(now_ts)
+            AuditLog.log(
+                db=db,
+                action="SECURITY_SUDO_FAILURE",
+                user_id=current_user.id,
+                entity_type="user",
+                details=f"Failed elevated authorization attempt by coordinator {current_user.full_name} when attempting to create coordinator account for '{payload.email}'."
+            )
+            remaining = _SUDO_MAX_ATTEMPTS - len(_sudo_failed_attempts[current_user.id])
             raise HTTPException(
                 status_code=403,
-                detail="Elevated authorization failed: Invalid current coordinator password."
+                detail=f"Elevated authorization failed: Invalid coordinator password. ({remaining} attempts remaining before temporary lockout)."
             )
+
+        # Clear failed attempts on successful elevated authorization
+        _sudo_failed_attempts.pop(current_user.id, None)
+
         if not payload.email.lower().endswith("@atlas.edu"):
             raise HTTPException(
                 status_code=400,

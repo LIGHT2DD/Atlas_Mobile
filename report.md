@@ -54,7 +54,7 @@ ATLAS operates on a modern, decoupled client-server architecture:
 ### 1.3 Implementation Status Summary
 A thorough repository audit and automated test verification confirm that ATLAS is an actively working, fully implemented software system:
 - **Automated Verification:** **100% Pass Rate** across all automated test suites:
-  - **32 / 32 Backend Pytest integration and security tests passed** (`.venv\Scripts\python -m pytest`).
+  - **33 / 33 Backend Pytest integration and security tests passed** (`.venv\Scripts\python -m pytest`).
   - **40 / 40 Flutter Dart unit, widget, storage, and model tests passed** (`flutter test test/`).
   - **0 Static Analysis Warnings** (`dart analyze mobile/`).
 - **Release Build Verified:** A standalone, fully optimized ARM64 Android release package ([app-arm64-release.apk](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/app-arm64-release.apk), 20.86 MB) compiled successfully via Gradle R8/ProGuard code and resource shrinking.
@@ -213,8 +213,10 @@ graph TD
   - Configure milestone deliverables, deadlines, and weight percentages.
   - Schedule oral defense hearings across examination rooms and committees.
   - Configure departmental rubric matrices.
+  - Configure departmental rubric matrices.
   - Lock and publish final academic grades.
   - Inspect system-wide audit logs and generate cohort analytical reports.
+  - User Roster Management: Register new faculty supervisors and peer academic coordinators with elevated sudo password verification, institutional domain enforcement (`@atlas.edu`), brute-force rate-limiting, and automatic peer broadcast notifications.
 - **Strictly Prohibited:**
   - System enforces separation of duties; coordinator actions are permanently logged in `audit_logs` table with actor timestamps.
 
@@ -223,6 +225,8 @@ graph TD
 | Operational Capability | Student | Supervisor | Coordinator | Enforcing Source File |
 | :--- | :---: | :---: | :---: | :--- |
 | **User Registration & Profile Update** | YES | YES | YES | [api/mobile/v1/auth.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/auth.py) |
+| **Register Faculty Supervisor Account** | NO | NO | YES | [api/mobile/v1/coordinator.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/coordinator.py) |
+| **Register Coordinator (Elevated Sudo)** | NO | NO | YES (Sudo + @atlas.edu) | [api/mobile/v1/coordinator.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/coordinator.py) |
 | **Team Creation & Invite Management** | YES | NO | NO | [api/v1/services/team.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/v1/services/team.py) |
 | **Supervisor Request Dispatch** | YES | NO | NO | [api/v1/services/team.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/v1/services/team.py) |
 | **Accept/Decline Supervision Invitation** | NO | YES | NO | [api/mobile/v1/supervisor.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/supervisor.py) |
@@ -242,6 +246,8 @@ graph TD
 ## Chapter 5: Overall System Architecture
 
 ATLAS employs a clean, layered architectural design that completely decouples client presentation from server domain logic, ensuring zero cross-contamination between mobile and web clients.
+
+> **Visual Modeling Reference:** For the complete, publication-grade visual catalog consisting of 36 comprehensive architectural diagrams (System Context, DFD Levels 0–2, Crow's Foot ER Models, UML Class Structures, State Machines, Sequence Diagrams, and Network Deployment Topologies), see the companion manual [`diagram.md`](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/diagram.md).
 
 ```mermaid
 graph TB
