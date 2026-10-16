@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/status_badge.dart';
-import '../../shared/widgets/about_atlas_card.dart';
 import '../auth/auth_controller.dart';
 import '../teams/team_repository.dart';
 
@@ -122,10 +121,6 @@ class StudentDashboardScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 18),
-
-              // About ATLAS Section
-              const AboutAtlasCard(),
-              const SizedBox(height: 22),
 
               // Team Status Card
               teamAsync.when(

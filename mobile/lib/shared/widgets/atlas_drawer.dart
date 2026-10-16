@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
 import '../models/user_model.dart';
 import '../../features/auth/auth_controller.dart';
-import 'about_atlas_card.dart';
 
 class AtlasDrawer extends ConsumerWidget {
   const AtlasDrawer({super.key});
@@ -97,8 +96,60 @@ class AtlasDrawer extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  // Compact "About ATLAS" Card below User Profile
-                  const AboutAtlasCard(isCompact: true),
+                  // About ATLAS Option below User Profile
+                  IosNeuCard(
+                    borderRadius: BorderRadius.circular(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push('/about');
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: neuTheme.accentColor.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            TablerIcons.info_circle,
+                            color: neuTheme.accentColor,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'About ATLAS',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: neuTheme.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                'Overview & suite mission',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: neuTheme.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          TablerIcons.chevron_right,
+                          size: 16,
+                          color: neuTheme.textSecondary,
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 14),
                   _drawerItem(
                     context,
@@ -233,6 +284,12 @@ class AtlasDrawer extends ConsumerWidget {
                     icon: TablerIcons.user,
                     title: 'User Profile',
                     route: '/profile',
+                  ),
+                  _drawerItem(
+                    context,
+                    icon: TablerIcons.info_circle,
+                    title: 'About ATLAS',
+                    route: '/about',
                   ),
                 ],
               ),

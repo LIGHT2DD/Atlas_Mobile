@@ -4,7 +4,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/widgets/atlas_drawer.dart';
-import '../../shared/widgets/about_atlas_card.dart';
 import '../auth/auth_controller.dart';
 import '../supervisor/supervisor_repository.dart';
 
@@ -102,10 +101,6 @@ class SupervisorDashboardScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 18),
-
-              // About ATLAS Section
-              const AboutAtlasCard(),
-              const SizedBox(height: 22),
 
               // KPI Counters
               Row(

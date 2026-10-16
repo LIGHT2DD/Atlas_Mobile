@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/about/about_atlas_screen.dart';
 import '../../features/auth/auth_controller.dart';
 import '../../features/auth/forgot_password_screen.dart';
 import '../../features/auth/login_screen.dart';
@@ -270,6 +271,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+
+      // About ATLAS Dedicated Route
+      GoRoute(
+        path: '/about',
+        builder: (context, state) => const AboutAtlasScreen(),
       ),
     ],
   );

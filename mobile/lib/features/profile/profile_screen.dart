@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/status_badge.dart';
-import '../../shared/widgets/about_atlas_card.dart';
 import '../auth/auth_controller.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -79,8 +78,58 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // About ATLAS Section
-                const AboutAtlasCard(),
+                // About ATLAS Navigation Option
+                IosNeuCard(
+                  borderRadius: BorderRadius.circular(20),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  onTap: () => context.push('/about'),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: neuTheme.accentColor.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          TablerIcons.info_circle,
+                          color: neuTheme.accentColor,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'About ATLAS',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: neuTheme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Academic Thesis Lifecycle & Assessment Suite',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: neuTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        TablerIcons.chevron_right,
+                        color: neuTheme.textSecondary.withValues(alpha: 0.7),
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 20),
 
                 // Account Information
