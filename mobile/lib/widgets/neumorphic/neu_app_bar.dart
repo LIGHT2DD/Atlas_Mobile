@@ -37,7 +37,8 @@ class NeuAppBar extends ConsumerWidget implements PreferredSizeWidget {
     if (leadingWidget == null && automaticallyImplyLeading) {
       final ScaffoldState? scaffold = Scaffold.maybeOf(context);
       final hasDrawer = scaffold?.hasDrawer ?? false;
-      final canPop = Navigator.of(context).canPop() || GoRouter.of(context).canPop();
+      final canGoRouterPop = GoRouter.maybeOf(context)?.canPop() ?? false;
+      final canPop = Navigator.of(context).canPop() || canGoRouterPop;
 
       if (hasDrawer) {
         leadingWidget = NeuIconButton(
@@ -50,8 +51,9 @@ class NeuAppBar extends ConsumerWidget implements PreferredSizeWidget {
           icon: TablerIcons.arrow_left,
           tooltip: 'Go Back',
           onPressed: () {
-            if (GoRouter.of(context).canPop()) {
-              context.pop();
+            final router = GoRouter.maybeOf(context);
+            if (router != null && router.canPop()) {
+              router.pop();
             } else {
               Navigator.of(context).maybePop();
             }

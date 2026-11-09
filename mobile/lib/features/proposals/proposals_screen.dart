@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
-import '../../shared/models/proposal_model.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
@@ -14,12 +13,6 @@ import '../auth/auth_controller.dart';
 import '../teams/team_repository.dart';
 import 'proposal_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-
-final proposalFutureProvider =
-    FutureProvider.autoDispose.family<ProposalModel?, String>((ref, teamId) async {
-  final repo = ref.watch(proposalRepositoryProvider);
-  return repo.getProposalByTeam(teamId);
-});
 
 class ProposalsScreen extends ConsumerWidget {
   final String? teamId;
@@ -33,27 +26,54 @@ class ProposalsScreen extends ConsumerWidget {
     final isStudent = user?.role.isStudent ?? true;
     final isSupervisor = user?.role.isSupervisor ?? false;
 
-    // If teamId is passed, use it directly. Otherwise look up current user's team.
+    // If teamId is passed, use it directly.
     if (teamId != null && teamId!.isNotEmpty) {
       return _ProposalView(teamId: teamId!, isStudent: isStudent, isSupervisor: isSupervisor);
     }
 
+    // For faculty / coordinators without a specific team context, prompt team selection
+    if (!isStudent) {
+      return Scaffold(
+        appBar: const NeuAppBar(title: 'Thesis Proposal Review'),
+        drawer: const AtlasDrawer(),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: EmptyState(
+              icon: TablerIcons.file_search,
+              title: 'Proposal Inspection',
+              subtitle:
+                  'Select a team from Supervised Teams or All Teams to inspect and review their thesis proposal.',
+              actionLabel: isSupervisor ? 'View Supervised Teams' : 'View All Teams',
+              onAction: () => context.go(isSupervisor ? '/supervisor/teams' : '/coordinator/teams'),
+            ),
+          ),
+        ),
+      );
+    }
+
     // Lookup current student team
     final myTeamAsync = ref.watch(myTeamFutureProvider);
-    return Scaffold(
-      appBar: const NeuAppBar(
-        title: 'Thesis Proposal',
+    return myTeamAsync.when(
+      loading: () => const Scaffold(
+        appBar: NeuAppBar(title: 'Thesis Proposal'),
+        drawer: AtlasDrawer(),
+        body: LoadingIndicator(message: 'Loading team context...'),
       ),
-      drawer: const AtlasDrawer(),
-      body: myTeamAsync.when(
-        loading: () => const LoadingIndicator(message: 'Loading team context...'),
-        error: (err, _) => ErrorView(
+      error: (err, _) => Scaffold(
+        appBar: const NeuAppBar(title: 'Thesis Proposal'),
+        drawer: const AtlasDrawer(),
+        body: ErrorView(
           message: err.toString(),
           onRetry: () => ref.refresh(myTeamFutureProvider),
         ),
-        data: (team) {
-          if (team == null) {
-            return Center(
+      ),
+      data: (team) {
+        if (team == null) {
+          return Scaffold(
+            appBar: const NeuAppBar(title: 'Thesis Proposal'),
+            drawer: const AtlasDrawer(),
+            body: Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: EmptyState(
@@ -64,11 +84,11 @@ class ProposalsScreen extends ConsumerWidget {
                   onAction: () => context.go('/teams/my-team'),
                 ),
               ),
-            );
-          }
-          return _ProposalView(teamId: team.id, isStudent: isStudent, isSupervisor: isSupervisor);
-        },
-      ),
+            ),
+          );
+        }
+        return _ProposalView(teamId: team.id, isStudent: isStudent, isSupervisor: isSupervisor);
+      },
     );
   }
 }

@@ -22,6 +22,10 @@ class Notification(BaseTableModel):
     user_id = sa.Column(sa.String, sa.ForeignKey('users.id'), nullable=False, index=True)
     is_read = sa.Column(sa.Boolean, default=False)
     link = sa.Column(sa.String, nullable=True)
+
+    __table_args__ = (
+        sa.Index('ix_notifications_user_read_deleted', 'user_id', 'is_read', 'is_deleted'),
+    )
     
     def to_dict(self, excludes=[]):
         return super().to_dict(excludes=excludes)

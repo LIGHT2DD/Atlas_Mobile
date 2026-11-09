@@ -1,6 +1,9 @@
 from typing import Optional, List, Callable
 from fastapi import Request, HTTPException, Depends
-from fastapi.responses import JSONResponse
+try:
+    from fastapi.responses import ORJSONResponse as FastJSONResponse
+except ImportError:
+    from fastapi.responses import JSONResponse as FastJSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
@@ -12,8 +15,8 @@ from api.v1.services.auth import AuthService
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
-def mobile_response(data: Optional[dict | list] = None, message: str = "Operation completed successfully.", status_code: int = 200) -> JSONResponse:
-    return JSONResponse(
+def mobile_response(data: Optional[dict | list] = None, message: str = "Operation completed successfully.", status_code: int = 200) -> FastJSONResponse:
+    return FastJSONResponse(
         status_code=status_code,
         content={
             "success": True,
@@ -25,8 +28,8 @@ def mobile_response(data: Optional[dict | list] = None, message: str = "Operatio
     )
 
 
-def mobile_error(message: str, status_code: int = 400, errors: Optional[List[str]] = None) -> JSONResponse:
-    return JSONResponse(
+def mobile_error(message: str, status_code: int = 400, errors: Optional[List[str]] = None) -> FastJSONResponse:
+    return FastJSONResponse(
         status_code=status_code,
         content={
             "success": False,

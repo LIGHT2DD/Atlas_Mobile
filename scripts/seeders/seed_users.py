@@ -34,14 +34,14 @@ USERS = [
     {
         "first_name": "Adebayo",
         "last_name": "Ogunleye",
-        "email": "admin@atlas.edu",
+        "email": "admin@cstu.edu.bd",
         "role": UserRole.ADMIN.value,
         "is_active": True,
     },
     {
         "first_name": "Funke",
         "last_name": "Adeyemi",
-        "email": "admin2@atlas.edu",
+        "email": "admin2@cstu.edu.bd",
         "role": UserRole.ADMIN.value,
         "is_active": True,
     },
@@ -50,35 +50,35 @@ USERS = [
     {
         "first_name": "Dr. Chinedu",
         "last_name": "Okafor",
-        "email": "supervisor1@atlas.edu",
+        "email": "supervisor1@cstu.edu.bd",
         "role": UserRole.SUPERVISOR.value,
         "is_active": True,
     },
     {
         "first_name": "Prof. Ngozi",
         "last_name": "Eze",
-        "email": "supervisor2@atlas.edu",
+        "email": "supervisor2@cstu.edu.bd",
         "role": UserRole.SUPERVISOR.value,
         "is_active": True,
     },
     {
         "first_name": "Dr. Tunde",
         "last_name": "Bakare",
-        "email": "supervisor3@atlas.edu",
+        "email": "supervisor3@cstu.edu.bd",
         "role": UserRole.SUPERVISOR.value,
         "is_active": True,
     },
     {
         "first_name": "Dr. Amina",
         "last_name": "Ibrahim",
-        "email": "supervisor4@atlas.edu",
+        "email": "supervisor4@cstu.edu.bd",
         "role": UserRole.SUPERVISOR.value,
         "is_active": True,
     },
     {
         "first_name": "Prof. Segun",
         "last_name": "Adeniyi",
-        "email": "supervisor5@atlas.edu",
+        "email": "supervisor5@cstu.edu.bd",
         "role": UserRole.SUPERVISOR.value,
         "is_active": True,
     },
@@ -87,63 +87,63 @@ USERS = [
     {
         "first_name": "Korede",
         "last_name": "Fashina",
-        "email": "student1@atlas.edu",
+        "email": "student1@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
     {
         "first_name": "Chiamaka",
         "last_name": "Nwosu",
-        "email": "student2@atlas.edu",
+        "email": "student2@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
     {
         "first_name": "Yusuf",
         "last_name": "Abdullahi",
-        "email": "student3@atlas.edu",
+        "email": "student3@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
     {
         "first_name": "Temitope",
         "last_name": "Akinwale",
-        "email": "student4@atlas.edu",
+        "email": "student4@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
     {
         "first_name": "Emeka",
         "last_name": "Ugochukwu",
-        "email": "student5@atlas.edu",
+        "email": "student5@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
     {
         "first_name": "Halima",
         "last_name": "Bello",
-        "email": "student6@atlas.edu",
+        "email": "student6@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
     {
         "first_name": "Chisom",
         "last_name": "Okonkwo",
-        "email": "student7@atlas.edu",
+        "email": "student7@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
     {
         "first_name": "Aisha",
         "last_name": "Mohammed",
-        "email": "student8@atlas.edu",
+        "email": "student8@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
     {
         "first_name": "David",
         "last_name": "Oladele",
-        "email": "student9@atlas.edu",
+        "email": "student9@cstu.edu.bd",
         "role": UserRole.STUDENT.value,
         "is_active": True,
     },
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     print("-" * 50)
     print(f"  {'Role':<12} {'Email':<32} Password")
     print("-" * 50)
-    print(f"  {'Admin':<12} {'admin@atlas.edu':<32} {SEED_PASSWORD}")
-    print(f"  {'Supervisor':<12} {'supervisor1@atlas.edu':<32} {SEED_PASSWORD}")
-    print(f"  {'Student':<12} {'student1@atlas.edu':<32} {SEED_PASSWORD}")
+    print(f"  {'Admin':<12} {'admin@cstu.edu.bd':<32} {SEED_PASSWORD}")
+    print(f"  {'Supervisor':<12} {'supervisor1@cstu.edu.bd':<32} {SEED_PASSWORD}")
+    print(f"  {'Student':<12} {'student1@cstu.edu.bd':<32} {SEED_PASSWORD}")
     print("-" * 50)

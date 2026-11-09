@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../shared/models/evaluation_model.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
@@ -8,13 +7,9 @@ import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/status_badge.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
+import '../auth/auth_controller.dart';
 import 'evaluation_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-
-final myGradeFutureProvider = FutureProvider.autoDispose<TeamGradeModel>((ref) async {
-  final repo = ref.watch(evaluationRepositoryProvider);
-  return repo.getMyGrade();
-});
 
 class MyGradeScreen extends ConsumerWidget {
   const MyGradeScreen({super.key});
@@ -22,6 +17,29 @@ class MyGradeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final neuTheme = context.neuTheme;
+    final authState = ref.watch(authControllerProvider);
+    final user = authState.user;
+    final isStudent = user?.role.isStudent ?? true;
+
+    if (!isStudent) {
+      return Scaffold(
+        backgroundColor: neuTheme.baseColor,
+        appBar: const NeuAppBar(title: 'Official Academic Grades'),
+        drawer: const AtlasDrawer(),
+        body: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: EmptyState(
+              icon: TablerIcons.award,
+              title: 'Student Grade Transcripts',
+              subtitle:
+                  'Official certified grades are student-facing records. Supervisors and coordinators can review scores under Rubric Evaluations and Reports.',
+            ),
+          ),
+        ),
+      );
+    }
+
     final gradeAsync = ref.watch(myGradeFutureProvider);
 
     return Scaffold(

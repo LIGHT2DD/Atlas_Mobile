@@ -1,6 +1,7 @@
 # ATLAS — Complete Architectural, Data Flow & Modeling Diagrams
+
 **Academic Thesis Lifecycle & Assessment Suite**  
-*Comprehensive Software Engineering Diagrammatic Reference Manual*
+_Comprehensive Software Engineering Diagrammatic Reference Manual_
 
 ---
 
@@ -1253,7 +1254,7 @@ sequenceDiagram
 
     Coord->>API: POST /api/mobile/v1/defenses/schedule {team_id, date, start_time, end_time, venue, panelist_ids}
     API->>Service: schedule_defense()
-    
+
     note over Service,DB: Room Interval Conflict Check
     Service->>DB: SELECT * FROM defense_schedules WHERE venue = :venue AND scheduled_date = :date AND status != 'cancelled'
     loop For Each Existing Booking in Venue
@@ -1338,7 +1339,7 @@ sequenceDiagram
     ActingCoord->>UI: Tap '+ Add Coordinator' -> Enter Name, Email, Password
     ActingCoord->>UI: Enter Current Coordinator Password (Sudo Mode)
     UI->>API: POST /api/mobile/v1/coordinator/users {first_name, last_name, email, password, role: 'coordinator', current_password}
-    
+
     API->>API: Verify Acting User has Role 'coordinator'
     API->>Auth: verify_hash(payload.current_password, acting_user.password)
     alt Sudo Password Invalid
@@ -1405,7 +1406,7 @@ sequenceDiagram
 stateDiagram-v2
     [*] --> DRAFT : Candidate Creates Proposal
     DRAFT --> SUBMITTED : Team Leader Submits Version 1
-    
+
     state SUBMITTED {
         [*] --> UnderSupervisorReview
         UnderSupervisorReview --> ChangesEvaluated
@@ -1413,7 +1414,7 @@ stateDiagram-v2
 
     SUBMITTED --> CHANGES_REQUESTED : Supervisor Requests Revisions (Comments)
     CHANGES_REQUESTED --> SUBMITTED : Candidate Resubmits Revised Draft (v2..vN)
-    
+
     SUBMITTED --> APPROVED : Supervisor Confirms Acceptance
     SUBMITTED --> REJECTED : Fundamental Rejection / Unviable
 
@@ -1429,7 +1430,7 @@ stateDiagram-v2
 stateDiagram-v2
     [*] --> FORMING : Team Leader Registers Team
     FORMING --> FORMING : Members Join via Invite Code
-    
+
     FORMING --> SUPERVISOR_REQUESTED : Leader Pitches to Faculty Member
     SUPERVISOR_REQUESTED --> FORMING : Faculty Declines Pitch
     SUPERVISOR_REQUESTED --> SUPERVISOR_ASSIGNED : Faculty Accepts Pitch
@@ -1441,10 +1442,10 @@ stateDiagram-v2
 
     PROPOSAL_APPROVED --> IN_PROGRESS : Milestones & Research Active
     IN_PROGRESS --> IN_PROGRESS : Periodic Submissions & Reviews
-    
+
     IN_PROGRESS --> DEFENSE_SCHEDULED : Coordinator Schedules Oral Defense
     DEFENSE_SCHEDULED --> DEFENSE_SCHEDULED : Panel Examiner Scoring
-    
+
     DEFENSE_SCHEDULED --> COMPLETED : Coordinator Publishes Final Grades
     COMPLETED --> [*] : Archival & Transcript Record
 ```
@@ -1457,14 +1458,14 @@ stateDiagram-v2
 stateDiagram-v2
     [*] --> UPCOMING : Coordinator Configures Milestone
     UPCOMING --> OPEN : Semester Reaches Open Window
-    
+
     OPEN --> SUBMITTED : Candidate Uploads Deliverable (Before Due Date)
     OPEN --> LATE : Due Date Passes without Submission
     LATE --> SUBMITTED : Candidate Uploads Deliverable (Marked Late)
 
     SUBMITTED --> UNDER_REVIEW : Supervisor Accesses Document
     UNDER_REVIEW --> GRADED : Supervisor Enters Score & Remarks
-    
+
     GRADED --> [*] : Added to Continuous Assessment
 ```
 
@@ -1476,14 +1477,14 @@ stateDiagram-v2
 stateDiagram-v2
     [*] --> PENDING_SCHEDULING : Proposal Approved & Milestones Met
     PENDING_SCHEDULING --> SCHEDULED : Coordinator Allocates Room & Panelists
-    
+
     SCHEDULED --> IN_PROGRESS : Defense Hearing Commences on Schedule
     SCHEDULED --> CANCELLED : Scheduling Conflict / Postponement
     CANCELLED --> PENDING_SCHEDULING : Reschedule
 
     IN_PROGRESS --> EVALUATED : All Panelists Complete Rubrics
     EVALUATED --> GRADES_PUBLISHED : Coordinator Authoritatively Releases Grade
-    
+
     GRADES_PUBLISHED --> [*] : Defense Concluded
 ```
 
@@ -1496,7 +1497,7 @@ stateDiagram-v2
 ```mermaid
 flowchart TD
     Start(["Client Sends Request"]) --> HasAuthHeader{"Has 'Authorization: Bearer <token>'?"}
-    
+
     HasAuthHeader -- No --> IsPublicRoute{"Is Route Public?<br/>(/login, /register)"}
     IsPublicRoute -- Yes --> ExecuteEndpoint["Process Route Handler"]
     IsPublicRoute -- No --> Return401["Return 401 Unauthorized"]
@@ -1504,7 +1505,7 @@ flowchart TD
     HasAuthHeader -- Yes --> DecodeJWT{"Decode JWT Secret & Expiry"}
     DecodeJWT -- Expired / Invalid --> Return401
     DecodeJWT -- Valid --> FetchUser["Fetch User from DB"]
-    
+
     FetchUser --> IsActive{"user.is_active == True?"}
     IsActive -- No --> Return403Inactive["Return 403 Forbidden: Inactive"]
     IsActive -- Yes --> CheckRole{"Endpoint Requires Role?"}
@@ -1513,7 +1514,7 @@ flowchart TD
     CheckRole -- Yes --> RoleMatch{"User Role Matches Required Role?"}
     RoleMatch -- No --> Return403Role["Return 403 Forbidden: Insufficient Permissions"]
     RoleMatch -- Yes --> CheckObject{"Object-Level Check Required?<br/>(Own Team / Assigned Supervisor)"}
-    
+
     CheckObject -- No --> ExecuteEndpoint
     CheckObject -- Yes --> ObjectAuthorized{"User Owns or Supervises Resource?"}
     ObjectAuthorized -- No --> Return403Obj["Return 403 Forbidden: Resource Access Denied"]
@@ -1611,7 +1612,7 @@ flowchart TD
     FetchScores --> GroupPanelists["Group scores by panelist_id"]
     GroupPanelists --> CalcPanelistScore["For each panelist P:<br/>Score_P = Sum( (score_i / max_score_i) * weight_i )"]
     CalcPanelistScore --> CalcComposite["Composite Score = Average(Score_P1, Score_P2, ... Score_PN)"]
-    
+
     CalcComposite --> ScaleGrade{"Map Composite Score (0..100) to Letter Grade"}
     ScaleGrade -- "Score >= 90" --> GradeA_Plus["Letter Grade: A+ (Excellent / Honors)"]
     ScaleGrade -- "80 <= Score < 90" --> GradeA["Letter Grade: A (Very Good)"]
@@ -1640,22 +1641,22 @@ flowchart TD
 ```mermaid
 flowchart TD
     Start(["Coordinator Submits 'Add User' Form"]) --> CheckRole{"Target Role Selected"}
-    
+
     CheckRole -- "role == 'supervisor'" --> CreateSupervisor["Create Faculty Supervisor:<br/>1. Hash Password (BCrypt)<br/>2. Insert into users<br/>3. Log 'SUPERVISOR_CREATED' in AuditLog<br/>4. Notify New Faculty User"]
     CreateSupervisor --> Return201Sup(["Return 201 Created: Supervisor Ready"])
 
     CheckRole -- "role == 'coordinator'" --> CheckSudoPassword{"current_password provided?"}
     CheckSudoPassword -- No --> ErrNoSudo["Return 400 Bad Request: Sudo Password Required"]
-    
+
     CheckSudoPassword -- Yes --> VerifySudoHash{"AuthService.verify_hash(current_password, acting_user.password)"}
     VerifySudoHash -- False --> ErrWrongSudo["Return 403 Forbidden: Sudo Elevated Authorization Failed"]
-    
+
     VerifySudoHash -- True --> CheckEmailDomain{"email.endswith('@atlas.edu')?"}
     CheckEmailDomain -- No --> ErrDomain["Return 400 Bad Request: Institutional @atlas.edu Domain Required"]
-    
+
     CheckEmailDomain -- Yes --> CheckDuplicate{"Email already exists in users table?"}
     CheckDuplicate -- Yes --> ErrDuplicate["Return 400 Bad Request: Account Email Already Registered"]
-    
+
     CheckDuplicate -- No --> CreateCoordinator["DB Transaction Commit:<br/>1. Hash New Password (BCrypt)<br/>2. Insert new user (role='coordinator', is_active=True)<br/>3. Log 'COORDINATOR_CREATED' in AuditLog<br/>4. Broadcast Alert Notifications to All Peer Coordinators"]
     CreateCoordinator --> Return201Coord(["Return 201 Created: Coordinator Activated"])
 
@@ -1935,9 +1936,9 @@ flowchart LR
 ```mermaid
 flowchart TD
     Request["Incoming API Request"] --> RBAC{"Check 1: Role-Based Access Control (RBAC)<br/>Does user.role match endpoint role requirements?"}
-    
+
     RBAC -- Failed --> Deny403["403 Forbidden: Insufficient Role Permissions"]
-    
+
     RBAC -- Passed --> ObjectLevel{"Check 2: Object-Level Authorization<br/>What is the targeted entity?"}
 
     ObjectLevel -- "Team Resource" --> TeamCheck{"User is Team Leader OR Assigned Supervisor OR Coordinator?"}
@@ -1966,46 +1967,47 @@ flowchart TD
 
 ## 10. Summary Matrix of Diagrams
 
-| Figure # | Category | Diagram Name | Primary Actors & Entities | Codebase Verification |
-| :--- | :--- | :--- | :--- | :--- |
-| **Fig 1.1** | DFD | Level 0 Context Diagram | Student, Supervisor, Coordinator, FCM | Full System Boundary |
-| **Fig 1.2** | DFD | Level 1 Subsystem Decomposition | Processes 1.0 - 7.0, Data Stores D1 - D9 | Complete Architecture |
-| **Fig 1.3** | DFD | Level 2 Proposal Lifecycle | Leader, Supervisor, Proposals, Versions | `api/v1/services/proposal.py` |
-| **Fig 1.4** | DFD | Level 2 Defense Collision Engine | Coordinator, Venues, Panelists, Defenses | `api/v1/services/defense.py` |
-| **Fig 1.5** | DFD | Level 2 Rubric Assessment | Panelists, Coordinator, Rubrics, Scores | `api/v1/services/evaluation.py` |
-| **Fig 2.1** | Use Case | Master System Use Cases | All System Actors | 17 Core Use Cases |
-| **Fig 2.2** | Use Case | Student Subsystem Use Cases | Student, Teams, Milestones, Pitches | Student Mobile Workflows |
-| **Fig 2.3** | Use Case | Supervisor Subsystem Use Cases | Faculty, Requests, Proposals, Rubrics | Supervisor Mobile Workflows |
-| **Fig 2.4** | Use Case | Coordinator Subsystem Use Cases | Coordinator, Semesters, Users, Audits | Coordinator Admin Panel |
-| **Fig 3.1** | ERD | Conceptual ER Diagram | Core Domain Entities | High-Level Schema |
-| **Fig 3.2** | ERD | Complete Physical ER Diagram | 16 Tables, PKs, FKs, Types, Cardinalities | `api/v1/models/*.py` |
-| **Fig 4.1** | Architecture | Multi-Tier Architecture | Presentation, Gateway, App, DB, Cloud | `main.py`, `app_router.dart` |
-| **Fig 4.2** | Architecture | Mobile Client Riverpod Architecture | Views, Notifiers, Repositories, Storage | `mobile/lib/` |
-| **Fig 4.3** | Architecture | Backend Service Component Diagram | Routers, Guards, Services, Models | `api/mobile/v1/` |
-| **Fig 4.4** | Deployment | Deployment Topology | Android OS, Uvicorn, SQLite WAL, FCM | Production Environment |
-| **Fig 4.5** | Sequence | Request/Response Middleware Pipeline | ASGI, CORS, JWT, Pydantic, ORM, DB | `api/core/` |
-| **Fig 5.1** | Sequence | Dual-Token Auth & Refresh Lifecycle | JWT Access (15m), Refresh Token (7d) | `api/v1/services/auth.py` |
-| **Fig 5.2** | Sequence | Team Formation & Invite Acceptance | Leader, Member, 6-char Invite Code | `api/v1/services/team.py` |
-| **Fig 5.3** | Sequence | Supervisor Pitch & Approval | Student Pitch, Requests Inbox, Decision | `api/v1/models/supervisor_request.py` |
-| **Fig 5.4** | Sequence | Multi-Round Proposal Review | v1..vN Iteration, Change Requests | `api/v1/models/proposal.py` |
-| **Fig 5.5** | Sequence | Milestone Submission & Feedback | File Uploads, Deadlines, Remarks | `api/v1/models/submission.py` |
-| **Fig 5.6** | Sequence | Defense Scheduling & Collision Engine | Interval Checking, Room/Panelist Lock | `DefenseService.schedule_defense` |
-| **Fig 5.7** | Sequence | Rubric Defense Evaluation & Publishing | Multi-Panel Scoring, Grade Publication | `EvaluationService.publish_grades` |
-| **Fig 5.8** | Sequence | Sudo Coordinator Creation (Option A) | Password Re-verification, @atlas.edu | `api/mobile/v1/coordinator.py:273` |
-| **Fig 5.9** | Sequence | Push Notification Dispatch via FCM | NotificationService, BackgroundTasks | `NotificationService.notify` |
-| **Fig 6.1** | State Machine | Proposal Lifecycle Statechart | Draft, Submitted, Revisions, Approved | `ProposalStatus` |
-| **Fig 6.2** | State Machine | Master Team Lifecycle Statechart | Forming, Pitched, Assigned, Defended | `TeamStatus` |
-| **Fig 6.3** | State Machine | Milestone Submission Statechart | Open, Submitted, Late, Graded | `SubmissionStatus` |
-| **Fig 6.4** | State Machine | Defense Hearing Statechart | Scheduled, In-Progress, Concluded | `DefenseStatus` |
-| **Fig 7.1** | Activity | Auth & RBAC Verification Flowchart | Token Validation, Role & Object Checks | `require_roles_mobile` |
-| **Fig 7.2** | Activity | Proposal Decision Logic Flowchart | Accept, Revise, Reject Decision Branch | `ProposalService.review_proposal` |
-| **Fig 7.3** | Activity | Collision Prevention Algorithm | Mathematical Interval Overlap Formula | `DefenseService` |
-| **Fig 7.4** | Activity | Weighted Grade Calculation Flowchart | Composite Averaging & Transcript Release | `EvaluationService` |
-| **Fig 7.5** | Activity | Sudo Coordinator Creation Flowchart | Sudo Check, Domain Check, Broadcast | Option A Implementation |
-| **Fig 8.1** | Class Diagram | Core SQLAlchemy Domain Class Diagram | 12 Model Classes with Methods & Fields | `api/v1/models/` |
-| **Fig 8.2** | Class Diagram | Flutter Riverpod Mobile Architecture | Notifiers, Repositories, ApiClient | `mobile/lib/` |
-| **Fig 9.1** | Security | Dual-Token Security Architecture | Token Hashing & Refresh Storage | Token Verification Pipeline |
-| **Fig 9.2** | Security | RBAC vs. Object Authorization Matrix | 2-Tier Permission Evaluation Gates | System Security Framework |
+| Figure #    | Category      | Diagram Name                           | Primary Actors & Entities                 | Codebase Verification                 |
+| :---------- | :------------ | :------------------------------------- | :---------------------------------------- | :------------------------------------ |
+| **Fig 1.1** | DFD           | Level 0 Context Diagram                | Student, Supervisor, Coordinator, FCM     | Full System Boundary                  |
+| **Fig 1.2** | DFD           | Level 1 Subsystem Decomposition        | Processes 1.0 - 7.0, Data Stores D1 - D9  | Complete Architecture                 |
+| **Fig 1.3** | DFD           | Level 2 Proposal Lifecycle             | Leader, Supervisor, Proposals, Versions   | `api/v1/services/proposal.py`         |
+| **Fig 1.4** | DFD           | Level 2 Defense Collision Engine       | Coordinator, Venues, Panelists, Defenses  | `api/v1/services/defense.py`          |
+| **Fig 1.5** | DFD           | Level 2 Rubric Assessment              | Panelists, Coordinator, Rubrics, Scores   | `api/v1/services/evaluation.py`       |
+| **Fig 2.1** | Use Case      | Master System Use Cases                | All System Actors                         | 17 Core Use Cases                     |
+| **Fig 2.2** | Use Case      | Student Subsystem Use Cases            | Student, Teams, Milestones, Pitches       | Student Mobile Workflows              |
+| **Fig 2.3** | Use Case      | Supervisor Subsystem Use Cases         | Faculty, Requests, Proposals, Rubrics     | Supervisor Mobile Workflows           |
+| **Fig 2.4** | Use Case      | Coordinator Subsystem Use Cases        | Coordinator, Semesters, Users, Audits     | Coordinator Admin Panel               |
+| **Fig 3.1** | ERD           | Conceptual ER Diagram                  | Core Domain Entities                      | High-Level Schema                     |
+| **Fig 3.2** | ERD           | Complete Physical ER Diagram           | 16 Tables, PKs, FKs, Types, Cardinalities | `api/v1/models/*.py`                  |
+| **Fig 4.1** | Architecture  | Multi-Tier Architecture                | Presentation, Gateway, App, DB, Cloud     | `main.py`, `app_router.dart`          |
+| **Fig 4.2** | Architecture  | Mobile Client Riverpod Architecture    | Views, Notifiers, Repositories, Storage   | `mobile/lib/`                         |
+| **Fig 4.3** | Architecture  | Backend Service Component Diagram      | Routers, Guards, Services, Models         | `api/mobile/v1/`                      |
+| **Fig 4.4** | Deployment    | Deployment Topology                    | Android OS, Uvicorn, SQLite WAL, FCM      | Production Environment                |
+| **Fig 4.5** | Sequence      | Request/Response Middleware Pipeline   | ASGI, CORS, JWT, Pydantic, ORM, DB        | `api/core/`                           |
+| **Fig 5.1** | Sequence      | Dual-Token Auth & Refresh Lifecycle    | JWT Access (15m), Refresh Token (7d)      | `api/v1/services/auth.py`             |
+| **Fig 5.2** | Sequence      | Team Formation & Invite Acceptance     | Leader, Member, 6-char Invite Code        | `api/v1/services/team.py`             |
+| **Fig 5.3** | Sequence      | Supervisor Pitch & Approval            | Student Pitch, Requests Inbox, Decision   | `api/v1/models/supervisor_request.py` |
+| **Fig 5.4** | Sequence      | Multi-Round Proposal Review            | v1..vN Iteration, Change Requests         | `api/v1/models/proposal.py`           |
+| **Fig 5.5** | Sequence      | Milestone Submission & Feedback        | File Uploads, Deadlines, Remarks          | `api/v1/models/submission.py`         |
+| **Fig 5.6** | Sequence      | Defense Scheduling & Collision Engine  | Interval Checking, Room/Panelist Lock     | `DefenseService.schedule_defense`     |
+| **Fig 5.7** | Sequence      | Rubric Defense Evaluation & Publishing | Multi-Panel Scoring, Grade Publication    | `EvaluationService.publish_grades`    |
+| **Fig 5.8** | Sequence      | Sudo Coordinator Creation (Option A)   | Password Re-verification, @atlas.edu      | `api/mobile/v1/coordinator.py:273`    |
+| **Fig 5.9** | Sequence      | Push Notification Dispatch via FCM     | NotificationService, BackgroundTasks      | `NotificationService.notify`          |
+| **Fig 6.1** | State Machine | Proposal Lifecycle Statechart          | Draft, Submitted, Revisions, Approved     | `ProposalStatus`                      |
+| **Fig 6.2** | State Machine | Master Team Lifecycle Statechart       | Forming, Pitched, Assigned, Defended      | `TeamStatus`                          |
+| **Fig 6.3** | State Machine | Milestone Submission Statechart        | Open, Submitted, Late, Graded             | `SubmissionStatus`                    |
+| **Fig 6.4** | State Machine | Defense Hearing Statechart             | Scheduled, In-Progress, Concluded         | `DefenseStatus`                       |
+| **Fig 7.1** | Activity      | Auth & RBAC Verification Flowchart     | Token Validation, Role & Object Checks    | `require_roles_mobile`                |
+| **Fig 7.2** | Activity      | Proposal Decision Logic Flowchart      | Accept, Revise, Reject Decision Branch    | `ProposalService.review_proposal`     |
+| **Fig 7.3** | Activity      | Collision Prevention Algorithm         | Mathematical Interval Overlap Formula     | `DefenseService`                      |
+| **Fig 7.4** | Activity      | Weighted Grade Calculation Flowchart   | Composite Averaging & Transcript Release  | `EvaluationService`                   |
+| **Fig 7.5** | Activity      | Sudo Coordinator Creation Flowchart    | Sudo Check, Domain Check, Broadcast       | Option A Implementation               |
+| **Fig 8.1** | Class Diagram | Core SQLAlchemy Domain Class Diagram   | 12 Model Classes with Methods & Fields    | `api/v1/models/`                      |
+| **Fig 8.2** | Class Diagram | Flutter Riverpod Mobile Architecture   | Notifiers, Repositories, ApiClient        | `mobile/lib/`                         |
+| **Fig 9.1** | Security      | Dual-Token Security Architecture       | Token Hashing & Refresh Storage           | Token Verification Pipeline           |
+| **Fig 9.2** | Security      | RBAC vs. Object Authorization Matrix   | 2-Tier Permission Evaluation Gates        | System Security Framework             |
 
 ---
-*Generated and verified against the ATLAS source repository. All models, routes, and diagrams match the active implementation.*
+
+_Generated and verified against the ATLAS source repository. All models, routes, and diagrams match the active implementation._

@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
@@ -18,6 +19,9 @@ from api.mobile.v1.dependencies import (
 
 evaluations_mobile_router = APIRouter(prefix="/evaluations", tags=["Mobile Evaluations & Rubrics"])
 
+_RUBRICS_CACHE: dict = {}
+_RUBRICS_CACHE_TTL = 300  # 5 minutes
+
 
 @evaluations_mobile_router.get("/rubrics")
 def list_rubrics(
@@ -26,6 +30,11 @@ def list_rubrics(
     db: Session = Depends(get_db)
 ):
     """Retrieve departmental rubric criteria for grading."""
+    cache_key = semester_id or "default"
+    cached = _RUBRICS_CACHE.get(cache_key)
+    if cached and (time.time() - cached["ts"] < _RUBRICS_CACHE_TTL):
+        return mobile_response(data=cached["data"], message="Rubric criteria retrieved.")
+
     criteria = EvaluationService.get_semester_rubrics(db, semester_id=semester_id)
     items = [
         {
@@ -38,6 +47,7 @@ def list_rubrics(
         }
         for c in criteria
     ]
+    _RUBRICS_CACHE[cache_key] = {"data": items, "ts": time.time()}
     return mobile_response(data=items, message="Rubric criteria retrieved.")
 
 
@@ -48,6 +58,7 @@ def create_rubric_criterion(
     db: Session = Depends(get_db)
 ):
     """Coordinator endpoint to define a rubric evaluation criterion."""
+    _RUBRICS_CACHE.clear()
     criterion = EvaluationService.create_criteria(
         db=db,
         title=payload.title,
@@ -184,7 +195,7 @@ def get_my_published_grade(
     team = TeamService.get_student_active_team(db, current_user.id)
     if not team:
         return mobile_response(
-            data={"has_grade": False, "reason": "No active team."},
+            data={"has_grade": False, "published": False, "reason": "No active team."},
             message="No active team found."
         )
 
@@ -192,6 +203,7 @@ def get_my_published_grade(
         return mobile_response(
             data={
                 "has_grade": False,
+                "published": False,
                 "team_name": team.name,
                 "reason": "Final evaluation scores are under departmental review and have not yet been published.",
             },

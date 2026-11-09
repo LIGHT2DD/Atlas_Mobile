@@ -277,10 +277,11 @@ class _AddUserModalSheetState extends ConsumerState<_AddUserModalSheet> {
     if (!_formKey.currentState!.validate()) return;
 
     final isCoord = widget.role == 'coordinator';
-    if (isCoord && !_emailController.text.trim().toLowerCase().endsWith('@atlas.edu')) {
+    final emailLower = _emailController.text.trim().toLowerCase();
+    if (isCoord && !emailLower.endsWith('@cstu.edu.bd') && !emailLower.endsWith('@atlas.edu')) {
       NeuToast.show(
         context,
-        message: 'Coordinator accounts must use an institutional email ending with @atlas.edu.',
+        message: 'Coordinator accounts must use an institutional email ending with @cstu.edu.bd.',
         type: NeuToastType.error,
         title: 'Institutional Domain Required',
       );
@@ -392,7 +393,7 @@ class _AddUserModalSheetState extends ConsumerState<_AddUserModalSheet> {
                         ),
                         Text(
                           isCoord
-                              ? 'Enforces elevated sudo verification & @atlas.edu'
+                              ? 'Enforces elevated sudo verification & @cstu.edu.bd'
                               : 'Registers a new thesis mentor to the faculty roster',
                           style: TextStyle(
                             fontSize: 12,
@@ -467,13 +468,14 @@ class _AddUserModalSheetState extends ConsumerState<_AddUserModalSheet> {
               NeuTextField(
                 controller: _emailController,
                 labelText: 'Institutional Email',
-                hintText: isCoord ? 'coordinator@atlas.edu' : 'supervisor@atlas.edu',
+                hintText: isCoord ? 'coordinator@cstu.edu.bd' : 'supervisor@cstu.edu.bd',
                 keyboardType: TextInputType.emailAddress,
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) return 'Email is required';
                   if (!v.contains('@')) return 'Enter a valid email';
-                  if (isCoord && !v.trim().toLowerCase().endsWith('@atlas.edu')) {
-                    return 'Must end with @atlas.edu';
+                  final val = v.trim().toLowerCase();
+                  if (isCoord && !val.endsWith('@cstu.edu.bd') && !val.endsWith('@atlas.edu')) {
+                    return 'Must end with @cstu.edu.bd';
                   }
                   return null;
                 },

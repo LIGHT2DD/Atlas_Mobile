@@ -1,9 +1,10 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from api.db.database import get_db
 from api.v1.models.user import User, UserRole
 from api.v1.models.team import Team
+from api.v1.models.team_member import TeamMember
 from api.v1.models.supervisor_request import SupervisorRequest, SupervisorRequestStatus
 from api.v1.services.team import TeamService
 from api.mobile.v1.schemas import SupervisorRespondPayload
@@ -25,6 +26,9 @@ def list_supervision_requests(
         SupervisorRequest.supervisor_id == current_user.id,
         SupervisorRequest.status == SupervisorRequestStatus.PENDING.value,
         SupervisorRequest.is_deleted == False,
+    ).options(
+        joinedload(SupervisorRequest.team),
+        joinedload(SupervisorRequest.requested_by),
     ).order_by(SupervisorRequest.created_at.desc()).all()
 
     items = []
@@ -84,6 +88,9 @@ def list_supervised_teams(
     teams = db.query(Team).filter(
         Team.supervisor_id == current_user.id,
         Team.is_deleted == False,
+    ).options(
+        joinedload(Team.leader),
+        selectinload(Team.members).joinedload(TeamMember.user),
     ).order_by(Team.created_at.desc()).all()
 
     items = []

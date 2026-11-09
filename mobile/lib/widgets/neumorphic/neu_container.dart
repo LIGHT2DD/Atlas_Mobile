@@ -102,8 +102,10 @@ class NeuContainer extends StatelessWidget {
       child: child,
     );
 
+    Widget result = container;
+
     if (onTap != null) {
-      return GestureDetector(
+      result = GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
           onTap!();
@@ -113,6 +115,6 @@ class NeuContainer extends StatelessWidget {
       );
     }
 
-    return container;
+    return RepaintBoundary(child: result);
   }
 }

@@ -158,7 +158,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 NeuTextField(
                   controller: _emailController,
                   labelText: 'University Email',
-                  hintText: 'student@atlas.edu',
+                  hintText: 'student@cstu.edu.bd',
                   keyboardType: TextInputType.emailAddress,
                   autofillHints: const [AutofillHints.email],
                   prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),

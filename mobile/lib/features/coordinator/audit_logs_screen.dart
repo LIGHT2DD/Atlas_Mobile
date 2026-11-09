@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/utils/provider_cache.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
@@ -9,6 +10,7 @@ import 'coordinator_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 final auditLogsFutureProvider = FutureProvider.autoDispose<List<AuditLogItem>>((ref) async {
+  ref.cacheFor(const Duration(minutes: 5));
   final repo = ref.watch(coordinatorRepositoryProvider);
   return repo.getAuditLogs();
 });

@@ -1,6 +1,8 @@
+import time
 from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy import func
+from sqlalchemy.orm import Session, joinedload
 
 from api.db.database import get_db
 from api.v1.models.user import User, UserRole
@@ -183,31 +185,48 @@ def request_supervisor(
     )
 
 
+_SUPERVISORS_CACHE = {"data": None, "timestamp": 0}
+_CACHE_TTL_SECONDS = 300
+
+
 @teams_mobile_router.get("/supervisors")
 def list_supervisors(
     current_user: User = Depends(get_current_user_mobile),
     db: Session = Depends(get_db)
 ):
-    """List faculty supervisors available for mentorship."""
-    supervisors = db.query(User).filter(
+    """List faculty supervisors available for mentorship (optimized with eager-loading & grouped count)."""
+    now = time.time()
+    if _SUPERVISORS_CACHE["data"] is not None and (now - _SUPERVISORS_CACHE["timestamp"]) < _CACHE_TTL_SECONDS:
+        return mobile_response(data=_SUPERVISORS_CACHE["data"], message="Supervisors retrieved (cached).")
+
+    supervisors = db.query(User).options(
+        joinedload(User.department)
+    ).filter(
         User.role == UserRole.SUPERVISOR.value,
         User.is_deleted == False,
         User.is_active == True,
     ).all()
 
-    items = []
-    for s in supervisors:
-        active_teams_count = db.query(Team).filter(
-            Team.supervisor_id == s.id,
-            Team.is_deleted == False,
-        ).count()
+    # Pre-aggregate active team counts in a single query to eliminate N+1 latency
+    counts = dict(
+        db.query(Team.supervisor_id, func.count(Team.id))
+        .filter(Team.is_deleted == False, Team.supervisor_id.isnot(None))
+        .group_by(Team.supervisor_id)
+        .all()
+    )
 
-        items.append({
+    items = [
+        {
             "id": s.id,
             "name": s.full_name,
             "email": s.email,
             "department": s.department.name if getattr(s, "department", None) else None,
-            "active_teams_count": active_teams_count,
-        })
+            "active_teams_count": counts.get(s.id, 0),
+        }
+        for s in supervisors
+    ]
+
+    _SUPERVISORS_CACHE["data"] = items
+    _SUPERVISORS_CACHE["timestamp"] = now
 
     return mobile_response(data=items, message="Supervisors retrieved.")

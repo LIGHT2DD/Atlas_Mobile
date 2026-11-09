@@ -78,10 +78,9 @@ class ApiClient {
               (error.response?.statusCode != null &&
                   [502, 503, 504].contains(error.response!.statusCode));
 
-          if (isGet && isTransient && retryCount < 2) {
+          if (isGet && isTransient && retryCount < 1) {
             requestOptions.extra['retry_count'] = retryCount + 1;
-            final backoffMs = (retryCount + 1) * 600;
-            await Future<void>.delayed(Duration(milliseconds: backoffMs));
+            await Future<void>.delayed(const Duration(milliseconds: 300));
             try {
               final response = await dio.fetch(requestOptions);
               return handler.resolve(response);

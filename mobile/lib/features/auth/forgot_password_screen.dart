@@ -101,7 +101,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               NeuTextField(
                 controller: _emailController,
                 labelText: 'Institutional Email',
-                hintText: 'name@atlas.edu',
+                hintText: 'name@cstu.edu.bd',
                 keyboardType: TextInputType.emailAddress,
                 prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),
               ),

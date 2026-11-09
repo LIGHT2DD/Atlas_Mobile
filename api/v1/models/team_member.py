@@ -19,6 +19,7 @@ class TeamMember(BaseTableModel):
 
     __table_args__ = (
         sa.UniqueConstraint('team_id', 'user_id', name='uq_team_member'),
+        sa.Index('ix_team_members_user_deleted', 'user_id', 'is_deleted'),
     )
 
     # Relationships

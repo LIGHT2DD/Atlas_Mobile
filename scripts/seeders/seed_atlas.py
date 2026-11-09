@@ -3,9 +3,9 @@ ATLAS Database Seeder
 Populates a complete, realistic university thesis lifecycle dataset for development & demonstration.
 
 Credentials:
-- Coordinator: coordinator@atlas.edu / Password123
-- Supervisors: supervisor1@atlas.edu, supervisor2@atlas.edu, supervisor3@atlas.edu / Password123
-- Students:    student1@atlas.edu through student12@atlas.edu / Password123
+- Coordinator: coordinator@cstu.edu.bd / Password123
+- Supervisors: supervisor1@cstu.edu.bd, supervisor2@cstu.edu.bd, supervisor3@cstu.edu.bd / Password123
+- Students:    student1@cstu.edu.bd through student12@cstu.edu.bd / Password123
 
 Usage:
     python -m scripts.seeders.seed_atlas
@@ -95,13 +95,13 @@ def seed_atlas():
         # ── 3. Users ───────────────────────────────────────────
         print("--> Seeding Users...")
         # Coordinator
-        coordinator = db.query(User).filter(User.email == "coordinator@atlas.edu").first()
+        coordinator = db.query(User).filter(User.email == "coordinator@cstu.edu.bd").first()
         if not coordinator:
             coordinator = User.create(
                 db=db,
                 first_name="Prof. Nazim",
                 last_name="Uddin",
-                email="coordinator@atlas.edu",
+                email="coordinator@cstu.edu.bd",
                 password=PASSWORD_HASH,
                 role=UserRole.COORDINATOR.value,
                 is_active=True,
@@ -113,9 +113,9 @@ def seed_atlas():
 
         # Supervisors
         supervisors_data = [
-            ("Fatema Jannat", "Dihan", "supervisor1@atlas.edu"),
-            ("Tanvir", "Ahmed", "supervisor2@atlas.edu"),
-            ("Md Abu Rumman", "Refat", "supervisor3@atlas.edu"),
+            ("Fatema Jannat", "Dihan", "supervisor1@cstu.edu.bd"),
+            ("Tanvir", "Ahmed", "supervisor2@cstu.edu.bd"),
+            ("Md Abu Rumman", "Refat", "supervisor3@cstu.edu.bd"),
         ]
         supervisors = []
         for fn, ln, em in supervisors_data:
@@ -138,18 +138,18 @@ def seed_atlas():
 
         # Students (12)
         students_data = [
-            ("Tahmid", "Hasan", "student1@atlas.edu"),
-            ("Samiul", "Islam", "student2@atlas.edu"),
-            ("Nahid", "Hossain", "student3@atlas.edu"),
-            ("Rafiul", "Karim", "student4@atlas.edu"),
-            ("Tanzeem", "Rahman", "student5@atlas.edu"),
-            ("Mahmudul", "Hasan", "student6@atlas.edu"),
-            ("Farhan", "Ishrak", "student7@atlas.edu"),
-            ("Nafis", "Fuad", "student8@atlas.edu"),
-            ("Wasif", "Chowdhury", "student9@atlas.edu"),
-            ("Arifur", "Rahman", "student10@atlas.edu"),
-            ("Shahriar", "Kabir", "student11@atlas.edu"),
-            ("Zubair", "Ahmed", "student12@atlas.edu"),
+            ("Tahmid", "Hasan", "student1@cstu.edu.bd"),
+            ("Samiul", "Islam", "student2@cstu.edu.bd"),
+            ("Nahid", "Hossain", "student3@cstu.edu.bd"),
+            ("Rafiul", "Karim", "student4@cstu.edu.bd"),
+            ("Tanzeem", "Rahman", "student5@cstu.edu.bd"),
+            ("Mahmudul", "Hasan", "student6@cstu.edu.bd"),
+            ("Farhan", "Ishrak", "student7@cstu.edu.bd"),
+            ("Nafis", "Fuad", "student8@cstu.edu.bd"),
+            ("Wasif", "Chowdhury", "student9@cstu.edu.bd"),
+            ("Arifur", "Rahman", "student10@cstu.edu.bd"),
+            ("Shahriar", "Kabir", "student11@cstu.edu.bd"),
+            ("Zubair", "Ahmed", "student12@cstu.edu.bd"),
         ]
         students = []
         for fn, ln, em in students_data:
@@ -567,14 +567,14 @@ def seed_atlas():
     print("[+] ATLAS SEEDING COMPLETED SUCCESSFULLY!")
     print("=" * 60)
     print("\nAcademic Demo Accounts:")
-    print(" - Coordinator:  coordinator@atlas.edu   / Password123")
-    print(" - Supervisors:  supervisor1@atlas.edu   / Password123")
-    print("                 supervisor2@atlas.edu   / Password123")
-    print("                 supervisor3@atlas.edu   / Password123")
-    print(" - Students:     student1@atlas.edu      / Password123  (Team Leader, Graded A+)")
-    print("                 student4@atlas.edu      / Password123  (Team Leader, In Progress)")
-    print("                 student7@atlas.edu      / Password123  (Supervisor Requested)")
-    print("                 student10@atlas.edu     / Password123  (Forming Team)")
+    print(" - Coordinator:  coordinator@cstu.edu.bd   / Password123")
+    print(" - Supervisors:  supervisor1@cstu.edu.bd   / Password123")
+    print("                 supervisor2@cstu.edu.bd   / Password123")
+    print("                 supervisor3@cstu.edu.bd   / Password123")
+    print(" - Students:     student1@cstu.edu.bd      / Password123  (Team Leader, Graded A+)")
+    print("                 student4@cstu.edu.bd      / Password123  (Team Leader, In Progress)")
+    print("                 student7@cstu.edu.bd      / Password123  (Supervisor Requested)")
+    print("                 student10@cstu.edu.bd     / Password123  (Forming Team)")
     print("=" * 60)
 
 

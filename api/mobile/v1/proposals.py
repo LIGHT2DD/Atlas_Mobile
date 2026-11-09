@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from api.db.database import get_db
 from api.v1.models.user import User, UserRole
@@ -34,7 +34,7 @@ def _serialize_proposal(proposal: Proposal) -> dict:
         })
 
     reviews = []
-    for r in sorted(proposal.reviews, key=lambda x: x.created_at or 0, reverse=True):
+    for r in sorted(proposal.reviews, key=lambda x: str(x.created_at or ""), reverse=True):
         reviews.append({
             "id": r.id,
             "reviewer_id": r.reviewer_id,
@@ -69,6 +69,8 @@ def get_team_proposal(
     proposal = db.query(Proposal).filter(
         Proposal.team_id == team_id,
         Proposal.is_deleted == False,
+    ).options(
+        joinedload(Proposal.team),
     ).first()
 
     if not proposal:

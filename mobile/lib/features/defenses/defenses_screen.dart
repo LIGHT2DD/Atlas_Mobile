@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
-import '../../shared/models/defense_model.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
@@ -13,11 +12,6 @@ import '../../shared/widgets/status_badge.dart';
 import '../auth/auth_controller.dart';
 import 'defense_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-
-final defensesListProvider = FutureProvider.autoDispose<List<DefenseModel>>((ref) async {
-  final repo = ref.watch(defenseRepositoryProvider);
-  return repo.getDefenses();
-});
 
 class DefensesScreen extends ConsumerWidget {
   const DefensesScreen({super.key});

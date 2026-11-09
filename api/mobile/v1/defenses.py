@@ -1,11 +1,11 @@
 from datetime import date, datetime
 from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from api.db.database import get_db
 from api.v1.models.user import User, UserRole
-from api.v1.models.defense import DefenseSchedule, DefenseStatus, DefensePanelRole
+from api.v1.models.defense import DefenseSchedule, DefensePanelMember, DefenseStatus, DefensePanelRole
 from api.v1.services.defense import DefenseService
 from api.mobile.v1.schemas import DefenseSchedulePayload
 from api.mobile.v1.dependencies import (
@@ -51,6 +51,9 @@ def list_defenses(
     """Retrieve scheduled oral defense sessions."""
     defenses = db.query(DefenseSchedule).filter(
         DefenseSchedule.is_deleted == False,
+    ).options(
+        joinedload(DefenseSchedule.team),
+        selectinload(DefenseSchedule.panel_members).joinedload(DefensePanelMember.user),
     ).order_by(DefenseSchedule.date.asc(), DefenseSchedule.start_time.asc()).all()
 
     items = [_serialize_defense(d) for d in defenses]

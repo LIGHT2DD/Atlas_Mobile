@@ -129,6 +129,36 @@ class SecureStorageService {
     }
   }
 
+  Future<void> saveCachedPayload(String key, String jsonString) async {
+    final storageKey = 'cache_$key';
+    _memoryFallback[storageKey] = jsonString;
+    try {
+      await _storage.write(key: storageKey, value: jsonString);
+    } catch (_) {}
+  }
+
+  Future<String?> getCachedPayload(String key) async {
+    final storageKey = 'cache_$key';
+    if (_memoryFallback.containsKey(storageKey)) {
+      return _memoryFallback[storageKey];
+    }
+    try {
+      final data = await _storage.read(key: storageKey);
+      if (data != null) _memoryFallback[storageKey] = data;
+      return data;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> clearCachedPayload(String key) async {
+    final storageKey = 'cache_$key';
+    _memoryFallback.remove(storageKey);
+    try {
+      await _storage.delete(key: storageKey);
+    } catch (_) {}
+  }
+
   Future<void> clearAuth() async {
     _memoryFallback.remove(_keyAccessToken);
     _memoryFallback.remove(_keyRefreshToken);

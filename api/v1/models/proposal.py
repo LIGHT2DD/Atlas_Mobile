@@ -26,6 +26,10 @@ class Proposal(BaseTableModel):
     submitted_at = sa.Column(sa.DateTime(timezone=True), nullable=True)
     reviewed_at = sa.Column(sa.DateTime(timezone=True), nullable=True)
 
+    __table_args__ = (
+        sa.Index('ix_proposals_status_deleted', 'status', 'is_deleted'),
+    )
+
     # Relationships
     team = relationship('Team', back_populates='proposal', foreign_keys=[team_id], lazy='selectin')
     versions = relationship('ProposalVersion', back_populates='proposal', cascade='all, delete-orphan', order_by='ProposalVersion.version_number.desc()', lazy='selectin')

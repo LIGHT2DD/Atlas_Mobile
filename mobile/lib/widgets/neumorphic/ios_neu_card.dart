@@ -88,16 +88,18 @@ class IosNeuCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      return GestureDetector(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onTap!();
-        },
-        behavior: HitTestBehavior.opaque,
-        child: content,
+      return RepaintBoundary(
+        child: GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap!();
+          },
+          behavior: HitTestBehavior.opaque,
+          child: content,
+        ),
       );
     }
 
-    return content;
+    return RepaintBoundary(child: content);
   }
 }

@@ -38,6 +38,12 @@ class Team(BaseTableModel):
     final_grade = sa.Column(sa.String(10), nullable=True)
     grade_published = sa.Column(sa.Boolean, default=False, index=True)
 
+    __table_args__ = (
+        sa.Index('ix_teams_supervisor_deleted', 'supervisor_id', 'is_deleted'),
+        sa.Index('ix_teams_semester_deleted', 'semester_id', 'is_deleted'),
+        sa.Index('ix_teams_status_deleted', 'status', 'is_deleted'),
+    )
+
     # Relationships
     semester = relationship('Semester', back_populates='teams', foreign_keys=[semester_id], lazy='selectin')
     leader = relationship('User', foreign_keys=[leader_id], lazy='selectin')

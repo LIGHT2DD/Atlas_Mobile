@@ -17,8 +17,8 @@ void main() {
 
     test('ApiClient initializes with correct timeouts and headers', () {
       expect(client.dio.options.headers['Accept'], equals('application/json'));
-      expect(client.dio.options.connectTimeout, equals(const Duration(seconds: 5)));
-      expect(client.dio.options.receiveTimeout, equals(const Duration(seconds: 8)));
+      expect(client.dio.options.connectTimeout, equals(ApiConfig.connectTimeout));
+      expect(client.dio.options.receiveTimeout, equals(ApiConfig.receiveTimeout));
       expect(client.dio.interceptors.length, greaterThanOrEqualTo(2));
     });
 

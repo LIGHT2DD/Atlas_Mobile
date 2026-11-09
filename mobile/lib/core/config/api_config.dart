@@ -6,7 +6,7 @@ class ApiConfig {
   static const String _envBaseUrl = String.fromEnvironment('API_BASE_URL');
 
   /// Local development host on physical Wi-Fi network
-  static const String defaultLocalIp = 'http://192.168.0.105:8000';
+  static const String defaultLocalIp = 'http://192.168.0.100:8000';
 
   /// Optional cloud production URL
   static const String defaultProductionUrl = 'https://atlas-api.onrender.com';
@@ -40,8 +40,8 @@ class ApiConfig {
 
   static const String apiMobileV1 = '/api/mobile/v1';
 
-  static const Duration connectTimeout = Duration(seconds: 5);
-  static const Duration receiveTimeout = Duration(seconds: 8);
-  static const Duration sendTimeout = Duration(seconds: 15);
+  static const Duration connectTimeout = Duration(seconds: 4);
+  static const Duration receiveTimeout = Duration(seconds: 6);
+  static const Duration sendTimeout = Duration(seconds: 10);
 }
 

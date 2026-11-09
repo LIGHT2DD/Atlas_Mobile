@@ -37,13 +37,21 @@ create_database()
 logger = create_logger(__name__, log_file='logs/error.log')
 # performance_logger = create_logger(__name__, log_file='logs/performance.log')
 
+try:
+    from fastapi.responses import ORJSONResponse
+    _default_response_class = ORJSONResponse
+except ImportError:
+    from fastapi.responses import JSONResponse
+    _default_response_class = JSONResponse
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
     lifespan=lifespan,
-    title='API Documentation'
+    title='API Documentation',
+    default_response_class=_default_response_class
 )
 
 limiter = Limiter(key_func=get_remote_address)

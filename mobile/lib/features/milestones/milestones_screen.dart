@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
-import '../../shared/models/milestone_model.dart';
 import '../../shared/widgets/atlas_card.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
@@ -15,17 +14,6 @@ import '../teams/team_repository.dart';
 import 'milestone_repository.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
-final milestonesListProvider = FutureProvider.autoDispose<List<MilestoneModel>>((ref) async {
-  final repo = ref.watch(milestoneRepositoryProvider);
-  return repo.getMilestones();
-});
-
-final teamSubmissionsProvider =
-    FutureProvider.autoDispose.family<List<SubmissionModel>, String>((ref, teamId) async {
-  final repo = ref.watch(milestoneRepositoryProvider);
-  return repo.getSubmissionsByTeam(teamId);
-});
-
 class MilestonesScreen extends ConsumerWidget {
   final String? teamId;
 
@@ -35,21 +23,17 @@ class MilestonesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
+    final isStudent = user?.role.isStudent ?? true;
     final isCoordinator = user?.role.isCoordinator ?? false;
     final isSupervisor = user?.role.isSupervisor ?? false;
 
-    // If teamId is passed (e.g. from supervisor reviewing team), use it.
-    if (teamId != null && teamId!.isNotEmpty) {
-      return _MilestoneContent(
-        targetTeamId: teamId!,
-        isCoordinator: isCoordinator,
-        isSupervisor: isSupervisor,
-      );
-    }
+    // If student, resolve own team for submission tracking
+    final myTeamAsync = isStudent ? ref.watch(myTeamFutureProvider) : null;
+    final effectiveTeamId = (teamId != null && teamId!.isNotEmpty)
+        ? teamId
+        : myTeamAsync?.value?.id;
 
-    // Otherwise if student, look up own team
     final neuTheme = context.neuTheme;
-    final myTeamAsync = ref.watch(myTeamFutureProvider);
     return Scaffold(
       backgroundColor: neuTheme.baseColor,
       appBar: NeuAppBar(
@@ -62,26 +46,22 @@ class MilestonesScreen extends ConsumerWidget {
               tooltip: 'Refresh Milestones',
               onPressed: () {
                 ref.invalidate(milestonesListProvider);
-                ref.invalidate(myTeamFutureProvider);
+                if (isStudent) {
+                  ref.invalidate(myTeamFutureProvider);
+                }
+                if (effectiveTeamId != null) {
+                  ref.invalidate(teamSubmissionsProvider(effectiveTeamId));
+                }
               },
             ),
           ),
         ],
       ),
       drawer: const AtlasDrawer(),
-      body: myTeamAsync.when(
-        loading: () => const LoadingIndicator(message: 'Loading team data...'),
-        error: (err, _) => ErrorView(
-          message: err.toString(),
-          onRetry: () => ref.refresh(myTeamFutureProvider),
-        ),
-        data: (team) {
-          return _MilestoneContent(
-            targetTeamId: team?.id,
-            isCoordinator: isCoordinator,
-            isSupervisor: isSupervisor,
-          );
-        },
+      body: _MilestoneContent(
+        targetTeamId: effectiveTeamId,
+        isCoordinator: isCoordinator,
+        isSupervisor: isSupervisor,
       ),
       floatingActionButton: isCoordinator
           ? IosNeuFAB(

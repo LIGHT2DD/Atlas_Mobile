@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:atlas_mobile/shared/widgets/atlas_card.dart';
 import 'package:atlas_mobile/shared/widgets/empty_state.dart';
 import 'package:atlas_mobile/shared/widgets/loading_indicator.dart';
 import 'package:atlas_mobile/shared/widgets/status_badge.dart';
 import 'package:atlas_mobile/widgets/neumorphic/neumorphic.dart';
+import 'package:atlas_mobile/features/proposals/proposals_screen.dart';
+import 'package:atlas_mobile/features/milestones/milestones_screen.dart';
+import 'package:atlas_mobile/features/defenses/defenses_screen.dart';
+import 'package:atlas_mobile/features/evaluations/my_grade_screen.dart';
+import 'package:atlas_mobile/features/teams/team_repository.dart';
+import 'package:atlas_mobile/features/milestones/milestone_repository.dart';
+import 'package:atlas_mobile/features/defenses/defense_repository.dart';
+import 'package:atlas_mobile/features/evaluations/evaluation_repository.dart';
+import 'package:atlas_mobile/shared/models/evaluation_model.dart';
 
 void main() {
   group('ATLAS Widget UI Tests', () {
@@ -233,6 +243,75 @@ void main() {
 
       expect(find.text('Active Filter'), findsOneWidget);
       expect(find.byType(IosNeuSegmentPill), findsOneWidget);
+    });
+
+    testWidgets('ProposalsScreen renders empty state when new student has no team', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            myTeamFutureProvider.overrideWith((ref) => Future.value(null)),
+          ],
+          child: const MaterialApp(
+            home: ProposalsScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('No Team Found'), findsOneWidget);
+      expect(find.text('You must form or join a thesis team before drafting a proposal.'), findsOneWidget);
+    });
+
+    testWidgets('MilestonesScreen renders empty state when no milestones exist', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            milestonesListProvider.overrideWith((ref) => Future.value([])),
+            myTeamFutureProvider.overrideWith((ref) => Future.value(null)),
+          ],
+          child: const MaterialApp(
+            home: MilestonesScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('No Milestones Configured'), findsOneWidget);
+    });
+
+    testWidgets('DefensesScreen renders empty state when no defense hearings exist', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            defensesListProvider.overrideWith((ref) => Future.value([])),
+          ],
+          child: const MaterialApp(
+            home: DefensesScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('No Defenses Scheduled'), findsOneWidget);
+    });
+
+    testWidgets('MyGradeScreen renders empty state when grades are unpublished', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            myGradeFutureProvider.overrideWith((ref) => Future.value(
+                  TeamGradeModel(hasGrade: false, published: false, reason: 'No active team.'),
+                )),
+          ],
+          child: const MaterialApp(
+            home: MyGradeScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('Grades Not Yet Published'), findsOneWidget);
+      expect(find.text('No active team.'), findsOneWidget);
     });
   });
 }

@@ -1,10 +1,12 @@
+import time
 from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from api.db.database import get_db
 from api.v1.models.user import User, UserRole
 from api.v1.models.team import Team
+from api.v1.models.team_member import TeamMember
 from api.v1.models.semester import Semester
 from api.v1.models.proposal import Proposal, ProposalStatus
 from api.v1.models.submission import Submission
@@ -34,7 +36,12 @@ def list_all_teams(
     db: Session = Depends(get_db)
 ):
     """Coordinator endpoint to view all teams across departments with status filters."""
-    query = db.query(Team).filter(Team.is_deleted == False)
+    query = db.query(Team).filter(Team.is_deleted == False).options(
+        joinedload(Team.semester),
+        joinedload(Team.supervisor),
+        joinedload(Team.leader),
+        selectinload(Team.members).joinedload(TeamMember.user),
+    )
     if semester_id:
         query = query.filter(Team.semester_id == semester_id)
     if status:
@@ -179,14 +186,26 @@ def activate_semester(
     )
 
 
+_REPORTS_CACHE = {"data": None, "timestamp": 0}
+_REPORTS_CACHE_TTL = 60
+
+
 @coordinator_mobile_router.get("/audit-logs")
 def get_audit_logs(
     limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
     current_user: User = Depends(require_roles_mobile(UserRole.COORDINATOR.value)),
     db: Session = Depends(get_db)
 ):
-    """Retrieve chronological university audit trail for accreditation compliance."""
-    logs = db.query(AuditLog).order_by(AuditLog.created_at.desc()).limit(limit).all()
+    """Retrieve chronological university audit trail for accreditation compliance with eager loading & pagination."""
+    logs = (
+        db.query(AuditLog)
+        .options(joinedload(AuditLog.user))
+        .order_by(AuditLog.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
     items = [
         {
@@ -210,7 +229,14 @@ def get_reports_summary(
     current_user: User = Depends(require_roles_mobile(UserRole.COORDINATOR.value)),
     db: Session = Depends(get_db)
 ):
-    """Retrieve departmental academic statistics and progression KPIs."""
+    """Retrieve departmental academic statistics and progression KPIs with 60s in-memory TTL caching."""
+    now = time.time()
+    if _REPORTS_CACHE["data"] is not None and (now - _REPORTS_CACHE["timestamp"]) < _REPORTS_CACHE_TTL:
+        return mobile_response(
+            data=_REPORTS_CACHE["data"],
+            message="Departmental summary report retrieved (cached)."
+        )
+
     total_students = db.query(User).filter(User.role == UserRole.STUDENT.value, User.is_deleted == False).count()
     total_supervisors = db.query(User).filter(User.role == UserRole.SUPERVISOR.value, User.is_deleted == False).count()
     total_teams = db.query(Team).filter(Team.is_deleted == False).count()
@@ -219,16 +245,20 @@ def get_reports_summary(
     grades_published = db.query(Team).filter(Team.grade_published == True, Team.is_deleted == False).count()
     total_submissions = db.query(Submission).filter(Submission.is_deleted == False).count()
 
+    summary_data = {
+        "total_students": total_students,
+        "total_supervisors": total_supervisors,
+        "total_teams": total_teams,
+        "proposals_approved": proposals_approved,
+        "defenses_scheduled": defenses_scheduled,
+        "grades_published": grades_published,
+        "total_submissions": total_submissions,
+    }
+    _REPORTS_CACHE["data"] = summary_data
+    _REPORTS_CACHE["timestamp"] = now
+
     return mobile_response(
-        data={
-            "total_students": total_students,
-            "total_supervisors": total_supervisors,
-            "total_teams": total_teams,
-            "proposals_approved": proposals_approved,
-            "defenses_scheduled": defenses_scheduled,
-            "grades_published": grades_published,
-            "total_submissions": total_submissions,
-        },
+        data=summary_data,
         message="Departmental summary report retrieved."
     )
 
@@ -236,11 +266,15 @@ def get_reports_summary(
 @coordinator_mobile_router.get("/users")
 def list_faculty_and_coordinators(
     role: Optional[str] = Query(None),
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0),
     current_user: User = Depends(require_roles_mobile(UserRole.COORDINATOR.value)),
     db: Session = Depends(get_db)
 ):
-    """List faculty supervisors and department coordinators."""
-    query = db.query(User).filter(
+    """List faculty supervisors and department coordinators with department eager-loading & pagination."""
+    query = db.query(User).options(
+        joinedload(User.department)
+    ).filter(
         User.role.in_([UserRole.SUPERVISOR.value, UserRole.COORDINATOR.value, UserRole.ADMIN.value]),
         User.is_deleted == False
     )
@@ -251,7 +285,7 @@ def list_faculty_and_coordinators(
         elif norm_role == "supervisor":
             query = query.filter(User.role == UserRole.SUPERVISOR.value)
 
-    users = query.order_by(User.role.asc(), User.first_name.asc()).all()
+    users = query.order_by(User.role.asc(), User.first_name.asc()).offset(offset).limit(limit).all()
     items = [
         {
             "id": u.id,
@@ -268,9 +302,6 @@ def list_faculty_and_coordinators(
         for u in users
     ]
     return mobile_response(data=items, message="Faculty and coordinator roster retrieved.")
-
-
-import time
 
 _sudo_failed_attempts: dict[str, list[float]] = {}
 _SUDO_MAX_ATTEMPTS = 5
@@ -337,10 +368,10 @@ def create_faculty_or_coordinator(
         # Clear failed attempts on successful elevated authorization
         _sudo_failed_attempts.pop(current_user.id, None)
 
-        if not payload.email.lower().endswith("@atlas.edu"):
+        if not (payload.email.lower().endswith("@cstu.edu.bd") or payload.email.lower().endswith("@atlas.edu")):
             raise HTTPException(
                 status_code=400,
-                detail="Coordinator accounts must use an institutional email ending with @atlas.edu."
+                detail="Coordinator accounts must use an institutional email ending with @cstu.edu.bd."
             )
 
     # Check for existing user with this email

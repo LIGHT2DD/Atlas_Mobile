@@ -57,19 +57,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _quickFill(String email, String password) {
-    setState(() {
-      _emailController.text = email;
-      _passwordController.text = password;
-    });
-    NeuToast.show(
-      context,
-      message: 'Loaded credentials for $email',
-      type: NeuToastType.info,
-      duration: const Duration(seconds: 2),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final neuTheme = context.neuTheme;
@@ -176,7 +163,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       NeuTextField(
                         controller: _emailController,
                         labelText: 'Institutional Email',
-                        hintText: 'name@atlas.edu',
+                        hintText: 'name@cstu.edu.bd',
                         keyboardType: TextInputType.emailAddress,
                         autofillHints: const [AutofillHints.email],
                         prefixIcon: Icon(TablerIcons.mail, size: 20, color: neuTheme.textSecondary),
@@ -279,42 +266,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 36),
-
-                      // Tactile Quick Demo Roster Box
-                      IosNeuCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(TablerIcons.sparkles, size: 16, color: neuTheme.accentColor),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'QUICK DEMO ROSTER',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    color: neuTheme.textSecondary,
-                                    letterSpacing: 0.8,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                _demoButton('Coordinator', TablerIcons.shield_check, 'coordinator@atlas.edu', neuTheme),
-                                _demoButton('Supervisor', TablerIcons.school, 'supervisor1@atlas.edu', neuTheme),
-                                _demoButton('Student', TablerIcons.user, 'student1@atlas.edu', neuTheme),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -349,30 +300,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _demoButton(String label, IconData icon, String email, NeumorphicThemeData neuTheme) {
-    return IosNeuButton(
-      isPrimary: false,
-      height: 38,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      onPressed: () => _quickFill(email, 'Password123'),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: neuTheme.textPrimary),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              color: neuTheme.textPrimary,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
       ),
     );
   }
