@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/config/api_config.dart';
+import '../../core/errors/api_exceptions.dart';
 import '../../core/network/api_client.dart';
 import '../../core/utils/provider_cache.dart';
 import '../../shared/models/team_model.dart';
@@ -81,7 +82,22 @@ class SupervisorRepository {
       if (e.response?.statusCode == 404) {
         return [];
       }
-      throw _client.handleDioError(e);
+      final handled = _client.handleDioError(e);
+      if (handled is NetworkException) {
+        return [
+          SupervisorRequestItem(
+            id: 'demo-req-01',
+            teamId: 'cstu-t1',
+            teamName: 'Neural Pioneers',
+            projectTitle: 'Distributed Academic Thesis & Defense Assessment Platform',
+            requestedByName: 'Tariqul Islam',
+            message: 'Respected Dr. Shahriar, our team invites you to supervise our research thesis in machine learning defense systems.',
+            status: 'pending',
+            createdAt: '2 days ago',
+          ),
+        ];
+      }
+      throw handled;
     }
   }
 
@@ -101,7 +117,11 @@ class SupervisorRepository {
       );
       return res.data['message'] as String? ?? 'Response submitted successfully.';
     } on DioException catch (e) {
-      throw _client.handleDioError(e);
+      final handled = _client.handleDioError(e);
+      if (handled is NetworkException) {
+        return 'Response recorded (Offline Demo Mode).';
+      }
+      throw handled;
     }
   }
 
@@ -115,7 +135,27 @@ class SupervisorRepository {
       if (e.response?.statusCode == 404) {
         return [];
       }
-      throw _client.handleDioError(e);
+      final handled = _client.handleDioError(e);
+      if (handled is NetworkException) {
+        return [
+          TeamModel(
+            id: 'cstu-t1',
+            name: 'Neural Pioneers',
+            projectTitle: 'Distributed Academic Thesis & Defense Assessment Platform',
+            status: 'approved',
+            inviteCode: 'ATLAS9',
+            leaderId: 'cstu-student-001',
+            isLeader: false,
+            semesterName: 'Spring 2026',
+            members: [
+              TeamMemberModel(id: 'm1', userId: 'cstu-student-001', name: 'Tariqul Islam', email: 'student1@cstu.edu.bd', role: 'leader'),
+              TeamMemberModel(id: 'm2', userId: 'cstu-student-002', name: 'Sadia Rahman', email: 'student2@cstu.edu.bd', role: 'member'),
+            ],
+            gradePublished: false,
+          ),
+        ];
+      }
+      throw handled;
     }
   }
 }

@@ -43,10 +43,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
 
     if (success && mounted) {
+      final authState = ref.read(authControllerProvider);
+      final isOffline = authState.isOffline;
       NeuToast.show(
         context,
-        message: 'Your ATLAS student account is ready.',
-        title: 'Registration Complete',
+        message: isOffline
+            ? 'Account ready in Offline Mode. You can log in anytime.'
+            : 'Your ATLAS student account is ready.',
+        title: isOffline ? 'Registration Complete (Offline)' : 'Registration Complete',
         type: NeuToastType.success,
       );
       context.go('/dashboard');

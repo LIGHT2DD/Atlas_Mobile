@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../shared/models/user_model.dart';
 
 final secureStorageProvider = Provider<SecureStorageService>((ref) {
   return SecureStorageService();
@@ -18,6 +20,8 @@ class SecureStorageService {
   static const _keyUserRole = 'atlas_user_role';
   static const _keyThemeMode = 'atlas_theme_mode';
   static const _keyServerUrl = 'atlas_server_url';
+  static const _keyCachedUser = 'atlas_cached_user';
+  static const _keyOfflineAccounts = 'atlas_offline_accounts';
 
   Future<void> saveTokens({required String accessToken, required String refreshToken}) async {
     _memoryFallback[_keyAccessToken] = accessToken;
@@ -87,6 +91,73 @@ class SecureStorageService {
     } catch (_) {
       return null;
     }
+  }
+
+  Future<void> saveCachedUser(UserModel user) async {
+    final jsonStr = jsonEncode(user.toJson());
+    _memoryFallback[_keyCachedUser] = jsonStr;
+    try {
+      await _storage.write(key: _keyCachedUser, value: jsonStr);
+    } catch (_) {}
+  }
+
+  Future<UserModel?> getCachedUser() async {
+    String? raw = _memoryFallback[_keyCachedUser];
+    if (raw == null) {
+      try {
+        raw = await _storage.read(key: _keyCachedUser);
+        if (raw != null) _memoryFallback[_keyCachedUser] = raw;
+      } catch (_) {}
+    }
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(raw) as Map<String, dynamic>;
+        return UserModel.fromJson(decoded);
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  Future<void> saveOfflineAccount(Map<String, dynamic> account) async {
+    final accounts = await getOfflineAccounts();
+    final cleanEmail = (account['email'] as String? ?? '').trim().toLowerCase();
+    accounts.removeWhere((a) => (a['email'] as String? ?? '').trim().toLowerCase() == cleanEmail);
+    accounts.add(account);
+    final jsonStr = jsonEncode(accounts);
+    _memoryFallback[_keyOfflineAccounts] = jsonStr;
+    try {
+      await _storage.write(key: _keyOfflineAccounts, value: jsonStr);
+    } catch (_) {}
+  }
+
+  Future<List<Map<String, dynamic>>> getOfflineAccounts() async {
+    String? raw = _memoryFallback[_keyOfflineAccounts];
+    if (raw == null) {
+      try {
+        raw = await _storage.read(key: _keyOfflineAccounts);
+        if (raw != null) _memoryFallback[_keyOfflineAccounts] = raw;
+      } catch (_) {}
+    }
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is List) {
+          return decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        }
+      } catch (_) {}
+    }
+    return [];
+  }
+
+  Future<Map<String, dynamic>?> findOfflineAccount(String email) async {
+    final accounts = await getOfflineAccounts();
+    final cleanEmail = email.trim().toLowerCase();
+    for (final acc in accounts) {
+      if ((acc['email'] as String? ?? '').trim().toLowerCase() == cleanEmail) {
+        return acc;
+      }
+    }
+    return null;
   }
 
   Future<void> saveThemeMode(String mode) async {
@@ -164,11 +235,13 @@ class SecureStorageService {
     _memoryFallback.remove(_keyRefreshToken);
     _memoryFallback.remove(_keyUserId);
     _memoryFallback.remove(_keyUserRole);
+    _memoryFallback.remove(_keyCachedUser);
     try {
       await _storage.delete(key: _keyAccessToken);
       await _storage.delete(key: _keyRefreshToken);
       await _storage.delete(key: _keyUserId);
       await _storage.delete(key: _keyUserRole);
+      await _storage.delete(key: _keyCachedUser);
     } catch (_) {}
   }
 }

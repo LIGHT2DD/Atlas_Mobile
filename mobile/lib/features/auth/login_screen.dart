@@ -47,10 +47,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
 
     if (success && mounted) {
+      final authState = ref.read(authControllerProvider);
+      final roleTitle = authState.user?.role.displayName ?? 'User';
+      final isOffline = authState.isOffline;
       NeuToast.show(
         context,
-        message: 'Welcome back to ATLAS',
-        title: 'Authentication Successful',
+        message: isOffline
+            ? 'Signed in as $roleTitle (${authState.user?.fullName ?? ""})'
+            : 'Welcome back to ATLAS',
+        title: isOffline ? 'Connected (Offline Mode)' : 'Authentication Successful',
         type: NeuToastType.success,
       );
       context.go('/dashboard');

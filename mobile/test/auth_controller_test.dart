@@ -29,6 +29,59 @@ class MockAuthRepository extends AuthRepository {
           isActive: true,
         );
   }
+
+  @override
+  Future<AuthResponse> login({
+    required String email,
+    required String password,
+    bool rememberMe = false,
+  }) async {
+    if (errorToThrow != null) {
+      throw errorToThrow!;
+    }
+    final user = mockUser ??
+        UserModel(
+          id: 'user-123',
+          email: email,
+          firstName: 'Tariqul',
+          lastName: 'Islam',
+          fullName: 'Tariqul Islam',
+          role: UserRole.student,
+          isActive: true,
+        );
+    return AuthResponse(
+      accessToken: 'test-access-token',
+      refreshToken: 'test-refresh-token',
+      user: user,
+    );
+  }
+
+  @override
+  Future<AuthResponse> registerStudent({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    if (errorToThrow != null) {
+      throw errorToThrow!;
+    }
+    final user = UserModel(
+      id: 'reg-user-123',
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      fullName: '$firstName $lastName'.trim(),
+      role: UserRole.student,
+      isActive: true,
+    );
+    return AuthResponse(
+      accessToken: 'reg-access-token',
+      refreshToken: 'reg-refresh-token',
+      user: user,
+    );
+  }
 }
 
 void main() {
@@ -136,6 +189,132 @@ void main() {
       // Verify tokens were cleared on 401
       expect(await storage.getAccessToken(), isNull);
       expect(await storage.getRefreshToken(), isNull);
+    });
+
+    test('login with demo coordinator credentials on NetworkException enters offline mode without error', () async {
+      repo.errorToThrow = NetworkException(message: 'Cannot connect to ATLAS server');
+
+      final container = ProviderContainer(
+        overrides: [
+          secureStorageProvider.overrideWithValue(storage),
+          authRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final controller = container.read(authControllerProvider.notifier);
+      final success = await controller.login(
+        email: 'coordinator@cstu.edu.bd',
+        password: 'Password123',
+      );
+
+      expect(success, isTrue);
+      final state = container.read(authControllerProvider);
+      expect(state.isAuthenticated, isTrue);
+      expect(state.isOffline, isTrue);
+      expect(state.user, isNotNull);
+      expect(state.user!.role, equals(UserRole.coordinator));
+      expect(state.user!.fullName, equals('Academic Coordinator'));
+      expect(state.errorMessage, isNull);
+    });
+
+    test('login with demo student credentials on NetworkException enters offline mode without error', () async {
+      repo.errorToThrow = NetworkException(message: 'Cannot connect to ATLAS server');
+
+      final container = ProviderContainer(
+        overrides: [
+          secureStorageProvider.overrideWithValue(storage),
+          authRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final controller = container.read(authControllerProvider.notifier);
+      final success = await controller.login(
+        email: 'student1@cstu.edu.bd',
+        password: 'Password123',
+      );
+
+      expect(success, isTrue);
+      final state = container.read(authControllerProvider);
+      expect(state.isAuthenticated, isTrue);
+      expect(state.isOffline, isTrue);
+      expect(state.user, isNotNull);
+      expect(state.user!.role, equals(UserRole.student));
+      expect(state.user!.fullName, equals('Tariqul Islam'));
+      expect(state.errorMessage, isNull);
+    });
+
+    test('register when server is offline succeeds locally, then logs in seamlessly without error', () async {
+      repo.errorToThrow = NetworkException(message: 'Cannot connect to ATLAS server');
+
+      final container = ProviderContainer(
+        overrides: [
+          secureStorageProvider.overrideWithValue(storage),
+          authRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final controller = container.read(authControllerProvider.notifier);
+
+      // 1. Register a new user while offline
+      final regSuccess = await controller.register(
+        firstName: 'Tariqul',
+        lastName: 'Islam',
+        email: 'newstudent@cstu.edu.bd',
+        password: 'MyPassword123',
+        confirmPassword: 'MyPassword123',
+      );
+
+      expect(regSuccess, isTrue);
+      var state = container.read(authControllerProvider);
+      expect(state.isAuthenticated, isTrue);
+      expect(state.isOffline, isTrue);
+      expect(state.user!.email, equals('newstudent@cstu.edu.bd'));
+      expect(state.user!.fullName, equals('Tariqul Islam'));
+
+      // 2. Logout
+      await controller.logout();
+      state = container.read(authControllerProvider);
+      expect(state.isAuthenticated, isFalse);
+
+      // 3. Login with newly registered offline credentials
+      final loginSuccess = await controller.login(
+        email: 'newstudent@cstu.edu.bd',
+        password: 'MyPassword123',
+      );
+
+      expect(loginSuccess, isTrue);
+      state = container.read(authControllerProvider);
+      expect(state.isAuthenticated, isTrue);
+      expect(state.isOffline, isTrue);
+      expect(state.user!.email, equals('newstudent@cstu.edu.bd'));
+      expect(state.user!.fullName, equals('Tariqul Islam'));
+      expect(state.errorMessage, isNull);
+    });
+
+    test('login with unknown credentials when server is offline returns clear message', () async {
+      repo.errorToThrow = NetworkException(message: 'Cannot connect to ATLAS server');
+
+      final container = ProviderContainer(
+        overrides: [
+          secureStorageProvider.overrideWithValue(storage),
+          authRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final controller = container.read(authControllerProvider.notifier);
+      final success = await controller.login(
+        email: 'unknown@cstu.edu.bd',
+        password: 'WrongPassword',
+      );
+
+      expect(success, isFalse);
+      final state = container.read(authControllerProvider);
+      expect(state.isAuthenticated, isFalse);
+      expect(state.errorMessage, contains('Demo Account or registered credentials'));
     });
   });
 }

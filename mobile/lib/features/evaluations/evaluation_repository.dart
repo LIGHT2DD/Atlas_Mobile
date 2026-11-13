@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/config/api_config.dart';
+import '../../core/errors/api_exceptions.dart';
 import '../../core/network/api_client.dart';
 import '../../core/utils/provider_cache.dart';
 import '../../shared/models/evaluation_model.dart';
@@ -130,7 +131,15 @@ class EvaluationRepository {
           reason: 'No evaluation records found.',
         );
       }
-      throw _client.handleDioError(e);
+      final handled = _client.handleDioError(e);
+      if (handled is NetworkException) {
+        return TeamGradeModel(
+          hasGrade: false,
+          published: false,
+          reason: 'Evaluation records will synchronize once connected to ATLAS server.',
+        );
+      }
+      throw handled;
     }
   }
 }
