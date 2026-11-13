@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -59,13 +58,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _quickFill(String email, String password) {
+    ref.read(authControllerProvider.notifier).clearError();
     setState(() {
       _emailController.text = email;
       _passwordController.text = password;
     });
     NeuToast.show(
       context,
-      message: 'Loaded credentials for $email',
+      message: 'Auto-filled demo account: $email',
       type: NeuToastType.info,
       duration: const Duration(seconds: 2),
     );
@@ -282,42 +282,53 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 36),
 
-                      // Tactile Quick Demo Roster Box (Guarded for development/debug only)
-                      if (kDebugMode) ...[
-                        IosNeuCard(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(TablerIcons.sparkles, size: 16, color: neuTheme.accentColor),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'QUICK DEMO ROSTER',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w800,
-                                      color: neuTheme.textSecondary,
-                                      letterSpacing: 0.8,
+                      // Tactile Quick Demo Credentials Card (Always available in debug & release for testing)
+                      IosNeuCard(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(TablerIcons.sparkles, size: 16, color: neuTheme.accentColor),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'DEMO TEST ACCOUNTS',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                        color: neuTheme.textSecondary,
+                                        letterSpacing: 0.8,
+                                      ),
                                     ),
+                                  ],
+                                ),
+                                Text(
+                                  'Tap to Auto-fill',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: neuTheme.textSecondary.withValues(alpha: 0.8),
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  _demoButton('Coordinator', TablerIcons.shield_check, 'coordinator@cstu.edu.bd', neuTheme),
-                                  _demoButton('Supervisor', TablerIcons.school, 'supervisor1@cstu.edu.bd', neuTheme),
-                                  _demoButton('Student', TablerIcons.user, 'student1@cstu.edu.bd', neuTheme),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                _demoButton('Coordinator', TablerIcons.shield_check, 'coordinator@cstu.edu.bd', neuTheme),
+                                _demoButton('Supervisor', TablerIcons.school, 'supervisor1@cstu.edu.bd', neuTheme),
+                                _demoButton('Student', TablerIcons.user, 'student1@cstu.edu.bd', neuTheme),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ],
                   ),
                 ),

@@ -22,9 +22,9 @@ class MockAuthRepository extends AuthRepository {
         UserModel(
           id: 'user-123',
           email: 'student@cstu.edu.bd',
-          firstName: 'John',
-          lastName: 'Doe',
-          fullName: 'John Doe',
+          firstName: 'Tariqul',
+          lastName: 'Islam',
+          fullName: 'Tariqul Islam',
           role: UserRole.student,
           isActive: true,
         );

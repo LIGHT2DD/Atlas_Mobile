@@ -136,7 +136,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       child: NeuTextField(
                         controller: _firstNameController,
                         labelText: 'First Name',
-                        hintText: 'John',
+                        hintText: 'Tariqul',
                         autofillHints: const [AutofillHints.givenName],
                         validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
                       ),
@@ -146,7 +146,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       child: NeuTextField(
                         controller: _lastNameController,
                         labelText: 'Last Name',
-                        hintText: 'Doe',
+                        hintText: 'Islam',
                         autofillHints: const [AutofillHints.familyName],
                         validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
                       ),
