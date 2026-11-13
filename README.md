@@ -21,8 +21,11 @@
    - [Server-Side Late Submission Detection](#c-authoritative-server-side-late-detection)
    - [Weighted Multi-Criteria Rubric Engine](#d-weighted-multi-criteria-rubric-math)
    - [Unified Authentication & Dynamic Role Routing](#e-unified-authentication--role-routing)
+   - [Database Performance & Memory Pragmas](#f-database-performance--memory-pragmas)
+   - [Early Connection Release & Async Offloading](#g-early-connection-release--async-offloading)
+   - [Resilient Mobile Offline State Machine](#h-resilient-mobile-offline-state-machine)
 7. [Role-Based Access Control (RBAC) Matrix](#7-role-based-access-control-rbac-matrix)
-8. [Automated Test Suite](#8-automated-test-suite)
+8. [Automated Test Suite (83 Tests / 100% Pass Rate)](#8-automated-test-suite-83-tests--100-pass-rate)
 9. [Project Structure & Architecture](#9-project-structure--architecture)
 10. [Database Schema & Entity Relationships](#10-database-schema--entity-relationships)
 11. [Docker Deployment](#11-docker-deployment)
@@ -97,7 +100,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 Once started, access via:
 * 👉 **Web Dashboard:** [http://localhost:8000](http://localhost:8000)
-* 👉 **Mobile Android Release APK:** [`app-arm64.apk`](app-arm64.apk) (Standalone ARM64 binary)
+* 👉 **Mobile Android Release APK:** [`app-arm64-v8-release.apk`](app-arm64-v8-release.apk) (18.26 MB optimized ARM64-v8a binary with R8 minification & resource shrinking; also accessible via [`app-arm64.apk`](app-arm64.apk))
 * 👉 **Comprehensive Architecture Diagrams:** [`diagram.md`](diagram.md) (36 publication-grade Mermaid diagrams)
 * 👉 **Formal Technical Report:** [`report.md`](report.md)
 * 👉 **Presentation & Viva Defense Guide:** [`presentation.md`](presentation.md)
@@ -115,7 +118,7 @@ When you visit the login page (`/auth?mode=login`), you will find **1-Click Test
 | **🎓 Student (Milestones)** | `student4@cstu.edu.bd` | `Password123` | Rafiul Karim; leader of Team Cipher (Active milestone submissions, SRS graded). |
 | **🎓 Student (Unassigned)** | `student10@cstu.edu.bd` | `Password123` | Arifur Rahman; unassigned student ready to create or join a new team. |
 
-*(A full list of pre-seeded accounts is available in [credentials.txt](credentials.txt).)*
+*(A complete reference roster of test credentials is kept in local [credentials.txt](credentials.txt), which is protected by `.gitignore` to prevent secret leakage in version control.)*
 
 ---
 
@@ -368,6 +371,32 @@ Located in `api/v1/routes/auth.py` and `frontend/app/pages/auth/role_auth.html`:
 
 ---
 
+### F. Database Performance & Memory Pragmas
+Located in `api/db/database.py`, `api/v1/models/token.py`, and `api/core/base/base_model.py`:
+* **Composite & High-Cardinality B-Tree Indexing**: Explicit B-Tree indices on frequently queried lookup columns: `Token.token`, `Token.user_id`, `Token.expiry_time`, `BlacklistedToken.token`, `BlacklistedToken.user_id`, and `BaseModel.unique_id`, reducing lookup latencies from $O(N)$ to $O(\log N)$.
+* **Class-Level Reflection Caching**: Cached hybrid property introspections in `BaseModel._hybrid_property_names()` eradicate expensive runtime `inspect.getmembers()` reflection calls during ORM `to_dict()` model serialization.
+* **Kernel Memory Optimization Pragmas**: Configured SQLite engine connection listeners with high-performance I/O pragmas:
+  * `PRAGMA mmap_size = 268435456` (256 MB memory-mapped file access)
+  * `PRAGMA cache_size = -64000` (64 MB dedicated page cache)
+  * `PRAGMA temp_store = MEMORY` (In-memory storage for intermediate sorting and joins)
+
+---
+
+### G. Early Connection Release & Async Offloading
+Located in `api/core/dependencies/middleware.py`, `api/core/dependencies/context.py`, and `api/v1/services/document.py`:
+* **Scoped Authentication Sessions**: `AuthMiddleware` limits database session life strictly to token decoding and user lookup, releasing connection handles back to the SQLAlchemy pool prior to calling `await call_next(request)`. This prevents connection exhaustion during long-running downstream responses.
+* **Threadpool Offloading**: Synchronous template rendering context generators are dispatched onto AnyIO worker threads (`anyio.to_thread.run_sync`), ensuring synchronous database queries do not stall the main event loop.
+* **Zero-Memory Chunked File Streaming**: Deliverable and thesis proposal uploads in `DocumentService` stream file chunks (1 MB buffer) directly to disk with path traversal sanitization, preventing memory bloat when handling multi-megabyte project archives.
+
+---
+
+### H. Resilient Mobile Offline State Machine
+Located in `mobile/lib/features/auth/auth_controller.dart` and `mobile/lib/core/network/api_client.dart`:
+* **Non-Destructive Offline Grace Mode**: When transient Wi-Fi drops or network connection timeouts occur, `AuthController` intercepts `NetworkException` and enters `isOffline: true` while securely retaining the user's credentials in hardware storage (`FlutterSecureStorage`). Users are never logged out due to intermittent network drops.
+* **Granular Network Exception Mapping**: Dio interceptors cleanly classify errors into `NetworkException` (offline fallback), `UnauthorizedException` (401 - triggers token clearing and logout), `ForbiddenException` (403), `ConflictException` (409 - defense hearing overlaps), and `ValidationException` (422 - inline form errors).
+
+---
+
 ## 7. Role-Based Access Control (RBAC) Matrix
 
 RBAC is enforced authoritatively at the route level via FastAPI dependencies (`_require_coordinator`, `_require_supervisor`, `_require_student`). Any attempt to bypass the UI receives an immediate `403 Forbidden`.
@@ -396,19 +425,19 @@ RBAC is enforced authoritatively at the route level via FastAPI dependencies (`_
 
 ---
 
-## 8. Automated Test Suite (73 Tests / 100% Pass Rate)
+## 8. Automated Test Suite (83 Tests / 100% Pass Rate)
 
 ATLAS includes two comprehensive test suites covering both the backend services and the native Flutter mobile client:
 
-### A. Backend Pytest Suite (33 Tests / 100% Pass Rate)
-Verifies RBAC rules, database resilience, defense room/panel conflict engine, rubric score calculations, milestones, submissions, and mobile REST APIs:
+### A. Backend Pytest Suite (35 Tests / 100% Pass Rate)
+Verifies RBAC rules, database resilience, memory pragmas, defense room/panel conflict engine, rubric score calculations, milestones, submissions, mobile REST APIs, and the complete 10-phase academic lifecycle from student registration to final transcript publication (`tests/test_full_academic_lifecycle.py`):
 
 ```powershell
-.venv\Scripts\python -m pytest tests/
+.venv\Scripts\python -m pytest tests/ -v
 ```
 
-### B. Flutter Mobile Test Suite (40 Tests / 100% Pass Rate)
-Verifies client data models, Dio network exception translation, hardware-encrypted secure storage, and Neumorphic Soft-UI widget rendering:
+### B. Flutter Mobile Test Suite (48 Tests / 100% Pass Rate)
+Verifies client data models, Dio network exception translation, non-destructive offline session preservation (`mobile/test/auth_controller_test.dart`), hardware-encrypted secure storage, dynamic theme switching, and Neumorphic Soft-UI widget rendering:
 
 ```powershell
 cd mobile
@@ -416,9 +445,10 @@ flutter test test/
 ```
 
 ### Combined Verification Summary:
-- **Backend Integration Tests:** `33 / 33 passed` (100%)
-- **Frontend Flutter Tests:** `40 / 40 passed` (100%)
-- **Dart Static Code Analysis:** `0 warnings / 0 errors` (`dart analyze mobile/`)
+- **Backend Integration Tests:** `35 / 35 passed` (100%)
+- **Frontend Flutter Tests:** `48 / 48 passed` (100%)
+- **Total Automated Tests:** `83 / 83 passed` (100%)
+- **Dart Static Code Analysis:** `0 warnings / 0 errors` (`flutter analyze mobile/`)
 
 ---
 
@@ -427,9 +457,19 @@ flutter test test/
 ```text
 Atlas/
 ├── api/
+│   ├── core/
+│   │   ├── base/                # BaseModel with cached hybrid reflection introspection
+│   │   └── dependencies/        # AuthMiddleware, Limiter, Email Sending, Async Threadpool
+│   │       ├── limiter.py       # SlowAPI Brute-force rate limiting
+│   │       └── middleware.py    # Early-release scoped database sessions
+│   ├── db/
+│   │   └── database.py          # Engine with SQLite kernel memory pragmas (256MB mmap)
+│   ├── mobile/
+│   │   └── v1/                  # Mobile-optimized REST API routers (Auth, Teams, Proposals, Defenses)
 │   └── v1/
-│       ├── models/              # 25 SQLAlchemy 2.0 Declarative Models
+│       ├── models/              # 25 SQLAlchemy 2.0 Declarative Models with B-tree indices
 │       │   ├── user.py          # User accounts, Roles, Hashes
+│       │   ├── token.py         # Indexed JWT tokens & BlacklistedToken
 │       │   ├── semester.py      # Academic terms, Team size rules
 │       │   ├── team.py          # Teams, TeamMembers, Invite codes
 │       │   ├── proposal.py      # Proposals, Versions, Reviews
@@ -443,6 +483,7 @@ Atlas/
 │       │   └── dashboard/       # 103 Dashboard endpoints across all 12 stages
 │       └── services/            # Business Logic & Validation Engines
 │           ├── defense.py       # Room & Panel conflict detection
+│           ├── document.py      # 1 MB chunked streaming file upload & path sanitization
 │           ├── proposal.py      # Version snapshot engine
 │           ├── submission.py    # Server-side late validator
 │           ├── evaluation.py    # Weighted rubric score engine
@@ -453,11 +494,23 @@ Atlas/
 │       └── pages/               # Server-Rendered Jinja2 Templates
 │           ├── auth/            # Unified Login & Registration with Demo Autofill
 │           └── dashboard/       # 12-Stage Dashboard Views (Teams, Proposals, Defenses...)
+├── mobile/                      # Flutter Native Cross-Platform Mobile Client
+│   ├── lib/
+│   │   ├── core/                # Dio network client, Neumorphic theme, secure storage
+│   │   └── features/            # Auth, Teams, Proposals, Defenses, Evaluations, Profile
+│   └── test/                    # 48 Flutter Unit, Controller, and Widget UI tests
 ├── scripts/
 │   └── seeders/
 │       └── seed_atlas.py        # Comprehensive database seeding script
-├── tests/                       # Pytest Automated Test Suite (17 Tests)
-├── credentials.txt              # Testing credentials and startup cheat sheet
+├── tests/                       # 35 Pytest Backend Tests
+│   ├── test_full_academic_lifecycle.py # 10-Phase E2E lifecycle & security conflict test
+│   ├── test_auth_rbac.py        # RBAC privilege boundaries
+│   ├── test_defense_conflict.py # Room & Panel conflict engine
+│   └── test_mobile_api.py       # Mobile REST endpoint contracts
+├── app-arm64-v8-release.apk     # Optimized 18.26 MB Android release binary
+├── credentials.txt              # Local developer credentials (gitignored)
+├── Dockerfile                   # Multi-stage optimized production container
+├── .dockerignore                # Container build context filter
 ├── main.py                      # FastAPI Application Entrypoint
 └── requirements.txt             # Python Package Dependencies
 ```
