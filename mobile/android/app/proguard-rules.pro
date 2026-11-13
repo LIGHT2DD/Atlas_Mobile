@@ -18,6 +18,10 @@
 -keep class androidx.security.crypto.** { *; }
 -keep class com.it_nomads.fluttersecurestorage.** { *; }
 
+# Preserve File Picker
+-keep class com.mr.flutter.plugin.filepicker.** { *; }
+-dontwarn com.mr.flutter.plugin.filepicker.**
+
 # Preserve JNI wrappers
 -keepclasseswithmembernames class * {
     native <methods>;

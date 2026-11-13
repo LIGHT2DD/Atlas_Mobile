@@ -51,7 +51,7 @@ All `/api/mobile/v1/` endpoints adhere to a standardized JSON response structure
 - **Request Body:**
   ```json
   {
-    "email": "student1@atlas.edu",
+    "email": "student1@cstu.edu.bd",
     "password": "Password123"
   }
   ```
@@ -67,7 +67,7 @@ All `/api/mobile/v1/` endpoints adhere to a standardized JSON response structure
       "token_type": "bearer",
       "user": {
         "id": "uuid",
-        "email": "student1@atlas.edu",
+        "email": "student1@cstu.edu.bd",
         "first_name": "Tahmid",
         "last_name": "Hasan",
         "role": "student",
@@ -151,7 +151,7 @@ All `/api/mobile/v1/` endpoints adhere to a standardized JSON response structure
         "status": "supervisor_assigned",
         "invite_code": "K9Q_mZ81",
         "leader_id": "uuid",
-        "supervisor": { "id": "uuid", "name": "Fatema Jannat Dihan", "email": "supervisor1@atlas.edu" },
+        "supervisor": { "id": "uuid", "name": "Fatema Jannat Dihan", "email": "supervisor1@cstu.edu.bd" },
         "members": [ ... ]
       }
     }

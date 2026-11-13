@@ -147,7 +147,13 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p class="text-xs text-secondary-400 py-6 text-center">No upcoming deadlines recorded for this semester.</p>
+            <p class="text-xs text-secondary-400 py-6 text-center">
+                {% if not stats.team %}
+                You have not formed or joined a thesis team yet. Form or join a team to begin tracking deliverables.
+                {% else %}
+                No upcoming deadlines recorded for this semester.
+                {% endif %}
+            </p>
             {% endif %}
         </div>
 
@@ -173,7 +179,7 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p class="text-xs text-secondary-400 py-6 text-center">No notifications yet.</p>
+            <p class="text-xs text-secondary-400 py-6 text-center">No notifications yet. Welcome to ATLAS!</p>
             {% endif %}
         </div>
     </div>

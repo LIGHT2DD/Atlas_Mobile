@@ -24,6 +24,10 @@ from api.v1.services.auth import AuthService
 
 import api.db.database as db_mod
 from sqlalchemy.orm import scoped_session
+from api.core.dependencies.limiter import limiter
+
+# Disable rate limiting during automated test suites
+limiter.enabled = False
 
 TEST_DB_URL = "sqlite:///./test_atlas.db"
 test_engine = create_engine(TEST_DB_URL, connect_args={"check_same_thread": False})
@@ -45,6 +49,14 @@ def reset_db_per_test():
     Base.metadata.create_all(bind=test_engine)
     yield
     db_mod.db_session.remove()
+
+
+@pytest.fixture(autouse=True)
+def mock_email_service():
+    """Mock send_email in background tasks to prevent SMTP timeouts during test runs."""
+    from unittest.mock import AsyncMock, patch
+    with patch("api.core.dependencies.email_sending_service.send_email", new_callable=AsyncMock) as m:
+        yield m
 
 
 @pytest.fixture
@@ -75,7 +87,7 @@ def seeded_users(db_session):
         db=db_session,
         first_name="Coordinator",
         last_name="Admin",
-        email="coord_test@atlas.edu",
+        email="coord_test@cstu.edu.bd",
         password=TEST_PASSWORD_HASH,
         role=UserRole.COORDINATOR.value,
         is_active=True,
@@ -85,7 +97,7 @@ def seeded_users(db_session):
         db=db_session,
         first_name="Supervisor",
         last_name="One",
-        email="sup1_test@atlas.edu",
+        email="sup1_test@cstu.edu.bd",
         password=TEST_PASSWORD_HASH,
         role=UserRole.SUPERVISOR.value,
         is_active=True,
@@ -95,7 +107,7 @@ def seeded_users(db_session):
         db=db_session,
         first_name="Supervisor",
         last_name="Two",
-        email="sup2_test@atlas.edu",
+        email="sup2_test@cstu.edu.bd",
         password=TEST_PASSWORD_HASH,
         role=UserRole.SUPERVISOR.value,
         is_active=True,
@@ -105,7 +117,7 @@ def seeded_users(db_session):
         db=db_session,
         first_name="Student",
         last_name="Leader",
-        email="stu1_test@atlas.edu",
+        email="stu1_test@cstu.edu.bd",
         password=TEST_PASSWORD_HASH,
         role=UserRole.STUDENT.value,
         is_active=True,
@@ -115,7 +127,7 @@ def seeded_users(db_session):
         db=db_session,
         first_name="Student",
         last_name="Member",
-        email="stu2_test@atlas.edu",
+        email="stu2_test@cstu.edu.bd",
         password=TEST_PASSWORD_HASH,
         role=UserRole.STUDENT.value,
         is_active=True,
@@ -125,7 +137,7 @@ def seeded_users(db_session):
         db=db_session,
         first_name="Student",
         last_name="Independent",
-        email="stu3_test@atlas.edu",
+        email="stu3_test@cstu.edu.bd",
         password=TEST_PASSWORD_HASH,
         role=UserRole.STUDENT.value,
         is_active=True,

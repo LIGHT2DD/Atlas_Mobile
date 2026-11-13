@@ -490,7 +490,7 @@ flowchart LR
         Coord_Publish(["Authoritatively Publish Final Grades"])
         Coord_UserList(["Inspect Faculty & Coordinator Roster"])
         Coord_AddSup(["Add Faculty Supervisor"])
-        Coord_AddCoord(["Add Coordinator (Sudo Password & @atlas.edu)"])
+        Coord_AddCoord(["Add Coordinator (Sudo Password & @cstu.edu.bd)"])
         Coord_Audit(["Audit Chronological University Activity Log"])
         Coord_Report(["Generate Departmental Progression Reports"])
     end
@@ -1027,7 +1027,7 @@ sequenceDiagram
                 alt Sudo Verification Failed
                     Service-->>Client: 403 Forbidden ("Invalid current coordinator password")
                 else Sudo Verification Passed
-                    Service->>Service: Check Institutional Email (@atlas.edu)
+                    Service->>Service: Check Institutional Email (@cstu.edu.bd)
                     Service->>ORM: User.create(first_name, last_name, email, hashed_password)
                     ORM->>DB: INSERT INTO users ... (Atomic Commit)
                     DB-->>ORM: Success
@@ -1347,9 +1347,9 @@ sequenceDiagram
         API-->>UI: 403 Forbidden ("Elevated authorization failed: Invalid current coordinator password.")
         UI-->>ActingCoord: Show Red Error Toast
     else Sudo Password Verified
-        API->>API: Verify email.endswith('@atlas.edu')
+        API->>API: Verify email.endswith('@cstu.edu.bd')
         alt Non-Institutional Email (e.g. @gmail.com)
-            API-->>UI: 400 Bad Request ("Coordinator accounts must use institutional @atlas.edu domain")
+            API-->>UI: 400 Bad Request ("Coordinator accounts must use institutional @cstu.edu.bd domain")
             UI-->>ActingCoord: Show Validation Error
         else Email Domain Verified
             API->>DB: Check email uniqueness
@@ -1651,8 +1651,8 @@ flowchart TD
     CheckSudoPassword -- Yes --> VerifySudoHash{"AuthService.verify_hash(current_password, acting_user.password)"}
     VerifySudoHash -- False --> ErrWrongSudo["Return 403 Forbidden: Sudo Elevated Authorization Failed"]
 
-    VerifySudoHash -- True --> CheckEmailDomain{"email.endswith('@atlas.edu')?"}
-    CheckEmailDomain -- No --> ErrDomain["Return 400 Bad Request: Institutional @atlas.edu Domain Required"]
+    VerifySudoHash -- True --> CheckEmailDomain{"email.endswith('@cstu.edu.bd')?"}
+    CheckEmailDomain -- No --> ErrDomain["Return 400 Bad Request: Institutional @cstu.edu.bd Domain Required"]
 
     CheckEmailDomain -- Yes --> CheckDuplicate{"Email already exists in users table?"}
     CheckDuplicate -- Yes --> ErrDuplicate["Return 400 Bad Request: Account Email Already Registered"]
@@ -1953,7 +1953,7 @@ flowchart TD
     MileCheck -- No --> DenyObj
     MileCheck -- Yes --> Allow
 
-    ObjectLevel -- "Sudo Coordinator Creation" --> SudoCheck{"Current Password matches acting Coordinator hash AND email ends with @atlas.edu?"}
+    ObjectLevel -- "Sudo Coordinator Creation" --> SudoCheck{"Current Password matches acting Coordinator hash AND email ends with @cstu.edu.bd?"}
     SudoCheck -- No --> DenyObj
     SudoCheck -- Yes --> Allow
 
@@ -1992,7 +1992,7 @@ flowchart TD
 | **Fig 5.5** | Sequence      | Milestone Submission & Feedback        | File Uploads, Deadlines, Remarks          | `api/v1/models/submission.py`         |
 | **Fig 5.6** | Sequence      | Defense Scheduling & Collision Engine  | Interval Checking, Room/Panelist Lock     | `DefenseService.schedule_defense`     |
 | **Fig 5.7** | Sequence      | Rubric Defense Evaluation & Publishing | Multi-Panel Scoring, Grade Publication    | `EvaluationService.publish_grades`    |
-| **Fig 5.8** | Sequence      | Sudo Coordinator Creation (Option A)   | Password Re-verification, @atlas.edu      | `api/mobile/v1/coordinator.py:273`    |
+| **Fig 5.8** | Sequence      | Sudo Coordinator Creation (Option A)   | Password Re-verification, @cstu.edu.bd      | `api/mobile/v1/coordinator.py:273`    |
 | **Fig 5.9** | Sequence      | Push Notification Dispatch via FCM     | NotificationService, BackgroundTasks      | `NotificationService.notify`          |
 | **Fig 6.1** | State Machine | Proposal Lifecycle Statechart          | Draft, Submitted, Revisions, Approved     | `ProposalStatus`                      |
 | **Fig 6.2** | State Machine | Master Team Lifecycle Statechart       | Forming, Pitched, Assigned, Defended      | `TeamStatus`                          |

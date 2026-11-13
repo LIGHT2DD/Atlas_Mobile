@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/errors/api_exceptions.dart';
 import '../../core/network/api_client.dart';
 import '../../core/storage/secure_storage.dart';
 import '../../shared/models/user_model.dart';
@@ -8,6 +9,7 @@ import '../evaluations/evaluation_repository.dart';
 import '../milestones/milestone_repository.dart';
 import '../supervisor/supervisor_repository.dart';
 import '../teams/team_repository.dart';
+import '../notifications/notifications_repository.dart';
 import 'auth_repository.dart';
 
 export '../../core/storage/secure_storage.dart' show secureStorageProvider;
@@ -34,6 +36,7 @@ class AuthState {
   final bool isAuthenticated;
   final UserModel? user;
   final String? errorMessage;
+  final bool isOffline;
 
   const AuthState({
     this.isLoading = false,
@@ -41,6 +44,7 @@ class AuthState {
     this.isAuthenticated = false,
     this.user,
     this.errorMessage,
+    this.isOffline = false,
   });
 
   AuthState copyWith({
@@ -49,6 +53,7 @@ class AuthState {
     bool? isAuthenticated,
     UserModel? user,
     String? errorMessage,
+    bool? isOffline,
     bool clearError = false,
   }) {
     return AuthState(
@@ -57,6 +62,7 @@ class AuthState {
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       user: user ?? this.user,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      isOffline: isOffline ?? this.isOffline,
     );
   }
 }
@@ -79,6 +85,7 @@ class AuthController extends StateNotifier<AuthState> {
     _ref.invalidate(milestonesListProvider);
     _ref.invalidate(defensesListProvider);
     _ref.invalidate(myGradeFutureProvider);
+    _ref.invalidate(notificationsListProvider);
   }
 
   Future<void> checkAuthStatus() async {
@@ -90,17 +97,47 @@ class AuthController extends StateNotifier<AuthState> {
           isLoading: false,
           isInitialized: true,
           isAuthenticated: false,
+          isOffline: false,
         );
         return;
       }
 
-      final user = await _repo.getProfile();
-      state = state.copyWith(
-        isLoading: false,
-        isInitialized: true,
-        isAuthenticated: true,
-        user: user,
-      );
+      try {
+        final user = await _repo.getProfile();
+        await _storage.saveUserMeta(
+          userId: user.id,
+          role: user.role.name,
+        );
+        state = state.copyWith(
+          isLoading: false,
+          isInitialized: true,
+          isAuthenticated: true,
+          isOffline: false,
+          user: user,
+        );
+      } on NetworkException {
+        // Network connection error while valid token exists: enter offline mode without wiping auth
+        final cachedUserId = await _storage.getUserId();
+        final cachedRole = await _storage.getUserRole();
+        final role = cachedRole != null ? UserRole.fromString(cachedRole) : UserRole.student;
+        final cachedUser = UserModel(
+          id: cachedUserId ?? '',
+          email: '',
+          firstName: 'Offline',
+          lastName: 'User',
+          fullName: 'Offline User',
+          role: role,
+          isActive: true,
+        );
+
+        state = state.copyWith(
+          isLoading: false,
+          isInitialized: true,
+          isAuthenticated: true,
+          isOffline: true,
+          user: cachedUser,
+        );
+      }
     } catch (_) {
       await _storage.clearAuth();
       _invalidateUserData();
@@ -108,6 +145,7 @@ class AuthController extends StateNotifier<AuthState> {
         isLoading: false,
         isInitialized: true,
         isAuthenticated: false,
+        isOffline: false,
       );
     }
   }

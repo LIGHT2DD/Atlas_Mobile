@@ -109,11 +109,11 @@ When you visit the login page (`/auth?mode=login`), you will find **1-Click Test
 
 | Role | Email | Password | Pre-loaded State in Database |
 |---|---|---|---|
-| **🏛️ Coordinator** | `coordinator@atlas.edu` | `Password123` | Full administrative control; manages active semester, defenses, rubrics, and grade registry. |
-| **👨‍🏫 Supervisor** | `supervisor1@atlas.edu` | `Password123` | Fatema Jannat Dihan; assigned supervisor of Team Apollo, pending reviews and submissions. |
-| **🎓 Student (Leader)** | `student1@atlas.edu` | `Password123` | Tahmid Hasan; leader of Team Apollo (Proposal Approved, Final Grade: A+ published). |
-| **🎓 Student (Milestones)** | `student4@atlas.edu` | `Password123` | Rafiul Karim; leader of Team Cipher (Active milestone submissions, SRS graded). |
-| **🎓 Student (Unassigned)** | `student10@atlas.edu` | `Password123` | Arifur Rahman; unassigned student ready to create or join a new team. |
+| **🏛️ Coordinator** | `coordinator@cstu.edu.bd` | `Password123` | Full administrative control; manages active semester, defenses, rubrics, and grade registry. |
+| **👨‍🏫 Supervisor** | `supervisor1@cstu.edu.bd` | `Password123` | Fatema Jannat Dihan; assigned supervisor of Team Apollo, pending reviews and submissions. |
+| **🎓 Student (Leader)** | `student1@cstu.edu.bd` | `Password123` | Tahmid Hasan; leader of Team Apollo (Proposal Approved, Final Grade: A+ published). |
+| **🎓 Student (Milestones)** | `student4@cstu.edu.bd` | `Password123` | Rafiul Karim; leader of Team Cipher (Active milestone submissions, SRS graded). |
+| **🎓 Student (Unassigned)** | `student10@cstu.edu.bd` | `Password123` | Arifur Rahman; unassigned student ready to create or join a new team. |
 
 *(A full list of pre-seeded accounts is available in [credentials.txt](credentials.txt).)*
 
@@ -376,7 +376,7 @@ RBAC is enforced authoritatively at the route level via FastAPI dependencies (`_
 |---|:---:|:---:|:---:|---|
 | **Semester Creation & Management** | ❌ | ❌ | ✅ | `_require_coordinator` |
 | **Register Faculty Supervisor** | ❌ | ❌ | ✅ | `_require_roles_mobile('coordinator')` |
-| **Register Coordinator (Elevated Sudo)** | ❌ | ❌ | ✅ (Sudo + @atlas.edu) | Elevated bcrypt verification + Domain check |
+| **Register Coordinator (Elevated Sudo)** | ❌ | ❌ | ✅ (Sudo + @cstu.edu.bd) | Elevated bcrypt verification + Domain check |
 | **Create Team & Generate Invite Code** | ✅ | ❌ | ❌ | `_require_student` |
 | **Join Team via Invite Code** | ✅ | ❌ | ❌ | `_require_student` |
 | **Send Supervision Request** | ✅ (Leader) | ❌ | ❌ | `TeamService.request_supervisor` |

@@ -13,7 +13,7 @@ audit_logs_router = APIRouter(prefix='/audit-logs', tags=['Audit Logs'])
 
 @audit_logs_router.get('')
 @add_template_context('pages/dashboard/audit_logs/index.html')
-async def audit_logs_index(request: Request, db: Session = Depends(get_db)):
+def audit_logs_index(request: Request, db: Session = Depends(get_db)):
     user = _require_coordinator(request)
 
     page = int(request.query_params.get('page', 1))

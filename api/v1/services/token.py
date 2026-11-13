@@ -1,4 +1,5 @@
 import datetime as dt
+import uuid
 from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -28,7 +29,8 @@ class TokenService:
             **payload,
             "user_id": user_id, 
             "exp": expires, 
-            "type": token_type
+            "type": token_type,
+            "jti": uuid.uuid4().hex,
         }
         
         # Remove user_id from payload if it is None

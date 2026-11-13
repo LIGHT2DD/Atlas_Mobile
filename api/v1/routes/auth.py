@@ -11,6 +11,7 @@ from api.utils.loggers import create_logger
 from api.v1.models.user import User, UserRole
 from api.v1.services.auth import AuthService
 from api.v1.services.user import UserService
+from api.core.dependencies.limiter import limiter
 
 
 auth_router = APIRouter(prefix='/auth', tags=['Auth'])
@@ -85,6 +86,9 @@ def _handle_login(request: Request, db: Session, payload):
         create_token=False,
     )
     
+    # Clear any previous session leftovers before creating new session
+    request.session.clear()
+
     logger.info(f'User {user.email} ({user.role}) logged in successfully')
     flash(request, 'Logged in successfully', MessageCategory.SUCCESS)
 
@@ -134,6 +138,7 @@ def _resolve_role(request: Request) -> str:
 
 
 @auth_router.api_route('', methods=["GET", "POST"])
+@limiter.limit("5/minute")
 @add_template_context('pages/auth/role_auth.html')
 async def auth_portal(
     request: Request,
@@ -198,6 +203,7 @@ async def forgot_password_page(request: Request):
 
 
 @auth_router.post('/forgot-password')
+@limiter.limit("5/minute")
 async def forgot_password(
     request: Request,
     bg_tasks: BackgroundTasks,
@@ -247,6 +253,7 @@ async def reset_password_page(request: Request, db: Session = Depends(get_db)):
 
 
 @auth_router.post('/reset-password')
+@limiter.limit("5/minute")
 async def reset_password(
     request: Request,
     db: Session = Depends(get_db),
@@ -289,9 +296,10 @@ async def logout(request: Request, db: Session = Depends(get_db)):
     """Endpoint to log a user out."""
     
     current_user = request.state.current_user
-    
-    AuthService.logout(db, current_user.id)
+    if current_user:
+        AuthService.logout(db, current_user.id)
     request.state.current_user = None
+    request.session.clear()
     
     response = RedirectResponse(url="/", status_code=303)
     response.delete_cookie('refresh_token')

@@ -9,9 +9,9 @@ STUDENT, SUPERVISOR, and COORDINATOR (Admin)—interact with the ATLAS web appli
 throughout the full academic year thesis/capstone lifecycle.
 
 Default Credentials for Local Testing (see credentials.txt for full list):
-  Coordinator : coordinator@atlas.edu  / Password123
-  Supervisor  : supervisor1@atlas.edu  / Password123
-  Student     : student1@atlas.edu     / Password123
+  Coordinator : coordinator@cstu.edu.bd  / Password123
+  Supervisor  : supervisor1@cstu.edu.bd  / Password123
+  Student     : student1@cstu.edu.bd     / Password123
 
 Application Local URL: http://127.0.0.1:8000
 
@@ -55,7 +55,7 @@ USE CASE S-01: Registration & Account Setup
 - Goal: Create an active student profile in ATLAS.
 - Steps:
   1. Navigate to http://127.0.0.1:8000/register
-  2. Fill in: Full Name, University Email (@atlas.edu or personal), Password.
+  2. Fill in: Full Name, University Email (@cstu.edu.bd or personal), Password.
   3. Note: Public registration automatically provisions the user as a STUDENT.
   4. Submit form. Upon success, redirect to /login.
   5. Log in with credentials to land on the Student Dashboard.
@@ -167,7 +167,7 @@ USE CASE V-01: Faculty Dashboard & Supervision Overview
 - Goal: Monitor all supervised teams, pending reviews, and upcoming deadlines.
 - Navigation: Dashboard (/dashboard)
 - Steps:
-  1. Log in as supervisor (e.g., supervisor1@atlas.edu).
+  1. Log in as supervisor (e.g., supervisor1@cstu.edu.bd).
   2. View quick metrics:
      - Number of supervised teams
      - Pending supervision requests
@@ -345,13 +345,13 @@ USE CASE C-07: Audit Logging & Academic Compliance
 Here is how a real semester flows from start to finish in ATLAS:
 
 1. COORDINATOR SETS UP THE SEMESTER:
-   - Coordinator logs in (coordinator@atlas.edu).
+   - Coordinator logs in (coordinator@cstu.edu.bd).
    - Creates "Spring 2026" with max team size = 4.
    - Creates milestones: "Proposal" (Feb 15), "Midterm" (Mar 30), "Final" (May 10).
    - Creates grading rubric with 4 criteria totaling 100 points.
 
 2. STUDENTS REGISTER & FORM TEAM:
-   - Student Tahmid registers or logs in (e.g., student1@atlas.edu).
+   - Student Tahmid registers or logs in (e.g., student1@cstu.edu.bd).
    - Tahmid creates "Team Alpha", titled "Smart Health Monitoring System".
    - System generates invite code: "K9Q_mZ81".
    - Teammates Samiul and Nahid register and use code "K9Q_mZ81" to join Team Alpha.
@@ -359,7 +359,7 @@ Here is how a real semester flows from start to finish in ATLAS:
 3. SUPERVISOR MATCHING:
    - Tahmid browses faculty at /dashboard/supervisors and selects Fatema Jannat Dihan.
    - Team Alpha submits a supervision request.
-   - Supervisor Dihan logs in (supervisor1@atlas.edu), reviews the pitch, and accepts.
+   - Supervisor Dihan logs in (supervisor1@cstu.edu.bd), reviews the pitch, and accepts.
 
 4. PROPOSAL APPROVAL:
    - Team Alpha writes their proposal and uploads "Proposal_v1.pdf" at /dashboard/proposals.

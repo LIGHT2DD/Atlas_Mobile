@@ -258,6 +258,24 @@ async def submission_detail(request: Request, submission_id: str, db: Session = 
     user = _get_user(request)
     submission = Submission.fetch_by_id(db, submission_id)
 
+    # Access control: students can only access their own submissions or their team's/project's submissions
+    if _is_student(user):
+        user_team_ids = [
+            m.team_id for m in db.query(TeamMember.team_id).filter(
+                TeamMember.user_id == user.id, TeamMember.is_deleted == False
+            ).all()
+        ]
+        user_project_ids = [
+            m.project_id for m in db.query(ProjectMember.project_id).filter(
+                ProjectMember.user_id == user.id, ProjectMember.is_deleted == False
+            ).all()
+        ]
+        is_owner = (submission.submitted_by == user.id)
+        is_team_sub = bool(submission.team_id and submission.team_id in user_team_ids)
+        is_proj_sub = bool(submission.project_id and submission.project_id in user_project_ids)
+        if not (is_owner or is_team_sub or is_proj_sub):
+            raise HTTPException(status_code=403, detail="You do not have permission to view this submission.")
+
     team = None
     if submission.team_id:
         team = Team.fetch_one_by_field(db, throw_error=False, id=submission.team_id)

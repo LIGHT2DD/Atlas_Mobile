@@ -318,7 +318,7 @@ def create_faculty_or_coordinator(
     Coordinator administrative user creation with elevated security controls:
     1. Sudo Elevated Password verification required if creating a Coordinator.
     2. Rate limiting & audit logging on failed sudo elevated attempts.
-    3. Institutional domain check (@atlas.edu) for Coordinator accounts.
+    3. Institutional domain check (@cstu.edu.bd) for Coordinator accounts.
     4. Immutable AuditLog recording.
     5. Broadcast alert notifications to all active peer coordinators.
     """

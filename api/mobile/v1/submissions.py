@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from api.db.database import get_db
 from api.v1.models.user import User, UserRole
 from api.v1.models.submission import Submission
+from api.v1.models.team import Team
+from api.v1.models.team_member import TeamMember
 from api.v1.services.submission import SubmissionService
 from api.v1.services.document import DocumentService
 from api.mobile.v1.schemas import SubmissionGradePayload
@@ -46,6 +48,15 @@ def list_team_submissions(
     db: Session = Depends(get_db)
 ):
     """List all deliverable submissions made by a specific team."""
+    if current_user.role == UserRole.STUDENT.value:
+        is_member = db.query(TeamMember).filter(
+            TeamMember.team_id == team_id,
+            TeamMember.user_id == current_user.id,
+            TeamMember.is_deleted == False
+        ).first()
+        if not is_member:
+            raise HTTPException(status_code=403, detail="You do not have permission to view submissions for this team.")
+
     submissions = db.query(Submission).filter(
         Submission.team_id == team_id,
         Submission.is_deleted == False,
@@ -63,6 +74,19 @@ def get_submission_details(
 ):
     """Retrieve full details of a specific milestone submission."""
     sub = Submission.fetch_by_id(db, submission_id)
+
+    if current_user.role == UserRole.STUDENT.value:
+        is_owner = (sub.submitted_by == current_user.id)
+        is_member = False
+        if sub.team_id:
+            is_member = db.query(TeamMember).filter(
+                TeamMember.team_id == sub.team_id,
+                TeamMember.user_id == current_user.id,
+                TeamMember.is_deleted == False
+            ).first() is not None
+        if not (is_owner or is_member):
+            raise HTTPException(status_code=403, detail="You do not have permission to view this submission.")
+
     return mobile_response(data=_serialize_submission(sub), message="Submission details retrieved.")
 
 

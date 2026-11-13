@@ -26,11 +26,23 @@ class AuthService:
     
     @classmethod
     def authenticate(cls, db: Session, email: str, password: str, create_token: bool=True):
+        email_clean = (email or "").strip().lower()
         user = User.fetch_one_by_field(
             db=db, 
-            email=email, 
-            error_message='Invalid user credentials',
+            email=email_clean, 
+            throw_error=False,
         )
+        if not user:
+            # Fallback alias between @atlas.edu and @cstu.edu.bd
+            if email_clean.endswith('@atlas.edu'):
+                alt_email = email_clean.replace('@atlas.edu', '@cstu.edu.bd')
+                user = User.fetch_one_by_field(db=db, email=alt_email, throw_error=False)
+            elif email_clean.endswith('@cstu.edu.bd'):
+                alt_email = email_clean.replace('@cstu.edu.bd', '@atlas.edu')
+                user = User.fetch_one_by_field(db=db, email=alt_email, throw_error=False)
+
+        if not user:
+            raise HTTPException(status_code=400, detail="Invalid user credentials")
 
         if not user.is_active:
             raise HTTPException(status_code=400, detail="User is inactive")

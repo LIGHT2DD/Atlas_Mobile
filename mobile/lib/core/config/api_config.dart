@@ -6,7 +6,7 @@ class ApiConfig {
   static const String _envBaseUrl = String.fromEnvironment('API_BASE_URL');
 
   /// Local development host on physical Wi-Fi network
-  static const String defaultLocalIp = 'http://192.168.0.100:8000';
+  static const String defaultLocalIp = 'http://192.168.0.101:8000';
 
   /// Optional cloud production URL
   static const String defaultProductionUrl = 'https://atlas-api.onrender.com';

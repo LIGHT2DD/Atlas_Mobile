@@ -125,7 +125,7 @@ The decision to adopt a **Hybrid Model (FastAPI Core + Firebase Companion Servic
   - Authoritatively publish final grades to student transcripts with one click.
 * **Faculty & Coordinator User Management (Elevated Sudo Authorization)**:
   - Register new faculty mentors directly from the mobile app with department assignments.
-  - Register peer academic coordinators with mandatory elevated sudo password verification, institutional email validation (`@atlas.edu`), brute-force attempt rate-limiting, and automatic peer broadcast notifications.
+  - Register peer academic coordinators with mandatory elevated sudo password verification, institutional email validation (`@cstu.edu.bd`), brute-force attempt rate-limiting, and automatic peer broadcast notifications.
 * **Institutional Audit Trail**:
   - View real-time system logs and action histories tracking all approvals, uploads, user creation events, and edits.
 
@@ -272,10 +272,10 @@ The database contains pre-seeded accounts representing all stages of the academi
 
 | Role | Email | Password | Pre-loaded State in Database |
 |:---|:---|:---|:---|
-| **🏛️ Coordinator** | `coordinator@atlas.edu` | `Password123` | Full administrative control; manages active semester, defenses, rubrics, and grade registry. |
-| **👨‍🏫 Supervisor** | `supervisor1@atlas.edu` | `Password123` | Assigned supervisor of Team Apollo; reviews pending submissions and defense scoring. |
-| **🎓 Student (Leader)** | `student1@atlas.edu` | `Password123` | Leader of Team Apollo (Proposal Approved, Final Grade: A+ published). |
-| **🎓 Student (Milestones)**| `student4@atlas.edu` | `Password123` | Leader of Team Cipher (Active milestone submissions, SRS graded). |
+| **🏛️ Coordinator** | `coordinator@cstu.edu.bd` | `Password123` | Full administrative control; manages active semester, defenses, rubrics, and grade registry. |
+| **👨‍🏫 Supervisor** | `supervisor1@cstu.edu.bd` | `Password123` | Assigned supervisor of Team Apollo; reviews pending submissions and defense scoring. |
+| **🎓 Student (Leader)** | `student1@cstu.edu.bd` | `Password123` | Leader of Team Apollo (Proposal Approved, Final Grade: A+ published). |
+| **🎓 Student (Milestones)**| `student4@cstu.edu.bd` | `Password123` | Leader of Team Cipher (Active milestone submissions, SRS graded). |
 
 ---
 

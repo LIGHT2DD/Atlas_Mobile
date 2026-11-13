@@ -5,7 +5,8 @@ import uvicorn, os, time
 from typing import Optional
 from psycopg2.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException, Request, Query
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, Request, Query, Depends
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import RedirectResponse, StreamingResponse, JSONResponse
 from contextlib import asynccontextmanager
@@ -13,14 +14,14 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware  # required by google oauth
 from decouple import config
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from jinja2.exceptions import TemplateNotFound
 
 from api.core.dependencies.flash_messages import MessageCategory, flash, get_flashed_messages
 from api.core.dependencies.middleware import AuthMiddleware
-from api.db.database import create_database
+from api.core.dependencies.limiter import limiter
+from api.db.database import create_database, get_db
 from api.utils.loggers import create_logger
 from api.utils.log_streamer import log_streamer
 from api.utils.port_checker import find_free_port
@@ -28,6 +29,8 @@ from api.utils.responses import success_response
 from api.v1.routes import v1_router
 from api.mobile.v1 import mobile_v1_router
 from api.utils.settings import settings
+from api.v1.models.user import User, UserRole
+from api.v1.services.auth import AuthService
 
 
 os.makedirs("./logs", exist_ok=True)
@@ -54,7 +57,6 @@ app = FastAPI(
     default_response_class=_default_response_class
 )
 
-limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -110,10 +112,17 @@ app.mount("/static", staticfiles.StaticFiles(directory="frontend/static"), name=
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
+raw_allowed_origins = config(
+    "ALLOWED_ORIGINS",
+    default="http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://127.0.0.1:3000,http://10.0.2.2:8000,http://10.0.3.2:8000"
+)
+allowed_origins = [o.strip() for o in raw_allowed_origins.split(",") if o.strip()]
+
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"^https?://.*$",
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -174,13 +183,37 @@ async def root(request: Request) -> dict:
         status_code=200
     )
 
+ALLOWED_LOG_FILES = {"app_logs", "error"}
+
 @app.get("/logs", tags=["Home"])
 async def stream_logs(
+    request: Request,
     lines: Optional[int] = Query(None), 
-    log_file: Optional[str] = Query('app_logs')
+    log_file: Optional[str] = Query('app_logs'),
+    db: Session = Depends(get_db),
 ) -> StreamingResponse:
-    '''Endpoint to stream logs'''
-    
+    '''Endpoint to stream logs - Coordinator/Admin only'''
+    if log_file not in ALLOWED_LOG_FILES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid log file '{log_file}'. Allowed: {', '.join(sorted(ALLOWED_LOG_FILES))}"
+        )
+
+    # Require coordinator authentication via session cookie or Bearer token
+    user = getattr(request.state, 'current_user', None)
+    if not user:
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.startswith("Bearer "):
+            token_str = auth_header[7:].strip()
+            credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials")
+            token_data = AuthService.verify_access_token(db, token_str, credentials_exception)
+            user = User.fetch_by_id(db, token_data.user_id)
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required to view system logs.")
+    if user.role not in (UserRole.COORDINATOR.value, UserRole.ADMIN.value):
+        raise HTTPException(status_code=403, detail="Coordinator authorization required.")
+
     return StreamingResponse(log_streamer(f'logs/{log_file}.log', lines), media_type="text/event-stream")
 
 

@@ -65,7 +65,7 @@
 
 - [x] **Phase 6: Coordinator Workflows (Flutter)**
   - [x] `CoordinatorDashboardScreen`: Department-wide metrics (Teams, Approved Proposals, Defenses, Students, Faculty, Graded) and administrative action shortcuts.
-  - [x] `CoordinatorUsersScreen`: User Roster Management, faculty supervisor registration, and coordinator creation with elevated sudo password verification, institutional email check (`@atlas.edu`), rate-limiting, and peer broadcast alerts.
+  - [x] `CoordinatorUsersScreen`: User Roster Management, faculty supervisor registration, and coordinator creation with elevated sudo password verification, institutional email check (`@cstu.edu.bd`), rate-limiting, and peer broadcast alerts.
   - [x] `CoordinatorTeamsScreen`: University-wide team oversight, manual faculty supervisor assignment/reassignment dialog, and grade publication lock.
   - [x] `SemestersScreen`: Academic semester term management, term creation form, and active term switching.
   - [x] `CreateMilestoneScreen`: Institutional milestone scheduling form with date picker, weight %, and max score.
@@ -126,6 +126,6 @@ flutter run
 - On Physical Android Device: Update `ApiConfig.customBaseUrl` or pass `--dart-define=API_URL=http://<YOUR_LAN_IP>:8000`.
 
 ### 3.3 Test Credentials Available for Quick Sign-in:
-- **Academic Coordinator:** `coordinator@atlas.edu` / `Password123`
-- **Faculty Supervisors:** `supervisor1@atlas.edu`, `supervisor2@atlas.edu`, `supervisor3@atlas.edu` / `Password123`
-- **Students:** `student1@atlas.edu` (Graded A+), `student4@atlas.edu` (Milestones active), `student7@atlas.edu` (Pending request), `student10@atlas.edu` (Forming) / `Password123`
+- **Academic Coordinator:** `coordinator@cstu.edu.bd` / `Password123`
+- **Faculty Supervisors:** `supervisor1@cstu.edu.bd`, `supervisor2@cstu.edu.bd`, `supervisor3@cstu.edu.bd` / `Password123`
+- **Students:** `student1@cstu.edu.bd` (Graded A+), `student4@cstu.edu.bd` (Milestones active), `student7@cstu.edu.bd` (Pending request), `student10@cstu.edu.bd` (Forming) / `Password123`

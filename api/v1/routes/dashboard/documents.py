@@ -11,10 +11,13 @@ from api.v1.models.user import User, UserRole
 from api.v1.models.document import Document
 from api.v1.models.project import Project
 from api.v1.models.project_member import ProjectMember
+from api.v1.models.team import Team
+from api.v1.models.team_member import TeamMember
 from api.v1.models.notification import NotificationType
 from api.utils.firebase_service import FirebaseService
 from api.v1.services.notification import NotificationService
-from api.v1.routes.dashboard.helpers import _get_user, _is_coordinator
+from api.v1.services.team import TeamService
+from api.v1.routes.dashboard.helpers import _get_user, _is_coordinator, _is_student
 
 
 # Router for project-scoped actions (upload, delete)
@@ -34,10 +37,24 @@ async def document_view(request: Request, document_id: str, db: Session = Depend
     user = _get_user(request)
     document = Document.fetch_by_id(db, document_id)
     
+    # Access control: students can only access their own documents or their team's/project's documents
+    if _is_student(user):
+        user_team = TeamService.get_student_active_team(db, user.id)
+        user_team_id = user_team.id if user_team else None
+        user_project_ids = [
+            m.project_id for m in db.query(ProjectMember.project_id).filter(
+                ProjectMember.user_id == user.id, ProjectMember.is_deleted == False
+            ).all()
+        ]
+        is_owner = (document.uploaded_by == user.id)
+        is_team_doc = bool(user_team_id and document.project_id == user_team_id)
+        is_proj_doc = (document.project_id in user_project_ids)
+        if not (is_owner or is_team_doc or is_proj_doc):
+            raise HTTPException(status_code=403, detail="You do not have permission to access this document.")
+
     # Safe project or team lookup
     project = Project.fetch_one_by_field(db, throw_error=False, id=document.project_id)
     if not project:
-        from api.v1.models.team import Team
         team = Team.fetch_one_by_field(db, throw_error=False, id=document.project_id)
         if team:
             project_data = {"id": team.id, "title": team.name, "description": team.description}
@@ -86,6 +103,21 @@ async def document_download(document_id: str, request: Request, db: Session = De
     from fastapi.responses import FileResponse
     user = _get_user(request)
     document = Document.fetch_by_id(db, document_id)
+
+    # Access control: students can only download their own documents or their team's/project's documents
+    if _is_student(user):
+        user_team = TeamService.get_student_active_team(db, user.id)
+        user_team_id = user_team.id if user_team else None
+        user_project_ids = [
+            m.project_id for m in db.query(ProjectMember.project_id).filter(
+                ProjectMember.user_id == user.id, ProjectMember.is_deleted == False
+            ).all()
+        ]
+        is_owner = (document.uploaded_by == user.id)
+        is_team_doc = bool(user_team_id and document.project_id == user_team_id)
+        is_proj_doc = (document.project_id in user_project_ids)
+        if not (is_owner or is_team_doc or is_proj_doc):
+            raise HTTPException(status_code=403, detail="You do not have permission to download this document.")
 
     if document.file_url:
         return RedirectResponse(url=document.file_url, status_code=303)

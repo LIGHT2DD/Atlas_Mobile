@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -55,6 +56,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
       context.go('/dashboard');
     }
+  }
+
+  void _quickFill(String email, String password) {
+    setState(() {
+      _emailController.text = email;
+      _passwordController.text = password;
+    });
+    NeuToast.show(
+      context,
+      message: 'Loaded credentials for $email',
+      type: NeuToastType.info,
+      duration: const Duration(seconds: 2),
+    );
   }
 
   @override
@@ -266,6 +280,44 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 36),
+
+                      // Tactile Quick Demo Roster Box (Guarded for development/debug only)
+                      if (kDebugMode) ...[
+                        IosNeuCard(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(TablerIcons.sparkles, size: 16, color: neuTheme.accentColor),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'QUICK DEMO ROSTER',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      color: neuTheme.textSecondary,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  _demoButton('Coordinator', TablerIcons.shield_check, 'coordinator@cstu.edu.bd', neuTheme),
+                                  _demoButton('Supervisor', TablerIcons.school, 'supervisor1@cstu.edu.bd', neuTheme),
+                                  _demoButton('Student', TablerIcons.user, 'student1@cstu.edu.bd', neuTheme),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -300,6 +352,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _demoButton(String label, IconData icon, String email, NeumorphicThemeData neuTheme) {
+    return IosNeuButton(
+      isPrimary: false,
+      height: 38,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      onPressed: () => _quickFill(email, 'Password123'),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: neuTheme.textPrimary),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: neuTheme.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -348,8 +424,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               runSpacing: 6,
               children: [
                 ActionChip(
-                  label: const Text('192.168.0.105:8000', style: TextStyle(fontSize: 11)),
-                  onPressed: () => controller.text = 'http://192.168.0.105:8000',
+                  label: const Text('192.168.0.101:8000', style: TextStyle(fontSize: 11)),
+                  onPressed: () => controller.text = 'http://192.168.0.101:8000',
                 ),
                 ActionChip(
                   label: const Text('10.0.2.2:8000 (Emulator)', style: TextStyle(fontSize: 11)),

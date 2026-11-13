@@ -1,6 +1,8 @@
 import datetime as dt
+import inspect
 from functools import wraps
 from typing import Callable
+from anyio import to_thread
 from fastapi import Request, Response
 from fastapi.responses import RedirectResponse
 
@@ -38,8 +40,11 @@ def add_template_context(template_path: str):
             # Get additional context from the injected dependency
             context_data = inject_context(request)
                         
-            # Run the route function to get extra context data from the function itself
-            result = await func(*args, **kwargs)
+            # Run the route function (offloading synchronous def to worker threadpool to prevent event-loop blocking)
+            if inspect.iscoroutinefunction(func):
+                result = await func(*args, **kwargs)
+            else:
+                result = await to_thread.run_sync(lambda: func(*args, **kwargs))
             
             # Check if the function returned a RedirectResponse (usually for POST redirection)
             if isinstance(result, RedirectResponse):

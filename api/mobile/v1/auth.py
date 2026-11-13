@@ -15,6 +15,7 @@ from api.mobile.v1.schemas import (
     ForgotPasswordRequest, ResetPasswordRequest
 )
 from api.mobile.v1.dependencies import mobile_response, get_current_user_mobile
+from api.core.dependencies.limiter import limiter
 
 
 auth_mobile_router = APIRouter(prefix="/auth", tags=["Mobile Auth"])
@@ -22,7 +23,8 @@ logger = create_logger(__name__)
 
 
 @auth_mobile_router.post("/login")
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)):
     """Authenticate with email and password, returning JWT access and refresh tokens."""
     try:
         user, _, _ = AuthService.authenticate(
@@ -180,7 +182,9 @@ def get_current_user_profile(
 
 
 @auth_mobile_router.post("/register")
+@limiter.limit("5/minute")
 def register_student(
+    request: Request,
     payload: RegisterRequest,
     bg_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
@@ -230,10 +234,11 @@ def register_student(
 
 
 @auth_mobile_router.post("/forgot-password")
+@limiter.limit("5/minute")
 async def forgot_password(
+    request: Request,
     payload: ForgotPasswordRequest,
     bg_tasks: BackgroundTasks,
-    request: Request,
     db: Session = Depends(get_db)
 ):
     """Send a password reset token/link if the email exists."""
@@ -249,7 +254,9 @@ async def forgot_password(
 
 
 @auth_mobile_router.post("/reset-password")
+@limiter.limit("5/minute")
 def reset_password(
+    request: Request,
     payload: ResetPasswordRequest,
     db: Session = Depends(get_db)
 ):

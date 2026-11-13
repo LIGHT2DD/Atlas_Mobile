@@ -21,7 +21,7 @@ logger = create_logger(__name__)
 
 @departments_router.get('')
 @add_template_context('pages/dashboard/departments/index.html')
-async def departments_list(request: Request, db: Session = Depends(get_db)):
+def departments_list(request: Request, db: Session = Depends(get_db)):
     user = _require_coordinator(request)
     page, size = _paginate(request, '/dashboard/departments')
 

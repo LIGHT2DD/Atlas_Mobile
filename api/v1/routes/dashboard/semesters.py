@@ -18,7 +18,7 @@ logger = create_logger(__name__)
 
 @semesters_router.get('')
 @add_template_context('pages/dashboard/semesters/index.html')
-async def semesters_list(request: Request, db: Session = Depends(get_db)):
+def semesters_list(request: Request, db: Session = Depends(get_db)):
     user = _require_coordinator(request)
     semesters = db.query(Semester).filter(Semester.is_deleted == False).order_by(Semester.start_date.desc()).all()
     active_semester = SemesterService.get_active_semester(db)

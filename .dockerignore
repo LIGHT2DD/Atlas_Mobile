@@ -1,0 +1,61 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Environment and sensitive secrets
+.env*
+credentials.txt
+*.pem
+*.key
+*.cert
+serviceAccount*.json
+firebase-adminsdk*.json
+key.properties
+*.jks
+*.keystore
+
+# Python virtual environment & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Tests, Plans & Caches
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+.testsprite/
+testsprite-plans/
+
+# Local databases, media & logs
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+logs/*
+!logs/.gitkeep
+tmp/*
+!tmp/.gitkeep
+filestorage/*
+!filestorage/.gitkeep
+
+# Mobile application (built separately)
+mobile/
+*.apk
+*.aab
+
+# Editor and OS artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

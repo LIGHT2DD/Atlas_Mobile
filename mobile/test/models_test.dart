@@ -14,7 +14,7 @@ void main() {
     test('UserModel JSON parsing and role checking', () {
       final json = {
         'id': 'usr-123',
-        'email': 'student@atlas.edu',
+        'email': 'student@cstu.edu.bd',
         'first_name': 'Alice',
         'last_name': 'Smith',
         'role': 'student',
@@ -26,7 +26,7 @@ void main() {
       final user = UserModel.fromJson(json);
 
       expect(user.id, 'usr-123');
-      expect(user.email, 'student@atlas.edu');
+      expect(user.email, 'student@cstu.edu.bd');
       expect(user.fullName, 'Alice Smith');
       expect(user.role, UserRole.student);
       expect(user.role.isStudent, isTrue);
@@ -47,21 +47,21 @@ void main() {
         'supervisor': {
           'id': 'sup-1',
           'name': 'Dr. Robert Oppenheimer',
-          'email': 'oppenheimer@atlas.edu',
+          'email': 'oppenheimer@cstu.edu.bd',
         },
         'members': [
           {
             'id': 'tm-1',
             'user_id': 'usr-1',
             'name': 'Alice',
-            'email': 'alice@atlas.edu',
+            'email': 'alice@cstu.edu.bd',
             'role': 'leader',
           },
           {
             'id': 'tm-2',
             'user_id': 'usr-2',
             'name': 'Bob',
-            'email': 'bob@atlas.edu',
+            'email': 'bob@cstu.edu.bd',
             'role': 'member',
           }
         ],
@@ -306,7 +306,7 @@ void main() {
         'id': 'tm-1',
         'user_id': 'u-1',
         'name': 'Tahmid Hasan',
-        'email': 'student1@atlas.edu',
+        'email': 'student1@cstu.edu.bd',
         'role': 'leader',
       };
       final member = TeamMemberModel.fromJson(json);
@@ -318,7 +318,7 @@ void main() {
       final json = {
         'id': 'sup-1',
         'name': 'Fatema Jannat Dihan',
-        'email': 'supervisor1@atlas.edu',
+        'email': 'supervisor1@cstu.edu.bd',
       };
       final sup = SupervisorInfo.fromJson(json);
       expect(sup.id, equals('sup-1'));

@@ -27,7 +27,7 @@ logger = create_logger(__name__)
 # ─── Teams List / My Team ──────────────────────────────
 @teams_router.get('')
 @add_template_context('pages/dashboard/teams/index.html')
-async def teams_index(request: Request, db: Session = Depends(get_db)):
+def teams_index(request: Request, db: Session = Depends(get_db)):
     user = _get_user(request)
 
     if _is_student(user):

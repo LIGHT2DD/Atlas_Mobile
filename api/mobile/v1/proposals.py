@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, joinedload
 from api.db.database import get_db
 from api.v1.models.user import User, UserRole
 from api.v1.models.team import Team
+from api.v1.models.team_member import TeamMember
 from api.v1.models.proposal import Proposal, ProposalVersion, ProposalReview
 from api.v1.services.proposal import ProposalService
 from api.v1.services.document import DocumentService
@@ -66,6 +67,15 @@ def get_team_proposal(
     db: Session = Depends(get_db)
 ):
     """Retrieve full proposal record, versions, and review feedback for a given team."""
+    if current_user.role == UserRole.STUDENT.value:
+        is_member = db.query(TeamMember).filter(
+            TeamMember.team_id == team_id,
+            TeamMember.user_id == current_user.id,
+            TeamMember.is_deleted == False
+        ).first()
+        if not is_member:
+            raise HTTPException(status_code=403, detail="You do not have permission to view this team's proposal.")
+
     proposal = db.query(Proposal).filter(
         Proposal.team_id == team_id,
         Proposal.is_deleted == False,

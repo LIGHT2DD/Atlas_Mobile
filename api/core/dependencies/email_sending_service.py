@@ -69,17 +69,23 @@ async def send_email(
         raise ValueError("Both HTML and template name cannot be None")
     
     try:
+        mail_port = int(config('MAIL_PORT', default=587))
+        mail_starttls = config('MAIL_STARTTLS', default=(mail_port == 587), cast=bool)
+        mail_ssl_tls = config('MAIL_SSL_TLS', default=(mail_port == 465), cast=bool)
+        suppress_send = config('SUPPRESS_SEND', default=1 if config('PYTHON_ENV', default='dev') in ('dev', 'test') else 0, cast=int)
+
         conf = ConnectionConfig(
-            MAIL_USERNAME=config('MAIL_USERNAME'),
-            MAIL_PASSWORD=config('MAIL_PASSWORD'),
-            MAIL_FROM=config('MAIL_FROM'),
-            MAIL_PORT=int(config('MAIL_PORT')),
-            MAIL_SERVER=config('MAIL_SERVER'),
+            MAIL_USERNAME=config('MAIL_USERNAME', default=''),
+            MAIL_PASSWORD=config('MAIL_PASSWORD', default=''),
+            MAIL_FROM=config('MAIL_FROM', default='noreply@atlas.edu'),
+            MAIL_PORT=mail_port,
+            MAIL_SERVER=config('MAIL_SERVER', default='localhost'),
             USE_CREDENTIALS=True,
             VALIDATE_CERTS=True,
-            MAIL_STARTTLS=False,
-            MAIL_SSL_TLS=True,
-            MAIL_FROM_NAME=config('MAIL_FROM_NAME'),
+            MAIL_STARTTLS=mail_starttls,
+            MAIL_SSL_TLS=mail_ssl_tls,
+            MAIL_FROM_NAME=config('MAIL_FROM_NAME', default='ATLAS'),
+            SUPPRESS_SEND=suppress_send,
             TEMPLATE_FOLDER=os.path.join("templates/email") if template_name else None,
         )
         logger.info('Config set up')
@@ -137,5 +143,4 @@ async def send_email(
 
     except Exception as e:
         logger.error(f"Failed to send email: {e}")
-        raise
 

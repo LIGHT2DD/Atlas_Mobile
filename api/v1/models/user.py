@@ -29,6 +29,9 @@ class User(BaseTableModel):
     
     department_id = sa.Column(sa.String, sa.ForeignKey('departments.id'), nullable=True, index=True)
     
+    # Relationships
+    department = relationship('Department', foreign_keys=[department_id], lazy='selectin')
+    
     @hybrid_property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"

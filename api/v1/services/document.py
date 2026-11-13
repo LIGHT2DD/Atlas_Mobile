@@ -58,18 +58,30 @@ class DocumentService:
             raise HTTPException(400, f"File size exceeds the {max_mb} MB limit")
 
         # Build safe filename & local path
-        safe_name = f"{filename.rsplit('.', 1)[0]}_{secrets.token_hex(6)}.{file_extension}"
-        safe_name = safe_name.replace(' ', '_')
+        base_title = os.path.basename(filename).rsplit('.', 1)[0]
+        base_title = "".join(c for c in base_title if c.isalnum() or c in ('-', '_')).strip() or "document"
+        safe_name = f"{base_title}_{secrets.token_hex(6)}.{file_extension}"
 
         storage_dir = config("FILESTORAGE", default="filestorage")
         file_path = f"{storage_dir}/projects/{project_id}/documents/{safe_name}"
 
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-        # Save locally
-        contents = await file.read()
+        # Save locally using 1MB chunked streaming to prevent server RAM bloat
+        bytes_read = 0
+        chunk_size = 1024 * 1024
         with open(file_path, "wb") as f:
-            f.write(contents)
+            while True:
+                chunk = await file.read(chunk_size)
+                if not chunk:
+                    break
+                bytes_read += len(chunk)
+                if bytes_read > max_bytes:
+                    f.close()
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                    raise HTTPException(400, f"File size exceeds the {max_mb} MB limit")
+                f.write(chunk)
 
         logger.info(f"Document saved to {file_path}")
 

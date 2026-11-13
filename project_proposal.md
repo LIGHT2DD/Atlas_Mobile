@@ -419,7 +419,7 @@ gantt
    * Simulating complete user journeys from student registration to oral defense grade publication.
    * Deliberately attempting conflicting defense bookings to verify the 409 Conflict rejection.
 4. **User Acceptance Testing (UAT):**
-   * Testing role boundaries using dedicated test personas: Coordinator (`coordinator@atlas.edu`), Supervisor (`supervisor1@atlas.edu`), and Student (`student1@atlas.edu`).
+   * Testing role boundaries using dedicated test personas: Coordinator (`coordinator@cstu.edu.bd`), Supervisor (`supervisor1@cstu.edu.bd`), and Student (`student1@cstu.edu.bd`).
 5. **Requirements Verification Criteria:**
    * 100% automated test pass rate across all 72+ test cases.
    * Zero static analysis warnings (`dart analyze` clean; `flake8` clean).

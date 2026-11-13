@@ -77,7 +77,7 @@ def test_student_registration_and_login(client, db_session):
         "action": "register",
         "first_name": "Test",
         "last_name": "Student",
-        "email": "newstudent@atlas.edu",
+        "email": "newstudent@cstu.edu.bd",
         "password": "Password123",
         "confirm_password": "Password123",
     }
@@ -88,7 +88,7 @@ def test_student_registration_and_login(client, db_session):
     # 2. Verify account is active and can authenticate successfully
     user, token, _ = AuthService.authenticate(
         db=db_session,
-        email="newstudent@atlas.edu",
+        email="newstudent@cstu.edu.bd",
         password="Password123",
         create_token=True,
     )

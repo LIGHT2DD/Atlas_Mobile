@@ -46,42 +46,36 @@ class AuthMiddleware(BaseHTTPMiddleware):
         # Check if path matches any protected prefix
         is_protected = any(path == prefix or path.startswith(prefix + "/") for prefix in self.protected_prefixes)
 
-        # Always open DB session
-        with get_db_with_ctx_manager() as db:
-            access_token = request.cookies.get("access_token")
-            refresh_token = request.cookies.get("refresh_token")
-            if not access_token:
-                auth_header = request.headers.get("authorization", "")
-                if auth_header.startswith("Bearer "):
-                    access_token = auth_header[7:].strip()
+        access_token = request.cookies.get("access_token")
+        refresh_token = request.cookies.get("refresh_token")
+        if not access_token:
+            auth_header = request.headers.get("authorization", "")
+            if auth_header.startswith("Bearer "):
+                access_token = auth_header[7:].strip()
 
-            # 1️⃣ If user tries to access a protected page
-            if is_protected:
-                if not access_token:
-                    flash(request, "Please login to access this page.", MessageCategory.ERROR)
-                    return _attach_csrf(RedirectResponse(url="/", status_code=303))
-                
+        # Scope DB session strictly to authentication lookup to release connection before downstream execution
+        user = None
+        if access_token:
+            with get_db_with_ctx_manager() as db:
                 user = await self._get_user_from_token(db, access_token, refresh_token, request)
-                if not user:
-                    flash(request, "Please login to access this page.", MessageCategory.ERROR)
-                    return _attach_csrf(RedirectResponse(url="/", status_code=303))
-                request.state.current_user = user
-                response = await call_next(request)
-                return _attach_csrf(response)
+        
+        request.state.current_user = user
 
-            # 2️⃣ If user is already logged in but visits login/register → redirect to dashboard
-            if path in self.unauthenticated_routes and access_token:
-                user = await self._get_user_from_token(db, access_token, refresh_token, request)
-                if user:
-                    return _attach_csrf(RedirectResponse(url="/dashboard", status_code=303))
-
-            # 3️⃣ For any other route (public pages, APIs)
-            if access_token:
-                user = await self._get_user_from_token(db, access_token, refresh_token, request)
-                request.state.current_user = user
-
+        # 1️⃣ If user tries to access a protected page
+        if is_protected:
+            if not access_token or not user:
+                flash(request, "Please login to access this page.", MessageCategory.ERROR)
+                return _attach_csrf(RedirectResponse(url="/", status_code=303))
             response = await call_next(request)
             return _attach_csrf(response)
+
+        # 2️⃣ If user is already logged in but visits login/register → redirect to dashboard
+        if path in self.unauthenticated_routes and user:
+            return _attach_csrf(RedirectResponse(url="/dashboard", status_code=303))
+
+        # 3️⃣ For any other route (public pages, static assets)
+        response = await call_next(request)
+        return _attach_csrf(response)
 
     async def _get_user_from_token(
         self, 

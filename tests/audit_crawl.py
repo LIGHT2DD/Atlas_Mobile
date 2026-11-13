@@ -70,6 +70,6 @@ def audit_client(email, password, role_name):
             print(f" [EXCEPTION] {r} -> {e}")
 
 if __name__ == "__main__":
-    audit_client("coordinator@atlas.edu", "Password123", "COORDINATOR")
-    audit_client("supervisor1@atlas.edu", "Password123", "SUPERVISOR")
-    audit_client("student1@atlas.edu", "Password123", "STUDENT")
+    audit_client("coordinator@cstu.edu.bd", "Password123", "COORDINATOR")
+    audit_client("supervisor1@cstu.edu.bd", "Password123", "SUPERVISOR")
+    audit_client("student1@cstu.edu.bd", "Password123", "STUDENT")

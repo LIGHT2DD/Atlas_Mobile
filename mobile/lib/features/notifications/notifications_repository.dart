@@ -10,6 +10,12 @@ final notificationsRepositoryProvider = Provider<NotificationsRepository>((ref) 
   return NotificationsRepository(client);
 });
 
+final notificationsListProvider =
+    FutureProvider.autoDispose<List<NotificationModel>>((ref) async {
+  final repo = ref.watch(notificationsRepositoryProvider);
+  return repo.getNotifications();
+});
+
 class NotificationsRepository {
   final ApiClient _client;
 

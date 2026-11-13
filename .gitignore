@@ -165,13 +165,20 @@ cython_debug/
 tmp
 filestorage
 logs/*.log
-serviceAccount.json
+serviceAccount*.json
+firebase-adminsdk*.json
+credentials.txt
+*.pem
+*.key
+*.cert
+key.properties
+*.jks
+*.keystore
 .history
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
-alembic/versions/*.py
 
 # OS Artifacts
 .DS_Store
@@ -181,7 +188,9 @@ Thumbs.db
 # Mobile Flutter Build Artifacts & IDE
 *.iml
 *.apk
+*.aab
 mobile/.dart_tool/
 mobile/.flutter-plugins-dependencies
 mobile/.idea/
-mobile/build/
+mobile/build/
+

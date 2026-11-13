@@ -2,18 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import '../../widgets/neumorphic/neumorphic.dart';
-import '../../shared/models/notification_model.dart';
 import '../../shared/widgets/atlas_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import 'notifications_repository.dart';
-
-final notificationsListProvider =
-    FutureProvider.autoDispose<List<NotificationModel>>((ref) async {
-  final repo = ref.watch(notificationsRepositoryProvider);
-  return repo.getNotifications();
-});
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});

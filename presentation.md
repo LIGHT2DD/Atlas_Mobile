@@ -636,7 +636,7 @@ sequenceDiagram
 > 1. **Role Invariant:** Students can only self-register with role `student`. Faculty and coordinator creation endpoints are strictly guarded by `require_roles_mobile('coordinator')`.
 > 2. **Elevated Sudo Verification:** Creating a peer coordinator requires the actor to confirm their current coordinator password, verified via bcrypt.
 > 3. **Brute-Force Lockout:** Failed elevated password attempts are throttled (5 attempts max, followed by a 60-second cooldown).
-> 4. **Institutional Domain Enforcement:** All coordinator accounts must end with `@atlas.edu`.
+> 4. **Institutional Domain Enforcement:** All coordinator accounts must end with `@cstu.edu.bd`.
 > 5. **Peer Accountability:** Whenever a coordinator is created, a broadcast alert is immediately pushed to all existing active coordinators, and an immutable audit trail entry is logged in the `audit_logs` table."*
 
 ---
@@ -670,7 +670,7 @@ When demonstrating the code to examiners, open files in this logical sequence:
 ### 12.2 Step-by-Step Demonstration Steps
 1. **Login & Role Demo Auto-Fill:**
    - Open app. Tap the `Student` quick demo button on the login screen.
-   - Show how fields auto-fill credentials for `MD. Ashikur Rahman (Ashik)` (`student1@atlas.edu`).
+   - Show how fields auto-fill credentials for `MD. Ashikur Rahman (Ashik)` (`student1@cstu.edu.bd`).
    - Tap **Sign In**. Observe instant transition to Student Workspace.
 2. **Student Dashboard & About ATLAS:**
    - Point out the Neumorphic Welcome Header banner.
@@ -681,13 +681,13 @@ When demonstrating the code to examiners, open files in this logical sequence:
    - Show version history timeline (`Version 1`, `Version 2`) and mentor critique notes.
 4. **Role Switching to Faculty Supervisor:**
    - Open drawer, tap **Sign Out of ATLAS**.
-   - Tap `Supervisor` demo button (`Fatema Jannat Dihan`, `supervisor1@atlas.edu`).
+   - Tap `Supervisor` demo button (`Fatema Jannat Dihan`, `supervisor1@cstu.edu.bd`).
    - Log in. Point out the Faculty Dashboard with pending supervision requests count.
 5. **Supervisor Review Action:**
    - Open **Requests Inbox**. Show the student pitch.
    - Demonstrate accepting/declining or opening **Supervised Teams** to grade submissions.
 6. **Coordinator Oral Defense Scheduling:**
-   - Sign out and log in as `Coordinator` (`Prof. Nazim Uddin`, `coordinator@atlas.edu`).
+   - Sign out and log in as `Coordinator` (`Prof. Nazim Uddin`, `coordinator@cstu.edu.bd`).
    - Navigate to **Defense Scheduling**.
    - Show scheduled oral hearings, assigned panel examiners, and conflict-free room allocation.
    - Open **Audit Logs** to demonstrate the immutable compliance history.

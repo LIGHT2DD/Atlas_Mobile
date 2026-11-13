@@ -75,7 +75,7 @@ def test_mobile_register_student(client, db_session):
         json={
             "first_name": "Mobile",
             "last_name": "Student",
-            "email": "mobile_student@atlas.edu",
+            "email": "mobile_student@cstu.edu.bd",
             "password": "Password123",
             "confirm_password": "Password123",
         }
@@ -552,7 +552,7 @@ def test_coordinator_user_management_option_a(client, seeded_users, db_session):
     4. Coordinator cannot create coordinator without sudo password.
     5. Coordinator cannot create coordinator with invalid password.
     6. Coordinator cannot create coordinator with non-atlas domain.
-    7. Coordinator creates coordinator with valid sudo password and @atlas.edu email.
+    7. Coordinator creates coordinator with valid sudo password and @cstu.edu.bd email.
     """
     coord = seeded_users["coordinator"]
     stu = seeded_users["student1"]
@@ -575,7 +575,7 @@ def test_coordinator_user_management_option_a(client, seeded_users, db_session):
         json={
             "first_name": "Dr. Nadia",
             "last_name": "Sultana",
-            "email": "nadia.sultana@atlas.edu",
+            "email": "nadia.sultana@cstu.edu.bd",
             "password": "Password123",
             "role": "supervisor",
         }
@@ -590,7 +590,7 @@ def test_coordinator_user_management_option_a(client, seeded_users, db_session):
         json={
             "first_name": "Prof. Hasan",
             "last_name": "Mahmud",
-            "email": "hasan.mahmud@atlas.edu",
+            "email": "hasan.mahmud@cstu.edu.bd",
             "password": "Password123",
             "role": "coordinator",
         }
@@ -604,7 +604,7 @@ def test_coordinator_user_management_option_a(client, seeded_users, db_session):
         json={
             "first_name": "Prof. Hasan",
             "last_name": "Mahmud",
-            "email": "hasan.mahmud@atlas.edu",
+            "email": "hasan.mahmud@cstu.edu.bd",
             "password": "Password123",
             "role": "coordinator",
             "current_password": "WrongPassword999",
@@ -627,14 +627,14 @@ def test_coordinator_user_management_option_a(client, seeded_users, db_session):
     )
     assert res_wrong_domain.status_code == 400
 
-    # 7. Coordinator creation successful with valid password and @atlas.edu -> 201
+    # 7. Coordinator creation successful with valid password and @cstu.edu.bd -> 201
     res_valid_coord = client.post(
         "/api/mobile/v1/coordinator/users",
         headers=headers_coord,
         json={
             "first_name": "Prof. Hasan",
             "last_name": "Mahmud",
-            "email": "hasan.mahmud@atlas.edu",
+            "email": "hasan.mahmud@cstu.edu.bd",
             "password": "Password123",
             "role": "coordinator",
             "current_password": "Password123",

@@ -70,11 +70,22 @@ class BaseTableModel(Base):
     _disable_activity_logging = False
     
     id = sa.Column(sa.String, primary_key=True, index=True, default=lambda: str(uuid4().hex))
-    unique_id = sa.Column(sa.String, nullable=True)
+    unique_id = sa.Column(sa.String, nullable=True, index=True)
     is_deleted = sa.Column(sa.Boolean, default=False)
     created_at = sa.Column(sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = sa.Column(sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    @classmethod
+    def _hybrid_property_names(cls) -> List[str]:
+        """Cache hybrid property attribute names per model class to avoid expensive runtime getmembers() reflection."""
+        if "_cached_hybrids" not in cls.__dict__:
+            hybrids = []
+            for base in reversed(cls.__mro__):
+                for name, attr in base.__dict__.items():
+                    if isinstance(attr, hybrid_property) and name not in hybrids:
+                        hybrids.append(name)
+            cls._cached_hybrids = hybrids
+        return cls._cached_hybrids
     
     def to_dict(self, excludes: List[str] = [], visited=None) -> Dict[str, Any]:
         """Returns a dictionary representation of the instance"""
@@ -106,10 +117,9 @@ class BaseTableModel(Base):
                 except Exception:
                     pass
             
-        # Get hybrid properties
-        for name, attr in getmembers(self):
-            if isinstance(attr, hybrid_property):
-                obj_dict[name] = getattr(self, name)
+        # Get hybrid properties from class cache
+        for name in self._hybrid_property_names():
+            obj_dict[name] = getattr(self, name)
                 
         # Exclude specified fields
         for exclude in excludes:

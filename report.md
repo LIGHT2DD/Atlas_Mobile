@@ -216,7 +216,7 @@ graph TD
   - Configure departmental rubric matrices.
   - Lock and publish final academic grades.
   - Inspect system-wide audit logs and generate cohort analytical reports.
-  - User Roster Management: Register new faculty supervisors and peer academic coordinators with elevated sudo password verification, institutional domain enforcement (`@atlas.edu`), brute-force rate-limiting, and automatic peer broadcast notifications.
+  - User Roster Management: Register new faculty supervisors and peer academic coordinators with elevated sudo password verification, institutional domain enforcement (`@cstu.edu.bd`), brute-force rate-limiting, and automatic peer broadcast notifications.
 - **Strictly Prohibited:**
   - System enforces separation of duties; coordinator actions are permanently logged in `audit_logs` table with actor timestamps.
 
@@ -226,7 +226,7 @@ graph TD
 | :--- | :---: | :---: | :---: | :--- |
 | **User Registration & Profile Update** | YES | YES | YES | [api/mobile/v1/auth.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/auth.py) |
 | **Register Faculty Supervisor Account** | NO | NO | YES | [api/mobile/v1/coordinator.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/coordinator.py) |
-| **Register Coordinator (Elevated Sudo)** | NO | NO | YES (Sudo + @atlas.edu) | [api/mobile/v1/coordinator.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/coordinator.py) |
+| **Register Coordinator (Elevated Sudo)** | NO | NO | YES (Sudo + @cstu.edu.bd) | [api/mobile/v1/coordinator.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/coordinator.py) |
 | **Team Creation & Invite Management** | YES | NO | NO | [api/v1/services/team.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/v1/services/team.py) |
 | **Supervisor Request Dispatch** | YES | NO | NO | [api/v1/services/team.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/v1/services/team.py) |
 | **Accept/Decline Supervision Invitation** | NO | YES | NO | [api/mobile/v1/supervisor.py](file:///e:/Virtual%20Stdio%20Codes/Mobile%20Application/projects/Atlas/api/mobile/v1/supervisor.py) |
@@ -898,9 +898,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
 
 # Email Service Configuration
-MAIL_USERNAME=notifications@atlas.edu
+MAIL_USERNAME=notifications@cstu.edu.bd
 MAIL_PASSWORD=your-secure-mail-app-password
-MAIL_FROM=notifications@atlas.edu
+MAIL_FROM=notifications@cstu.edu.bd
 MAIL_PORT=587
 MAIL_SERVER=smtp.gmail.com
 
